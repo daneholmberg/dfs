@@ -92,7 +92,7 @@ class Projector:
             self.players = sorted(self.players.values(), key=lambda player: player.median_value, reverse=True)
         else:
             self.players = sorted(self.players.values(), key=lambda player: player.lower_value, reverse=True)
-        # self.reduce_players(7, 8, 12, 5, 5)
+        self.reduce_players(7, 8, 12, 5, 5)
         # self.reduce_players(4, 5, 7, 3, 3)
         print(len(self.players))
         # self.players = sorted(self.players, key=lambda player: player.upper, reverse=True)
@@ -100,7 +100,7 @@ class Projector:
             # if player.position in ["TE", "RB", "WR"]:
             if player.position in ["TE"]:
                 print(player.name, player.upper_value, player.position, player.team, player.upper, player.salary)
-        esfd
+        
 
     def reduce_players(self, qb_num, rb_num, wr_num, te_num, dst_num):
         players = {i: player for i, player in enumerate(self.players)}

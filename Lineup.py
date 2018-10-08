@@ -1,7 +1,7 @@
 from copy import copy, deepcopy
 
 class Lineup:
-    def __init__(self, players=[], cap=50000, player=None):
+    def __init__(self, players=[], cap=50000, new_player=None):
         if players:
             self.players = players
         else:
@@ -12,7 +12,7 @@ class Lineup:
         self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}
         for player in self.players:
             self.remove_needed(player.position, player)
-        if player:
+        if new_player and self.create_new(new_player):
             self.add_player(player)
 
     def create_new(self, player):
