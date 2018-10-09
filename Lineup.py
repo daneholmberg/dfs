@@ -80,14 +80,14 @@ class Lineup:
         return needed
 
 
-    def add_player(self, player):
+    def add_player(self, player, is_positions = True):
         sal_remain = self.salary_remaining - int(player.salary)
 
         if sal_remain < 0:
             return False
         if not hasattr(player, "position"):
             return False
-        if not self.remove_needed(player.position, player):
+        if is_positions and not self.remove_needed(player.position, player):
             return False
         self.salary_remaining = self.salary_remaining - int(player.salary)
         self.players.append(player)

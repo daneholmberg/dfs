@@ -24,6 +24,6 @@ if __name__ == "__main__":
 
     Projector.add_values()
     Projector.purge_players()
-    Projector.build_all_lineups()
+    Projector.build_all_lineups(50000, True)
 
     

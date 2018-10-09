@@ -1,8 +1,11 @@
+import re
+
+from copy import copy, deepcopy
+
 class Player:
     def __init__(self, name, offset=1):
         self.name = name
-        self.offset = offset
-        self.flex = False
+        # self.offset = offset
     
     def update_player_proj(self, data):
         self.team = data['team']
@@ -15,9 +18,32 @@ class Player:
         self.sdRank = data['sdRank']
         self.risk = data['risk']
     
+    def __deepcopy__(self, memo):
+        id_self = id(self)        # memoization avoids unnecesary recursion
+        _copy = memo.get(id_self)
+        if _copy is None:
+            _copy = type(self)(
+                deepcopy(self.name, memo)
+                )
+            memo[id_self] = _copy
+            memo[id_self].salary = deepcopy(self.salary)
+            memo[id_self].lower = deepcopy(self.lower)
+            memo[id_self].upper = deepcopy(self.upper)
+            memo[id_self].median = deepcopy(self.median)
+            memo[id_self].name = self.name
+            memo[id_self].team = self.team
+            memo[id_self].position = self.position
+        return _copy
+
     def update_player_dfs(self, data):
-        self.isFlex = "FLEX" in data['Roster Position']
+        # self.isFlex = "FLEX" in data['Roster Position']
         self.salary = data['Salary']
+        match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+        if data['TeamAbbrev'] == match.group(1):
+            self.opposing_team = match.group(2)
+        elif data['TeamAbbrev'] == match.group(2):
+            self.opposing_team = match.group(1)
+
 
     def get_value(self):
         try:
