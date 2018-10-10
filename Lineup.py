@@ -10,10 +10,14 @@ class Lineup:
         self.salary_remaining = cap
         self.decrease_salary_remaining()
         self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}
+        self.len_players = len(self.players)
         for player in self.players:
             self.remove_needed(player.position, player)
         if new_player and self.create_new(new_player):
             self.add_player(player)
+            self.len_players += 1
+
+    
 
     def create_new(self, player):
         sal_remain = self.salary_remaining - int(player.salary)
@@ -43,6 +47,7 @@ class Lineup:
             new_salary = new_salary + player.salary
         return new_salary
 
+    # REMOVES LAST PLAYER
     def __deepcopy__(self, memo): # memo is a dict of id's to copies
         id_self = id(self)        # memoization avoids unnecesary recursion
         _copy = memo.get(id_self)
@@ -91,6 +96,7 @@ class Lineup:
             return False
         self.salary_remaining = self.salary_remaining - int(player.salary)
         self.players.append(player)
+        self.len_players += 1
         return True
     
     def decrease_salary_remaining(self):
