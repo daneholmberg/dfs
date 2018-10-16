@@ -1,0 +1,18 @@
+cdef class Player:
+    cdef str tpe
+    cdef list lineups
+    cdef dict players
+    cdef list draftkings_data
+    cdef list projected_data
+    cpdef void build_projection_dict(self)
+    cpdef str clean_name(self, str name)
+    cpdef str clean_abbr(self, str abbr)
+    cpdef void purge_players(self)
+    cpdef void order_players_by_value(self)
+    cpdef void reduce_players(self, int qb_num, int rb_num, int wr_num, int te_num, int dst_num)
+    cpdef void append_lineup(self, list lineup)
+    cpdef void lineups_iter(self, int r, cpt=*)
+    cpdef void sort_linesup(self, int limit=*)
+    cpdef void write_player_csv(self)
+    cpdef void write_linesups_csv(self)
+    cpdef void add_values(self)
