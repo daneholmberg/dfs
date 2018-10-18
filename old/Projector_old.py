@@ -217,7 +217,7 @@ class Projector:
 
     def write_player_csv(self):
         players = [vars(player) for player in self.players]
-        #write_csv("player_values.csv", PLAYER_COLUMNS, players)
+        write_csv("player_values.csv", PLAYER_COLUMNS, players)
 
     def write_linesups_csv(self, limit=10):
         # print("here", len(self.li))

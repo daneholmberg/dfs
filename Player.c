@@ -3,6 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
+        "define_macros": [
+            [
+                "CYTHON_TRACE",
+                "1"
+            ]
+        ],
         "name": "dfs.Player",
         "sources": [
             "Player.pyx"
@@ -784,6 +790,19 @@ static const char *__pyx_f[] = {
 
 /*--- Type declarations ---*/
 struct __pyx_obj_3dfs_6Player_Player;
+struct __pyx_opt_args_3dfs_6Player_6Player_update_player_dfs;
+
+/* "dfs/Player.pxd":19
+ *     cdef public double lower_value
+ *     cpdef update_player_proj(self, data)
+ *     cpdef update_player_dfs(self, data, site=*)             # <<<<<<<<<<<<<<
+ *     cpdef get_value(self, site)
+ *     cpdef __deepcopy__(self, memo)
+ */
+struct __pyx_opt_args_3dfs_6Player_6Player_update_player_dfs {
+  int __pyx_n;
+  PyObject *site;
+};
 
 /* "dfs/Player.pxd":1
  * cdef class Player:             # <<<<<<<<<<<<<<
@@ -823,8 +842,8 @@ struct __pyx_obj_3dfs_6Player_Player {
 
 struct __pyx_vtabstruct_3dfs_6Player_Player {
   PyObject *(*update_player_proj)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch);
-  PyObject *(*update_player_dfs)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch);
-  PyObject *(*get_value)(struct __pyx_obj_3dfs_6Player_Player *, int __pyx_skip_dispatch);
+  PyObject *(*update_player_dfs)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_3dfs_6Player_6Player_update_player_dfs *__pyx_optional_args);
+  PyObject *(*get_value)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch);
   PyObject *(*__pyx___deepcopy__)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch);
 };
 static struct __pyx_vtabstruct_3dfs_6Player_Player *__pyx_vtabptr_3dfs_6Player_Player;
@@ -1251,11 +1270,20 @@ static CYTHON_INLINE int __Pyx_PyObject_SetAttrStr(PyObject* obj, PyObject* attr
 #define __Pyx_PyObject_SetAttrStr(o,n,v) PyObject_SetAttr(o,n,v)
 #endif
 
-/* PyObjectCallNoArg.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
+/* IncludeStringH.proto */
+#include <string.h>
+
+/* BytesEquals.proto */
+static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals);
+
+/* UnicodeEquals.proto */
+static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals);
+
+/* StrEquals.proto */
+#if PY_MAJOR_VERSION >= 3
+#define __Pyx_PyString_Equals __Pyx_PyUnicode_Equals
 #else
-#define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
+#define __Pyx_PyString_Equals __Pyx_PyBytes_Equals
 #endif
 
 /* SaveResetException.proto */
@@ -1290,9 +1318,6 @@ static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject 
         likely(PyUnicode_CheckExact(s)) ? (Py_INCREF(s), s) :\
         PyObject_Format(s, f))
 #endif
-
-/* IncludeStringH.proto */
-#include <string.h>
 
 /* JoinPyUnicode.proto */
 static PyObject* __Pyx_PyUnicode_Join(PyObject* value_tuple, Py_ssize_t value_count, Py_ssize_t result_ulength,
@@ -1343,6 +1368,62 @@ static int __Pyx_SetVtable(PyObject *dict, void *vtable);
 
 /* SetupReduce.proto */
 static int __Pyx_setup_reduce(PyObject* type_obj);
+
+/* FetchCommonType.proto */
+static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type);
+
+/* CythonFunction.proto */
+#define __Pyx_CyFunction_USED 1
+#define __Pyx_CYFUNCTION_STATICMETHOD  0x01
+#define __Pyx_CYFUNCTION_CLASSMETHOD   0x02
+#define __Pyx_CYFUNCTION_CCLASS        0x04
+#define __Pyx_CyFunction_GetClosure(f)\
+    (((__pyx_CyFunctionObject *) (f))->func_closure)
+#define __Pyx_CyFunction_GetClassObj(f)\
+    (((__pyx_CyFunctionObject *) (f))->func_classobj)
+#define __Pyx_CyFunction_Defaults(type, f)\
+    ((type *)(((__pyx_CyFunctionObject *) (f))->defaults))
+#define __Pyx_CyFunction_SetDefaultsGetter(f, g)\
+    ((__pyx_CyFunctionObject *) (f))->defaults_getter = (g)
+typedef struct {
+    PyCFunctionObject func;
+#if PY_VERSION_HEX < 0x030500A0
+    PyObject *func_weakreflist;
+#endif
+    PyObject *func_dict;
+    PyObject *func_name;
+    PyObject *func_qualname;
+    PyObject *func_doc;
+    PyObject *func_globals;
+    PyObject *func_code;
+    PyObject *func_closure;
+    PyObject *func_classobj;
+    void *defaults;
+    int defaults_pyobjects;
+    int flags;
+    PyObject *defaults_tuple;
+    PyObject *defaults_kwdict;
+    PyObject *(*defaults_getter)(PyObject *);
+    PyObject *func_annotations;
+} __pyx_CyFunctionObject;
+static PyTypeObject *__pyx_CyFunctionType = 0;
+#define __Pyx_CyFunction_NewEx(ml, flags, qualname, self, module, globals, code)\
+    __Pyx_CyFunction_New(__pyx_CyFunctionType, ml, flags, qualname, self, module, globals, code)
+static PyObject *__Pyx_CyFunction_New(PyTypeObject *, PyMethodDef *ml,
+                                      int flags, PyObject* qualname,
+                                      PyObject *self,
+                                      PyObject *module, PyObject *globals,
+                                      PyObject* code);
+static CYTHON_INLINE void *__Pyx_CyFunction_InitDefaults(PyObject *m,
+                                                         size_t size,
+                                                         int pyobjects);
+static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsTuple(PyObject *m,
+                                                            PyObject *tuple);
+static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsKwDict(PyObject *m,
+                                                             PyObject *dict);
+static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *m,
+                                                              PyObject *dict);
+static int __pyx_CyFunction_init(void);
 
 /* CLineInTraceback.proto */
 #ifdef CYTHON_CLINE_IN_TRACEBACK
@@ -1400,8 +1481,8 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data, int __pyx_skip_dispatch); /* proto*/
 static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_memo, int __pyx_skip_dispatch); /* proto*/
-static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data, int __pyx_skip_dispatch); /* proto*/
-static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data, int __pyx_skip_dispatch, struct __pyx_opt_args_3dfs_6Player_6Player_update_player_dfs *__pyx_optional_args); /* proto*/
+static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_site, int __pyx_skip_dispatch); /* proto*/
 
 /* Module declarations from 'dfs.Player' */
 static PyTypeObject *__pyx_ptype_3dfs_6Player_Player = 0;
@@ -1412,27 +1493,35 @@ int __pyx_module_is_main_dfs__Player = 0;
 
 /* Implementation of 'dfs.Player' */
 static PyObject *__pyx_builtin_id;
-static const char __pyx_k__5[] = ", ";
-static const char __pyx_k__6[] = "";
+static const char __pyx_k_DK[] = "DK";
+static const char __pyx_k__9[] = ", ";
 static const char __pyx_k_id[] = "id";
 static const char __pyx_k_re[] = "re";
+static const char __pyx_k__10[] = "";
 static const char __pyx_k_get[] = "get";
 static const char __pyx_k_new[] = "__new__";
 static const char __pyx_k_w_w[] = "(\\w+)@(\\w+)";
 static const char __pyx_k_copy[] = "copy";
+static const char __pyx_k_data[] = "data";
 static const char __pyx_k_dict[] = "__dict__";
 static const char __pyx_k_main[] = "__main__";
+static const char __pyx_k_memo[] = "memo";
 static const char __pyx_k_name[] = "name";
 static const char __pyx_k_risk[] = "risk";
+static const char __pyx_k_self[] = "self";
+static const char __pyx_k_site[] = "site";
 static const char __pyx_k_team[] = "team";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_group[] = "group";
 static const char __pyx_k_lower[] = "lower";
 static const char __pyx_k_match[] = "match";
 static const char __pyx_k_sdPts[] = "sdPts";
+static const char __pyx_k_state[] = "state";
 static const char __pyx_k_upper[] = "upper";
 static const char __pyx_k_value[] = "value: ";
+static const char __pyx_k_yahoo[] = "yahoo";
 static const char __pyx_k_Salary[] = "Salary";
+static const char __pyx_k_dict_2[] = "_dict";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_median[] = "median";
 static const char __pyx_k_name_2[] = "name: ";
@@ -1446,6 +1535,7 @@ static const char __pyx_k_sdRank[] = "sdRank";
 static const char __pyx_k_team_2[] = ", team: ";
 static const char __pyx_k_update[] = "update";
 static const char __pyx_k_dropoff[] = "dropoff";
+static const char __pyx_k_Opponent[] = "Opponent";
 static const char __pyx_k_deepcopy[] = "__deepcopy__";
 static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_median_2[] = ", median: ";
@@ -1457,6 +1547,7 @@ static const char __pyx_k_Game_Info[] = "Game Info";
 static const char __pyx_k_get_value[] = "get_value";
 static const char __pyx_k_pyx_state[] = "__pyx_state";
 static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
+static const char __pyx_k_Player_pyx[] = "Player.pyx";
 static const char __pyx_k_TeamAbbrev[] = "TeamAbbrev";
 static const char __pyx_k_deepcopy_2[] = "deepcopy";
 static const char __pyx_k_dfs_Player[] = "dfs.Player";
@@ -1469,27 +1560,46 @@ static const char __pyx_k_upper_value[] = "upper_value";
 static const char __pyx_k_median_value[] = "median_value";
 static const char __pyx_k_pyx_checksum[] = "__pyx_checksum";
 static const char __pyx_k_stringsource[] = "stringsource";
+static const char __pyx_k_use_setstate[] = "use_setstate";
+static const char __pyx_k_opposing_team[] = "opposing_team";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
 static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
+static const char __pyx_k_Player_get_value[] = "Player.get_value";
+static const char __pyx_k_Player___deepcopy[] = "Player.__deepcopy__";
 static const char __pyx_k_update_player_dfs[] = "update_player_dfs";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_update_player_proj[] = "update_player_proj";
 static const char __pyx_k_pyx_unpickle_Player[] = "__pyx_unpickle_Player";
+static const char __pyx_k_Player___reduce_cython[] = "Player.__reduce_cython__";
+static const char __pyx_k_Player___setstate_cython[] = "Player.__setstate_cython__";
+static const char __pyx_k_Player_update_player_dfs[] = "Player.update_player_dfs";
+static const char __pyx_k_Player_update_player_proj[] = "Player.update_player_proj";
 static const char __pyx_k_Incompatible_checksums_s_vs_0x2b[] = "Incompatible checksums (%s vs 0x2b81de6 = (dropoff, flex, lower, lower_value, median, median_value, name, opposing_team, position, risk, salary, sdPts, sdRank, team, upper, upper_value))";
+static PyObject *__pyx_n_s_DK;
 static PyObject *__pyx_kp_s_Game_Info;
 static PyObject *__pyx_kp_s_Incompatible_checksums_s_vs_0x2b;
+static PyObject *__pyx_n_s_Opponent;
 static PyObject *__pyx_n_s_PickleError;
+static PyObject *__pyx_n_s_Player___deepcopy;
+static PyObject *__pyx_n_s_Player___reduce_cython;
+static PyObject *__pyx_n_s_Player___setstate_cython;
+static PyObject *__pyx_n_s_Player_get_value;
+static PyObject *__pyx_kp_s_Player_pyx;
+static PyObject *__pyx_n_s_Player_update_player_dfs;
+static PyObject *__pyx_n_s_Player_update_player_proj;
 static PyObject *__pyx_n_s_Salary;
 static PyObject *__pyx_n_s_TeamAbbrev;
-static PyObject *__pyx_kp_u__5;
-static PyObject *__pyx_kp_s__6;
+static PyObject *__pyx_kp_s__10;
+static PyObject *__pyx_kp_u__9;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_copy;
+static PyObject *__pyx_n_s_data;
 static PyObject *__pyx_n_s_deepcopy;
 static PyObject *__pyx_n_s_deepcopy_2;
 static PyObject *__pyx_n_s_dfs_Player;
 static PyObject *__pyx_n_s_dict;
+static PyObject *__pyx_n_s_dict_2;
 static PyObject *__pyx_n_s_dropoff;
 static PyObject *__pyx_n_s_get;
 static PyObject *__pyx_n_s_get_value;
@@ -1504,11 +1614,13 @@ static PyObject *__pyx_n_s_match;
 static PyObject *__pyx_n_s_median;
 static PyObject *__pyx_kp_u_median_2;
 static PyObject *__pyx_n_s_median_value;
+static PyObject *__pyx_n_s_memo;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_kp_u_name_2;
 static PyObject *__pyx_n_s_name_3;
 static PyObject *__pyx_n_s_new;
 static PyObject *__pyx_n_s_offset;
+static PyObject *__pyx_n_s_opposing_team;
 static PyObject *__pyx_n_s_pickle;
 static PyObject *__pyx_n_s_points;
 static PyObject *__pyx_n_s_position;
@@ -1529,8 +1641,11 @@ static PyObject *__pyx_n_s_salary;
 static PyObject *__pyx_kp_u_salary_2;
 static PyObject *__pyx_n_s_sdPts;
 static PyObject *__pyx_n_s_sdRank;
+static PyObject *__pyx_n_s_self;
 static PyObject *__pyx_n_s_setstate;
 static PyObject *__pyx_n_s_setstate_cython;
+static PyObject *__pyx_n_s_site;
+static PyObject *__pyx_n_s_state;
 static PyObject *__pyx_kp_s_stringsource;
 static PyObject *__pyx_n_s_team;
 static PyObject *__pyx_kp_u_team_2;
@@ -1540,13 +1655,15 @@ static PyObject *__pyx_n_s_update_player_dfs;
 static PyObject *__pyx_n_s_update_player_proj;
 static PyObject *__pyx_n_s_upper;
 static PyObject *__pyx_n_s_upper_value;
+static PyObject *__pyx_n_s_use_setstate;
 static PyObject *__pyx_kp_u_value;
 static PyObject *__pyx_kp_s_w_w;
+static PyObject *__pyx_n_s_yahoo;
 static int __pyx_pf_3dfs_6Player_6Player___init__(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_name, CYTHON_UNUSED PyObject *__pyx_v_offset); /* proto */
 static PyObject *__pyx_pf_3dfs_6Player_6Player_2update_player_proj(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data); /* proto */
 static PyObject *__pyx_pf_3dfs_6Player_6Player_4__deepcopy__(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_memo); /* proto */
-static PyObject *__pyx_pf_3dfs_6Player_6Player_6update_player_dfs(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data); /* proto */
-static PyObject *__pyx_pf_3dfs_6Player_6Player_8get_value(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_3dfs_6Player_6Player_6update_player_dfs(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data, PyObject *__pyx_v_site); /* proto */
+static PyObject *__pyx_pf_3dfs_6Player_6Player_8get_value(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_site); /* proto */
 static PyObject *__pyx_pf_3dfs_6Player_6Player_10__str__(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_3dfs_6Player_6Player_4name___get__(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self); /* proto */
 static int __pyx_pf_3dfs_6Player_6Player_4name_2__set__(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
@@ -1595,13 +1712,27 @@ static PyObject *__pyx_pf_3dfs_6Player___pyx_unpickle_Player(CYTHON_UNUSED PyObj
 static PyObject *__pyx_tp_new_3dfs_6Player_Player(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_int_2;
+static PyObject *__pyx_int_10;
+static PyObject *__pyx_int_1000;
 static PyObject *__pyx_int_45620710;
-static PyObject *__pyx_tuple_;
-static PyObject *__pyx_tuple__2;
-static PyObject *__pyx_tuple__3;
+static PyObject *__pyx_codeobj_;
 static PyObject *__pyx_tuple__4;
-static PyObject *__pyx_tuple__8;
-static PyObject *__pyx_codeobj__7;
+static PyObject *__pyx_tuple__5;
+static PyObject *__pyx_tuple__6;
+static PyObject *__pyx_tuple__7;
+static PyObject *__pyx_tuple__14;
+static PyObject *__pyx_tuple__15;
+static PyObject *__pyx_tuple__16;
+static PyObject *__pyx_tuple__17;
+static PyObject *__pyx_tuple__18;
+static PyObject *__pyx_tuple__19;
+static PyObject *__pyx_tuple__20;
+static PyObject *__pyx_codeobj__2;
+static PyObject *__pyx_codeobj__3;
+static PyObject *__pyx_codeobj__8;
+static PyObject *__pyx_codeobj__11;
+static PyObject *__pyx_codeobj__12;
+static PyObject *__pyx_codeobj__13;
 /* Late includes */
 
 /* "dfs/Player.pyx":8
@@ -1692,6 +1823,7 @@ static int __pyx_pf_3dfs_6Player_6Player___init__(struct __pyx_obj_3dfs_6Player_
  *         # self.offset = offset
  * 
  */
+  __Pyx_TraceLine(9,0,__PYX_ERR(0, 9, __pyx_L1_error))
   if (!(likely(PyString_CheckExact(__pyx_v_name))||((__pyx_v_name) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_v_name)->tp_name), 0))) __PYX_ERR(0, 9, __pyx_L1_error)
   __pyx_t_1 = __pyx_v_name;
   __Pyx_INCREF(__pyx_t_1);
@@ -1741,6 +1873,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
   PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
   double __pyx_t_6;
+  __Pyx_TraceFrameInit(__pyx_codeobj_)
   __Pyx_RefNannySetupContext("update_player_proj", 0);
   __Pyx_TraceCall("update_player_proj", __pyx_f[0], 12, 0, __PYX_ERR(0, 12, __pyx_L1_error));
   /* Check if called by wrapper */
@@ -1810,6 +1943,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
  *         self.position = data['position']
  *         self.median = float(data['points'])
  */
+  __Pyx_TraceLine(13,0,__PYX_ERR(0, 13, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_team); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 13, __pyx_L1_error)
@@ -1826,6 +1960,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
  *         self.median = float(data['points'])
  *         self.lower = float(data['lower'])
  */
+  __Pyx_TraceLine(14,0,__PYX_ERR(0, 14, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_position); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 14, __pyx_L1_error)
@@ -1842,6 +1977,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
  *         self.lower = float(data['lower'])
  *         self.upper = float(data['upper'])
  */
+  __Pyx_TraceLine(15,0,__PYX_ERR(0, 15, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 15, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_1); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 15, __pyx_L1_error)
@@ -1855,6 +1991,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
  *         self.upper = float(data['upper'])
  *         self.sdPts = data['sdPts']
  */
+  __Pyx_TraceLine(16,0,__PYX_ERR(0, 16, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_lower); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_1); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 16, __pyx_L1_error)
@@ -1868,6 +2005,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
  *         self.sdPts = data['sdPts']
  *         self.dropoff = data['dropoff']
  */
+  __Pyx_TraceLine(17,0,__PYX_ERR(0, 17, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_upper); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_1); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 17, __pyx_L1_error)
@@ -1881,6 +2019,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
  *         self.dropoff = data['dropoff']
  *         self.sdRank = data['sdRank']
  */
+  __Pyx_TraceLine(18,0,__PYX_ERR(0, 18, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_sdPts); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 18, __pyx_L1_error)
@@ -1897,6 +2036,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
  *         self.sdRank = data['sdRank']
  *         self.risk = data['risk']
  */
+  __Pyx_TraceLine(19,0,__PYX_ERR(0, 19, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_dropoff); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 19, __pyx_L1_error)
@@ -1913,6 +2053,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
  *         self.risk = data['risk']
  * 
  */
+  __Pyx_TraceLine(20,0,__PYX_ERR(0, 20, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_sdRank); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 20, __pyx_L1_error)
@@ -1929,6 +2070,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
  * 
  *     cpdef __deepcopy__(self, memo):
  */
+  __Pyx_TraceLine(21,0,__PYX_ERR(0, 21, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_risk); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 21, __pyx_L1_error)
@@ -1966,6 +2108,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_proj(struct __pyx_ob
 
 /* Python wrapper */
 static PyObject *__pyx_pw_3dfs_6Player_6Player_3update_player_proj(PyObject *__pyx_v_self, PyObject *__pyx_v_data); /*proto*/
+static PyMethodDef __pyx_mdef_3dfs_6Player_6Player_3update_player_proj = {"update_player_proj", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_3update_player_proj, METH_O, 0};
 static PyObject *__pyx_pw_3dfs_6Player_6Player_3update_player_proj(PyObject *__pyx_v_self, PyObject *__pyx_v_data) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -1982,6 +2125,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_2update_player_proj(struct __pyx_
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
+  __Pyx_TraceFrameInit(__pyx_codeobj_)
   __Pyx_RefNannySetupContext("update_player_proj", 0);
   __Pyx_TraceCall("update_player_proj (wrapper)", __pyx_f[0], 12, 0, __PYX_ERR(0, 12, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
@@ -2026,6 +2170,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
   int __pyx_t_6;
   int __pyx_t_7;
   int __pyx_t_8;
+  __Pyx_TraceFrameInit(__pyx_codeobj__2)
   __Pyx_RefNannySetupContext("__deepcopy__", 0);
   __Pyx_TraceCall("__deepcopy__", __pyx_f[0], 23, 0, __PYX_ERR(0, 23, __pyx_L1_error));
   /* Check if called by wrapper */
@@ -2095,6 +2240,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *         _copy = memo.get(id_self)
  *         if _copy is None:
  */
+  __Pyx_TraceLine(24,0,__PYX_ERR(0, 24, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_id, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_id_self = __pyx_t_1;
@@ -2107,6 +2253,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *         if _copy is None:
  *             _copy = type(self)(
  */
+  __Pyx_TraceLine(25,0,__PYX_ERR(0, 25, __pyx_L1_error))
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_memo, __pyx_n_s_get); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 25, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
@@ -2162,6 +2309,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             _copy = type(self)(
  *                 deepcopy(self.name, memo)
  */
+  __Pyx_TraceLine(26,0,__PYX_ERR(0, 26, __pyx_L1_error))
   __pyx_t_6 = (__pyx_v__copy == Py_None);
   __pyx_t_7 = (__pyx_t_6 != 0);
   if (__pyx_t_7) {
@@ -2173,6 +2321,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *                 )
  *             memo[id_self] = _copy
  */
+    __Pyx_TraceLine(28,0,__PYX_ERR(0, 28, __pyx_L1_error))
     __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 28, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_3 = NULL;
@@ -2277,6 +2426,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].salary = deepcopy(self.salary)
  *             memo[id_self].lower = deepcopy(self.lower)
  */
+    __Pyx_TraceLine(30,0,__PYX_ERR(0, 30, __pyx_L1_error))
     if (unlikely(PyObject_SetItem(__pyx_v_memo, __pyx_v_id_self, __pyx_v__copy) < 0)) __PYX_ERR(0, 30, __pyx_L1_error)
 
     /* "dfs/Player.pyx":31
@@ -2286,6 +2436,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].lower = deepcopy(self.lower)
  *             memo[id_self].upper = deepcopy(self.upper)
  */
+    __Pyx_TraceLine(31,0,__PYX_ERR(0, 31, __pyx_L1_error))
     __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 31, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_3 = PyFloat_FromDouble(__pyx_v_self->salary); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 31, __pyx_L1_error)
@@ -2349,6 +2500,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].upper = deepcopy(self.upper)
  *             memo[id_self].median = deepcopy(self.median)
  */
+    __Pyx_TraceLine(32,0,__PYX_ERR(0, 32, __pyx_L1_error))
     __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->lower); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 32, __pyx_L1_error)
@@ -2412,6 +2564,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].median = deepcopy(self.median)
  *             memo[id_self].median_value = self.median_value
  */
+    __Pyx_TraceLine(33,0,__PYX_ERR(0, 33, __pyx_L1_error))
     __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 33, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->upper); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 33, __pyx_L1_error)
@@ -2475,6 +2628,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].median_value = self.median_value
  *             memo[id_self].lower_value = self.lower_value
  */
+    __Pyx_TraceLine(34,0,__PYX_ERR(0, 34, __pyx_L1_error))
     __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_3 = PyFloat_FromDouble(__pyx_v_self->median); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 34, __pyx_L1_error)
@@ -2538,6 +2692,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].lower_value = self.lower_value
  *             memo[id_self].upper_value = self.upper_value
  */
+    __Pyx_TraceLine(35,0,__PYX_ERR(0, 35, __pyx_L1_error))
     __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->median_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 35, __pyx_L1_error)
@@ -2553,6 +2708,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].upper_value = self.upper_value
  *             memo[id_self].name = self.name
  */
+    __Pyx_TraceLine(36,0,__PYX_ERR(0, 36, __pyx_L1_error))
     __pyx_t_5 = PyFloat_FromDouble(__pyx_v_self->lower_value); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
@@ -2568,6 +2724,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].name = self.name
  *             memo[id_self].team = self.team
  */
+    __Pyx_TraceLine(37,0,__PYX_ERR(0, 37, __pyx_L1_error))
     __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->upper_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 37, __pyx_L1_error)
@@ -2583,6 +2740,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].team = self.team
  *             memo[id_self].position = self.position
  */
+    __Pyx_TraceLine(38,0,__PYX_ERR(0, 38, __pyx_L1_error))
     __pyx_t_5 = __pyx_v_self->name;
     __Pyx_INCREF(__pyx_t_5);
     __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
@@ -2596,8 +2754,9 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].name = self.name
  *             memo[id_self].team = self.team             # <<<<<<<<<<<<<<
  *             memo[id_self].position = self.position
- *         return _copy
+ *             memo[id_self].opposing_team = self.opposing_team
  */
+    __Pyx_TraceLine(39,0,__PYX_ERR(0, 39, __pyx_L1_error))
     __pyx_t_1 = __pyx_v_self->team;
     __Pyx_INCREF(__pyx_t_1);
     __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 39, __pyx_L1_error)
@@ -2610,9 +2769,10 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  *             memo[id_self].name = self.name
  *             memo[id_self].team = self.team
  *             memo[id_self].position = self.position             # <<<<<<<<<<<<<<
+ *             memo[id_self].opposing_team = self.opposing_team
  *         return _copy
- * 
  */
+    __Pyx_TraceLine(40,0,__PYX_ERR(0, 40, __pyx_L1_error))
     __pyx_t_5 = __pyx_v_self->position;
     __Pyx_INCREF(__pyx_t_5);
     __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)
@@ -2620,6 +2780,22 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
     if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_n_s_position, __pyx_t_5) < 0) __PYX_ERR(0, 40, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "dfs/Player.pyx":41
+ *             memo[id_self].team = self.team
+ *             memo[id_self].position = self.position
+ *             memo[id_self].opposing_team = self.opposing_team             # <<<<<<<<<<<<<<
+ *         return _copy
+ * 
+ */
+    __Pyx_TraceLine(41,0,__PYX_ERR(0, 41, __pyx_L1_error))
+    __pyx_t_1 = __pyx_v_self->opposing_team;
+    __Pyx_INCREF(__pyx_t_1);
+    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    if (__Pyx_PyObject_SetAttrStr(__pyx_t_5, __pyx_n_s_opposing_team, __pyx_t_1) < 0) __PYX_ERR(0, 41, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
     /* "dfs/Player.pyx":26
  *         id_self = id(self)        # memoization avoids unnecesary recursion
@@ -2630,13 +2806,14 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
  */
   }
 
-  /* "dfs/Player.pyx":41
- *             memo[id_self].team = self.team
+  /* "dfs/Player.pyx":42
  *             memo[id_self].position = self.position
+ *             memo[id_self].opposing_team = self.opposing_team
  *         return _copy             # <<<<<<<<<<<<<<
  * 
- *     cpdef update_player_dfs(self, data):
+ *     cpdef update_player_dfs(self, data, site="DK"):
  */
+  __Pyx_TraceLine(42,0,__PYX_ERR(0, 42, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v__copy);
   __pyx_r = __pyx_v__copy;
@@ -2670,6 +2847,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player___deepcopy__(struct __pyx_obj_3dfs
 
 /* Python wrapper */
 static PyObject *__pyx_pw_3dfs_6Player_6Player_5__deepcopy__(PyObject *__pyx_v_self, PyObject *__pyx_v_memo); /*proto*/
+static PyMethodDef __pyx_mdef_3dfs_6Player_6Player_5__deepcopy__ = {"__deepcopy__", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_5__deepcopy__, METH_O, 0};
 static PyObject *__pyx_pw_3dfs_6Player_6Player_5__deepcopy__(PyObject *__pyx_v_self, PyObject *__pyx_v_memo) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -2686,6 +2864,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_4__deepcopy__(struct __pyx_obj_3d
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
+  __Pyx_TraceFrameInit(__pyx_codeobj__2)
   __Pyx_RefNannySetupContext("__deepcopy__", 0);
   __Pyx_TraceCall("__deepcopy__ (wrapper)", __pyx_f[0], 23, 0, __PYX_ERR(0, 23, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
@@ -2707,16 +2886,17 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_4__deepcopy__(struct __pyx_obj_3d
   return __pyx_r;
 }
 
-/* "dfs/Player.pyx":43
+/* "dfs/Player.pyx":44
  *         return _copy
  * 
- *     cpdef update_player_dfs(self, data):             # <<<<<<<<<<<<<<
+ *     cpdef update_player_dfs(self, data, site="DK"):             # <<<<<<<<<<<<<<
  *         # self.isFlex = "FLEX" in data['Roster Position']
  *         self.salary = float(data['Salary'])
  */
 
-static PyObject *__pyx_pw_3dfs_6Player_6Player_7update_player_dfs(PyObject *__pyx_v_self, PyObject *__pyx_v_data); /*proto*/
-static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data, int __pyx_skip_dispatch) {
+static PyObject *__pyx_pw_3dfs_6Player_6Player_7update_player_dfs(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data, int __pyx_skip_dispatch, struct __pyx_opt_args_3dfs_6Player_6Player_update_player_dfs *__pyx_optional_args) {
+  PyObject *__pyx_v_site = ((PyObject *)__pyx_n_s_DK);
   PyObject *__pyx_v_match = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
@@ -2725,22 +2905,29 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
-  PyObject *__pyx_t_5 = NULL;
-  double __pyx_t_6;
-  int __pyx_t_7;
+  int __pyx_t_5;
+  PyObject *__pyx_t_6 = NULL;
+  double __pyx_t_7;
   int __pyx_t_8;
+  __Pyx_TraceFrameInit(__pyx_codeobj__3)
   __Pyx_RefNannySetupContext("update_player_dfs", 0);
-  __Pyx_TraceCall("update_player_dfs", __pyx_f[0], 43, 0, __PYX_ERR(0, 43, __pyx_L1_error));
+  __Pyx_TraceCall("update_player_dfs", __pyx_f[0], 44, 0, __PYX_ERR(0, 44, __pyx_L1_error));
+  if (__pyx_optional_args) {
+    if (__pyx_optional_args->__pyx_n > 0) {
+      __pyx_v_site = __pyx_optional_args->site;
+    }
+  }
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update_player_dfs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update_player_dfs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 44, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Player_6Player_7update_player_dfs)) {
       __Pyx_XDECREF(__pyx_r);
       __Pyx_INCREF(__pyx_t_1);
       __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+      __pyx_t_5 = 0;
       if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
         __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
         if (likely(__pyx_t_4)) {
@@ -2748,39 +2935,40 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
           __Pyx_INCREF(__pyx_t_4);
           __Pyx_INCREF(function);
           __Pyx_DECREF_SET(__pyx_t_3, function);
+          __pyx_t_5 = 1;
         }
       }
-      if (!__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_data); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
+      #if CYTHON_FAST_PYCALL
+      if (PyFunction_Check(__pyx_t_3)) {
+        PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_data, __pyx_v_site};
+        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_GOTREF(__pyx_t_2);
-      } else {
-        #if CYTHON_FAST_PYCALL
-        if (PyFunction_Check(__pyx_t_3)) {
-          PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_data};
-          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
-          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __Pyx_GOTREF(__pyx_t_2);
-        } else
-        #endif
-        #if CYTHON_FAST_PYCCALL
-        if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
-          PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_data};
-          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
-          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __Pyx_GOTREF(__pyx_t_2);
-        } else
-        #endif
-        {
-          __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 43, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_5);
-          __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
-          __Pyx_INCREF(__pyx_v_data);
-          __Pyx_GIVEREF(__pyx_v_data);
-          PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_data);
-          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_2);
-          __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      } else
+      #endif
+      #if CYTHON_FAST_PYCCALL
+      if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+        PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_data, __pyx_v_site};
+        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        __Pyx_GOTREF(__pyx_t_2);
+      } else
+      #endif
+      {
+        __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 44, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        if (__pyx_t_4) {
+          __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4); __pyx_t_4 = NULL;
         }
+        __Pyx_INCREF(__pyx_v_data);
+        __Pyx_GIVEREF(__pyx_v_data);
+        PyTuple_SET_ITEM(__pyx_t_6, 0+__pyx_t_5, __pyx_v_data);
+        __Pyx_INCREF(__pyx_v_site);
+        __Pyx_GIVEREF(__pyx_v_site);
+        PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_5, __pyx_v_site);
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       }
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_r = __pyx_t_2;
@@ -2791,187 +2979,252 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Player.pyx":45
- *     cpdef update_player_dfs(self, data):
+  /* "dfs/Player.pyx":46
+ *     cpdef update_player_dfs(self, data, site="DK"):
  *         # self.isFlex = "FLEX" in data['Roster Position']
  *         self.salary = float(data['Salary'])             # <<<<<<<<<<<<<<
- *         match = re.match(r'(\w+)@(\w+)', data['Game Info'])
- *         if data['TeamAbbrev'] == match.group(1):
+ *         if site == "DK":
+ *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
  */
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_Salary); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+  __Pyx_TraceLine(46,0,__PYX_ERR(0, 46, __pyx_L1_error))
+  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_Salary); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_1); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 45, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_AsDouble(__pyx_t_1); if (unlikely(__pyx_t_7 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_self->salary = __pyx_t_6;
-
-  /* "dfs/Player.pyx":46
- *         # self.isFlex = "FLEX" in data['Roster Position']
- *         self.salary = float(data['Salary'])
- *         match = re.match(r'(\w+)@(\w+)', data['Game Info'])             # <<<<<<<<<<<<<<
- *         if data['TeamAbbrev'] == match.group(1):
- *             self.opposing_team = match.group(2)
- */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_re); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_match); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_kp_s_Game_Info); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = NULL;
-  __pyx_t_7 = 0;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_3);
-    if (likely(__pyx_t_5)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-      __Pyx_INCREF(__pyx_t_5);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_3, function);
-      __pyx_t_7 = 1;
-    }
-  }
-  #if CYTHON_FAST_PYCALL
-  if (PyFunction_Check(__pyx_t_3)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_kp_s_w_w, __pyx_t_2};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  } else
-  #endif
-  #if CYTHON_FAST_PYCCALL
-  if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
-    PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_kp_s_w_w, __pyx_t_2};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  } else
-  #endif
-  {
-    __pyx_t_4 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    if (__pyx_t_5) {
-      __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5); __pyx_t_5 = NULL;
-    }
-    __Pyx_INCREF(__pyx_kp_s_w_w);
-    __Pyx_GIVEREF(__pyx_kp_s_w_w);
-    PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_7, __pyx_kp_s_w_w);
-    __Pyx_GIVEREF(__pyx_t_2);
-    PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_7, __pyx_t_2);
-    __pyx_t_2 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  }
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_v_match = __pyx_t_1;
-  __pyx_t_1 = 0;
+  __pyx_v_self->salary = __pyx_t_7;
 
   /* "dfs/Player.pyx":47
+ *         # self.isFlex = "FLEX" in data['Roster Position']
  *         self.salary = float(data['Salary'])
- *         match = re.match(r'(\w+)@(\w+)', data['Game Info'])
- *         if data['TeamAbbrev'] == match.group(1):             # <<<<<<<<<<<<<<
- *             self.opposing_team = match.group(2)
- *         elif data['TeamAbbrev'] == match.group(2):
+ *         if site == "DK":             # <<<<<<<<<<<<<<
+ *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+ *             if data['TeamAbbrev'] == match.group(1):
  */
-  __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_TeamAbbrev); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 47, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 47, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 47, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 47, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_TraceLine(47,0,__PYX_ERR(0, 47, __pyx_L1_error))
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_site, __pyx_n_s_DK, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 47, __pyx_L1_error)
   if (__pyx_t_8) {
 
     /* "dfs/Player.pyx":48
- *         match = re.match(r'(\w+)@(\w+)', data['Game Info'])
- *         if data['TeamAbbrev'] == match.group(1):
- *             self.opposing_team = match.group(2)             # <<<<<<<<<<<<<<
- *         elif data['TeamAbbrev'] == match.group(2):
- *             self.opposing_team = match.group(1)
+ *         self.salary = float(data['Salary'])
+ *         if site == "DK":
+ *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])             # <<<<<<<<<<<<<<
+ *             if data['TeamAbbrev'] == match.group(1):
+ *                 self.opposing_team = match.group(2)
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 48, __pyx_L1_error)
+    __Pyx_TraceLine(48,0,__PYX_ERR(0, 48, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_re); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_match); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 48, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 48, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_kp_s_Game_Info); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = NULL;
+    __pyx_t_5 = 0;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
+      if (likely(__pyx_t_6)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+        __Pyx_INCREF(__pyx_t_6);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_3, function);
+        __pyx_t_5 = 1;
+      }
+    }
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_3)) {
+      PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_kp_s_w_w, __pyx_t_2};
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+      PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_kp_s_w_w, __pyx_t_2};
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_4 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 48, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      if (__pyx_t_6) {
+        __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_6); __pyx_t_6 = NULL;
+      }
+      __Pyx_INCREF(__pyx_kp_s_w_w);
+      __Pyx_GIVEREF(__pyx_kp_s_w_w);
+      PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_5, __pyx_kp_s_w_w);
+      __Pyx_GIVEREF(__pyx_t_2);
+      PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_5, __pyx_t_2);
+      __pyx_t_2 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_v_match = __pyx_t_1;
+    __pyx_t_1 = 0;
+
+    /* "dfs/Player.pyx":49
+ *         if site == "DK":
+ *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+ *             if data['TeamAbbrev'] == match.group(1):             # <<<<<<<<<<<<<<
+ *                 self.opposing_team = match.group(2)
+ *             elif data['TeamAbbrev'] == match.group(2):
+ */
+    __Pyx_TraceLine(49,0,__PYX_ERR(0, 49, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_TeamAbbrev); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 49, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (!(likely(PyString_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_4)->tp_name), 0))) __PYX_ERR(0, 48, __pyx_L1_error)
-    __Pyx_GIVEREF(__pyx_t_4);
-    __Pyx_GOTREF(__pyx_v_self->opposing_team);
-    __Pyx_DECREF(__pyx_v_self->opposing_team);
-    __pyx_v_self->opposing_team = ((PyObject*)__pyx_t_4);
-    __pyx_t_4 = 0;
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 49, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (__pyx_t_8) {
+
+      /* "dfs/Player.pyx":50
+ *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+ *             if data['TeamAbbrev'] == match.group(1):
+ *                 self.opposing_team = match.group(2)             # <<<<<<<<<<<<<<
+ *             elif data['TeamAbbrev'] == match.group(2):
+ *                 self.opposing_team = match.group(1)
+ */
+      __Pyx_TraceLine(50,0,__PYX_ERR(0, 50, __pyx_L1_error))
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 50, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (!(likely(PyString_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_4)->tp_name), 0))) __PYX_ERR(0, 50, __pyx_L1_error)
+      __Pyx_GIVEREF(__pyx_t_4);
+      __Pyx_GOTREF(__pyx_v_self->opposing_team);
+      __Pyx_DECREF(__pyx_v_self->opposing_team);
+      __pyx_v_self->opposing_team = ((PyObject*)__pyx_t_4);
+      __pyx_t_4 = 0;
+
+      /* "dfs/Player.pyx":49
+ *         if site == "DK":
+ *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+ *             if data['TeamAbbrev'] == match.group(1):             # <<<<<<<<<<<<<<
+ *                 self.opposing_team = match.group(2)
+ *             elif data['TeamAbbrev'] == match.group(2):
+ */
+      goto __pyx_L4;
+    }
+
+    /* "dfs/Player.pyx":51
+ *             if data['TeamAbbrev'] == match.group(1):
+ *                 self.opposing_team = match.group(2)
+ *             elif data['TeamAbbrev'] == match.group(2):             # <<<<<<<<<<<<<<
+ *                 self.opposing_team = match.group(1)
+ *         elif site == "yahoo":
+ */
+    __Pyx_TraceLine(51,0,__PYX_ERR(0, 51, __pyx_L1_error))
+    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_TeamAbbrev); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 51, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 51, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 51, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_4, __pyx_t_1, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 51, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 51, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (__pyx_t_8) {
+
+      /* "dfs/Player.pyx":52
+ *                 self.opposing_team = match.group(2)
+ *             elif data['TeamAbbrev'] == match.group(2):
+ *                 self.opposing_team = match.group(1)             # <<<<<<<<<<<<<<
+ *         elif site == "yahoo":
+ *             self.opposing_team = data['Opponent']
+ */
+      __Pyx_TraceLine(52,0,__PYX_ERR(0, 52, __pyx_L1_error))
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 52, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 52, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 52, __pyx_L1_error)
+      __Pyx_GIVEREF(__pyx_t_1);
+      __Pyx_GOTREF(__pyx_v_self->opposing_team);
+      __Pyx_DECREF(__pyx_v_self->opposing_team);
+      __pyx_v_self->opposing_team = ((PyObject*)__pyx_t_1);
+      __pyx_t_1 = 0;
+
+      /* "dfs/Player.pyx":51
+ *             if data['TeamAbbrev'] == match.group(1):
+ *                 self.opposing_team = match.group(2)
+ *             elif data['TeamAbbrev'] == match.group(2):             # <<<<<<<<<<<<<<
+ *                 self.opposing_team = match.group(1)
+ *         elif site == "yahoo":
+ */
+    }
+    __pyx_L4:;
 
     /* "dfs/Player.pyx":47
+ *         # self.isFlex = "FLEX" in data['Roster Position']
  *         self.salary = float(data['Salary'])
- *         match = re.match(r'(\w+)@(\w+)', data['Game Info'])
- *         if data['TeamAbbrev'] == match.group(1):             # <<<<<<<<<<<<<<
- *             self.opposing_team = match.group(2)
- *         elif data['TeamAbbrev'] == match.group(2):
+ *         if site == "DK":             # <<<<<<<<<<<<<<
+ *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+ *             if data['TeamAbbrev'] == match.group(1):
  */
     goto __pyx_L3;
   }
 
-  /* "dfs/Player.pyx":49
- *         if data['TeamAbbrev'] == match.group(1):
- *             self.opposing_team = match.group(2)
- *         elif data['TeamAbbrev'] == match.group(2):             # <<<<<<<<<<<<<<
- *             self.opposing_team = match.group(1)
+  /* "dfs/Player.pyx":53
+ *             elif data['TeamAbbrev'] == match.group(2):
+ *                 self.opposing_team = match.group(1)
+ *         elif site == "yahoo":             # <<<<<<<<<<<<<<
+ *             self.opposing_team = data['Opponent']
  * 
  */
-  __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_TeamAbbrev); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 49, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 49, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_4, __pyx_t_1, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 49, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_TraceLine(53,0,__PYX_ERR(0, 53, __pyx_L1_error))
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_site, __pyx_n_s_yahoo, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 53, __pyx_L1_error)
   if (__pyx_t_8) {
 
-    /* "dfs/Player.pyx":50
- *             self.opposing_team = match.group(2)
- *         elif data['TeamAbbrev'] == match.group(2):
- *             self.opposing_team = match.group(1)             # <<<<<<<<<<<<<<
+    /* "dfs/Player.pyx":54
+ *                 self.opposing_team = match.group(1)
+ *         elif site == "yahoo":
+ *             self.opposing_team = data['Opponent']             # <<<<<<<<<<<<<<
  * 
  * 
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
+    __Pyx_TraceLine(54,0,__PYX_ERR(0, 54, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_Opponent); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 54, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 50, __pyx_L1_error)
+    if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 54, __pyx_L1_error)
     __Pyx_GIVEREF(__pyx_t_1);
     __Pyx_GOTREF(__pyx_v_self->opposing_team);
     __Pyx_DECREF(__pyx_v_self->opposing_team);
     __pyx_v_self->opposing_team = ((PyObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "dfs/Player.pyx":49
- *         if data['TeamAbbrev'] == match.group(1):
- *             self.opposing_team = match.group(2)
- *         elif data['TeamAbbrev'] == match.group(2):             # <<<<<<<<<<<<<<
- *             self.opposing_team = match.group(1)
+    /* "dfs/Player.pyx":53
+ *             elif data['TeamAbbrev'] == match.group(2):
+ *                 self.opposing_team = match.group(1)
+ *         elif site == "yahoo":             # <<<<<<<<<<<<<<
+ *             self.opposing_team = data['Opponent']
  * 
  */
   }
   __pyx_L3:;
 
-  /* "dfs/Player.pyx":43
+  /* "dfs/Player.pyx":44
  *         return _copy
  * 
- *     cpdef update_player_dfs(self, data):             # <<<<<<<<<<<<<<
+ *     cpdef update_player_dfs(self, data, site="DK"):             # <<<<<<<<<<<<<<
  *         # self.isFlex = "FLEX" in data['Roster Position']
  *         self.salary = float(data['Salary'])
  */
@@ -2984,7 +3237,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
   __Pyx_AddTraceback("dfs.Player.Player.update_player_dfs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
@@ -2996,27 +3249,84 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_3dfs_6Player_6Player_7update_player_dfs(PyObject *__pyx_v_self, PyObject *__pyx_v_data); /*proto*/
-static PyObject *__pyx_pw_3dfs_6Player_6Player_7update_player_dfs(PyObject *__pyx_v_self, PyObject *__pyx_v_data) {
+static PyObject *__pyx_pw_3dfs_6Player_6Player_7update_player_dfs(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_3dfs_6Player_6Player_7update_player_dfs = {"update_player_dfs", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_7update_player_dfs, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_3dfs_6Player_6Player_7update_player_dfs(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_data = 0;
+  PyObject *__pyx_v_site = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("update_player_dfs (wrapper)", 0);
-  __pyx_r = __pyx_pf_3dfs_6Player_6Player_6update_player_dfs(((struct __pyx_obj_3dfs_6Player_Player *)__pyx_v_self), ((PyObject *)__pyx_v_data));
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_data,&__pyx_n_s_site,0};
+    PyObject* values[2] = {0,0};
+    values[1] = ((PyObject *)__pyx_n_s_DK);
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_data)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (kw_args > 0) {
+          PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_site);
+          if (value) { values[1] = value; kw_args--; }
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "update_player_dfs") < 0)) __PYX_ERR(0, 44, __pyx_L3_error)
+      }
+    } else {
+      switch (PyTuple_GET_SIZE(__pyx_args)) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+    }
+    __pyx_v_data = values[0];
+    __pyx_v_site = values[1];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("update_player_dfs", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 44, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("dfs.Player.Player.update_player_dfs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_3dfs_6Player_6Player_6update_player_dfs(((struct __pyx_obj_3dfs_6Player_Player *)__pyx_v_self), __pyx_v_data, __pyx_v_site);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_3dfs_6Player_6Player_6update_player_dfs(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data) {
+static PyObject *__pyx_pf_3dfs_6Player_6Player_6update_player_dfs(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_data, PyObject *__pyx_v_site) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
+  struct __pyx_opt_args_3dfs_6Player_6Player_update_player_dfs __pyx_t_2;
+  __Pyx_TraceFrameInit(__pyx_codeobj__3)
   __Pyx_RefNannySetupContext("update_player_dfs", 0);
-  __Pyx_TraceCall("update_player_dfs (wrapper)", __pyx_f[0], 43, 0, __PYX_ERR(0, 43, __pyx_L1_error));
+  __Pyx_TraceCall("update_player_dfs (wrapper)", __pyx_f[0], 44, 0, __PYX_ERR(0, 44, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Player_6Player_update_player_dfs(__pyx_v_self, __pyx_v_data, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_t_2.__pyx_n = 1;
+  __pyx_t_2.site = __pyx_v_site;
+  __pyx_t_1 = __pyx_vtabptr_3dfs_6Player_Player->update_player_dfs(__pyx_v_self, __pyx_v_data, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3034,16 +3344,17 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_6update_player_dfs(struct __pyx_o
   return __pyx_r;
 }
 
-/* "dfs/Player.pyx":53
+/* "dfs/Player.pyx":57
  * 
  * 
- *     cpdef get_value(self):             # <<<<<<<<<<<<<<
+ *     cpdef get_value(self, site):             # <<<<<<<<<<<<<<
+ *         divi = 1000 if site == "DK" else 10
  *         try:
- *         # if hasattr(self, "salary") and hasattr(self, "median"):
  */
 
-static PyObject *__pyx_pw_3dfs_6Player_6Player_9get_value(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, int __pyx_skip_dispatch) {
+static PyObject *__pyx_pw_3dfs_6Player_6Player_9get_value(PyObject *__pyx_v_self, PyObject *__pyx_v_site); /*proto*/
+static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_site, int __pyx_skip_dispatch) {
+  PyObject *__pyx_v_divi = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
@@ -3052,16 +3363,19 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
-  PyObject *__pyx_t_6 = NULL;
+  int __pyx_t_6;
   PyObject *__pyx_t_7 = NULL;
-  double __pyx_t_8;
+  PyObject *__pyx_t_8 = NULL;
+  PyObject *__pyx_t_9 = NULL;
+  double __pyx_t_10;
+  __Pyx_TraceFrameInit(__pyx_codeobj__8)
   __Pyx_RefNannySetupContext("get_value", 0);
-  __Pyx_TraceCall("get_value", __pyx_f[0], 53, 0, __PYX_ERR(0, 53, __pyx_L1_error));
+  __Pyx_TraceCall("get_value", __pyx_f[0], 57, 0, __PYX_ERR(0, 57, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Player_6Player_9get_value)) {
       __Pyx_XDECREF(__pyx_r);
@@ -3076,13 +3390,38 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
           __Pyx_DECREF_SET(__pyx_t_3, function);
         }
       }
-      if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (!__pyx_t_4) {
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_site); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
+        #if CYTHON_FAST_PYCALL
+        if (PyFunction_Check(__pyx_t_3)) {
+          PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_site};
+          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+          __Pyx_GOTREF(__pyx_t_2);
+        } else
+        #endif
+        #if CYTHON_FAST_PYCCALL
+        if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+          PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_site};
+          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+          __Pyx_GOTREF(__pyx_t_2);
+        } else
+        #endif
+        {
+          __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 57, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_5);
+          __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
+          __Pyx_INCREF(__pyx_v_site);
+          __Pyx_GIVEREF(__pyx_v_site);
+          PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_site);
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        }
       }
-      __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_r = __pyx_t_2;
       __pyx_t_2 = 0;
@@ -3092,107 +3431,170 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Player.pyx":54
+  /* "dfs/Player.pyx":58
  * 
- *     cpdef get_value(self):
+ *     cpdef get_value(self, site):
+ *         divi = 1000 if site == "DK" else 10             # <<<<<<<<<<<<<<
+ *         try:
+ *         # if hasattr(self, "salary") and hasattr(self, "median"):
+ */
+  __Pyx_TraceLine(58,0,__PYX_ERR(0, 58, __pyx_L1_error))
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_site, __pyx_n_s_DK, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 58, __pyx_L1_error)
+  if (__pyx_t_6) {
+    __Pyx_INCREF(__pyx_int_1000);
+    __pyx_t_1 = __pyx_int_1000;
+  } else {
+    __Pyx_INCREF(__pyx_int_10);
+    __pyx_t_1 = __pyx_int_10;
+  }
+  __pyx_v_divi = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "dfs/Player.pyx":59
+ *     cpdef get_value(self, site):
+ *         divi = 1000 if site == "DK" else 10
  *         try:             # <<<<<<<<<<<<<<
  *         # if hasattr(self, "salary") and hasattr(self, "median"):
- *             self.median_value = float(self.median) / (float(self.salary)/1000)
+ *             self.median_value = float(self.median) / (float(self.salary)/divi)
  */
+  __Pyx_TraceLine(59,0,__PYX_ERR(0, 59, __pyx_L3_error))
   {
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
-    __Pyx_ExceptionSave(&__pyx_t_5, &__pyx_t_6, &__pyx_t_7);
-    __Pyx_XGOTREF(__pyx_t_5);
-    __Pyx_XGOTREF(__pyx_t_6);
+    __Pyx_ExceptionSave(&__pyx_t_7, &__pyx_t_8, &__pyx_t_9);
     __Pyx_XGOTREF(__pyx_t_7);
+    __Pyx_XGOTREF(__pyx_t_8);
+    __Pyx_XGOTREF(__pyx_t_9);
     /*try:*/ {
 
-      /* "dfs/Player.pyx":56
+      /* "dfs/Player.pyx":61
  *         try:
  *         # if hasattr(self, "salary") and hasattr(self, "median"):
- *             self.median_value = float(self.median) / (float(self.salary)/1000)             # <<<<<<<<<<<<<<
+ *             self.median_value = float(self.median) / (float(self.salary)/divi)             # <<<<<<<<<<<<<<
  *         # if hasattr(self, "salary") and hasattr(self, "lower"):
- *             self.lower_value = float(self.lower) / (float(self.salary)/1000)
+ *             self.lower_value = float(self.lower) / (float(self.salary)/divi)
  */
-      __pyx_t_8 = (((double)__pyx_v_self->salary) / 1000.0);
-      if (unlikely(__pyx_t_8 == 0)) {
-        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 56, __pyx_L3_error)
-      }
-      __pyx_v_self->median_value = (((double)__pyx_v_self->median) / __pyx_t_8);
+      __Pyx_TraceLine(61,0,__PYX_ERR(0, 61, __pyx_L3_error))
+      __pyx_t_1 = PyFloat_FromDouble(((double)__pyx_v_self->median)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_2 = PyFloat_FromDouble(((double)__pyx_v_self->salary)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_t_2, __pyx_v_divi); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 61, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 61, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_v_self->median_value = __pyx_t_10;
 
-      /* "dfs/Player.pyx":58
- *             self.median_value = float(self.median) / (float(self.salary)/1000)
+      /* "dfs/Player.pyx":63
+ *             self.median_value = float(self.median) / (float(self.salary)/divi)
  *         # if hasattr(self, "salary") and hasattr(self, "lower"):
- *             self.lower_value = float(self.lower) / (float(self.salary)/1000)             # <<<<<<<<<<<<<<
+ *             self.lower_value = float(self.lower) / (float(self.salary)/divi)             # <<<<<<<<<<<<<<
  *         # if hasattr(self, "salary") and hasattr(self, "upper"):
- *             self.upper_value = float(self.upper) / (float(self.salary)/1000)
+ *             self.upper_value = float(self.upper) / (float(self.salary)/divi)
  */
-      __pyx_t_8 = (((double)__pyx_v_self->salary) / 1000.0);
-      if (unlikely(__pyx_t_8 == 0)) {
-        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 58, __pyx_L3_error)
-      }
-      __pyx_v_self->lower_value = (((double)__pyx_v_self->lower) / __pyx_t_8);
+      __Pyx_TraceLine(63,0,__PYX_ERR(0, 63, __pyx_L3_error))
+      __pyx_t_2 = PyFloat_FromDouble(((double)__pyx_v_self->lower)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_3 = PyFloat_FromDouble(((double)__pyx_v_self->salary)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 63, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_v_divi); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 63, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 63, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 63, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_v_self->lower_value = __pyx_t_10;
 
-      /* "dfs/Player.pyx":60
- *             self.lower_value = float(self.lower) / (float(self.salary)/1000)
+      /* "dfs/Player.pyx":65
+ *             self.lower_value = float(self.lower) / (float(self.salary)/divi)
  *         # if hasattr(self, "salary") and hasattr(self, "upper"):
- *             self.upper_value = float(self.upper) / (float(self.salary)/1000)             # <<<<<<<<<<<<<<
+ *             self.upper_value = float(self.upper) / (float(self.salary)/divi)             # <<<<<<<<<<<<<<
  *         except:
  *             pass
  */
-      __pyx_t_8 = (((double)__pyx_v_self->salary) / 1000.0);
-      if (unlikely(__pyx_t_8 == 0)) {
-        PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 60, __pyx_L3_error)
-      }
-      __pyx_v_self->upper_value = (((double)__pyx_v_self->upper) / __pyx_t_8);
+      __Pyx_TraceLine(65,0,__PYX_ERR(0, 65, __pyx_L3_error))
+      __pyx_t_3 = PyFloat_FromDouble(((double)__pyx_v_self->upper)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 65, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_1 = PyFloat_FromDouble(((double)__pyx_v_self->salary)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_1, __pyx_v_divi); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L3_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 65, __pyx_L3_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_v_self->upper_value = __pyx_t_10;
 
-      /* "dfs/Player.pyx":54
- * 
- *     cpdef get_value(self):
+      /* "dfs/Player.pyx":59
+ *     cpdef get_value(self, site):
+ *         divi = 1000 if site == "DK" else 10
  *         try:             # <<<<<<<<<<<<<<
  *         # if hasattr(self, "salary") and hasattr(self, "median"):
- *             self.median_value = float(self.median) / (float(self.salary)/1000)
+ *             self.median_value = float(self.median) / (float(self.salary)/divi)
  */
     }
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
     goto __pyx_L8_try_end;
     __pyx_L3_error:;
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "dfs/Player.pyx":61
+    /* "dfs/Player.pyx":66
  *         # if hasattr(self, "salary") and hasattr(self, "upper"):
- *             self.upper_value = float(self.upper) / (float(self.salary)/1000)
+ *             self.upper_value = float(self.upper) / (float(self.salary)/divi)
  *         except:             # <<<<<<<<<<<<<<
  *             pass
  *     def __str__(self):
  */
+    __Pyx_TraceLine(66,0,__PYX_ERR(0, 66, __pyx_L5_except_error))
     /*except:*/ {
       __Pyx_ErrRestore(0,0,0);
       goto __pyx_L4_exception_handled;
     }
-    __pyx_L4_exception_handled:;
-    __Pyx_XGIVEREF(__pyx_t_5);
-    __Pyx_XGIVEREF(__pyx_t_6);
+    __pyx_L5_except_error:;
+
+    /* "dfs/Player.pyx":59
+ *     cpdef get_value(self, site):
+ *         divi = 1000 if site == "DK" else 10
+ *         try:             # <<<<<<<<<<<<<<
+ *         # if hasattr(self, "salary") and hasattr(self, "median"):
+ *             self.median_value = float(self.median) / (float(self.salary)/divi)
+ */
     __Pyx_XGIVEREF(__pyx_t_7);
-    __Pyx_ExceptionReset(__pyx_t_5, __pyx_t_6, __pyx_t_7);
+    __Pyx_XGIVEREF(__pyx_t_8);
+    __Pyx_XGIVEREF(__pyx_t_9);
+    __Pyx_ExceptionReset(__pyx_t_7, __pyx_t_8, __pyx_t_9);
+    goto __pyx_L1_error;
+    __pyx_L4_exception_handled:;
+    __Pyx_XGIVEREF(__pyx_t_7);
+    __Pyx_XGIVEREF(__pyx_t_8);
+    __Pyx_XGIVEREF(__pyx_t_9);
+    __Pyx_ExceptionReset(__pyx_t_7, __pyx_t_8, __pyx_t_9);
     __pyx_L8_try_end:;
   }
 
-  /* "dfs/Player.pyx":53
+  /* "dfs/Player.pyx":57
  * 
  * 
- *     cpdef get_value(self):             # <<<<<<<<<<<<<<
+ *     cpdef get_value(self, site):             # <<<<<<<<<<<<<<
+ *         divi = 1000 if site == "DK" else 10
  *         try:
- *         # if hasattr(self, "salary") and hasattr(self, "median"):
  */
 
   /* function exit code */
@@ -3203,9 +3605,11 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
   __Pyx_AddTraceback("dfs.Player.Player.get_value", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_divi);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_TraceReturn(__pyx_r, 0);
   __Pyx_RefNannyFinishContext();
@@ -3213,27 +3617,29 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_3dfs_6Player_6Player_9get_value(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_3dfs_6Player_6Player_9get_value(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_3dfs_6Player_6Player_9get_value(PyObject *__pyx_v_self, PyObject *__pyx_v_site); /*proto*/
+static PyMethodDef __pyx_mdef_3dfs_6Player_6Player_9get_value = {"get_value", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_9get_value, METH_O, 0};
+static PyObject *__pyx_pw_3dfs_6Player_6Player_9get_value(PyObject *__pyx_v_self, PyObject *__pyx_v_site) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("get_value (wrapper)", 0);
-  __pyx_r = __pyx_pf_3dfs_6Player_6Player_8get_value(((struct __pyx_obj_3dfs_6Player_Player *)__pyx_v_self));
+  __pyx_r = __pyx_pf_3dfs_6Player_6Player_8get_value(((struct __pyx_obj_3dfs_6Player_Player *)__pyx_v_self), ((PyObject *)__pyx_v_site));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_3dfs_6Player_6Player_8get_value(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self) {
+static PyObject *__pyx_pf_3dfs_6Player_6Player_8get_value(struct __pyx_obj_3dfs_6Player_Player *__pyx_v_self, PyObject *__pyx_v_site) {
   PyObject *__pyx_r = NULL;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
+  __Pyx_TraceFrameInit(__pyx_codeobj__8)
   __Pyx_RefNannySetupContext("get_value", 0);
-  __Pyx_TraceCall("get_value (wrapper)", __pyx_f[0], 53, 0, __PYX_ERR(0, 53, __pyx_L1_error));
+  __Pyx_TraceCall("get_value (wrapper)", __pyx_f[0], 57, 0, __PYX_ERR(0, 57, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Player_6Player_get_value(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Player_6Player_get_value(__pyx_v_self, __pyx_v_site, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3251,7 +3657,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_8get_value(struct __pyx_obj_3dfs_
   return __pyx_r;
 }
 
-/* "dfs/Player.pyx":63
+/* "dfs/Player.pyx":68
  *         except:
  *             pass
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -3284,16 +3690,17 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_10__str__(struct __pyx_obj_3dfs_6
   PyObject *__pyx_t_5 = NULL;
   int __pyx_t_6;
   __Pyx_RefNannySetupContext("__str__", 0);
-  __Pyx_TraceCall("__str__", __pyx_f[0], 63, 0, __PYX_ERR(0, 63, __pyx_L1_error));
+  __Pyx_TraceCall("__str__", __pyx_f[0], 68, 0, __PYX_ERR(0, 68, __pyx_L1_error));
 
-  /* "dfs/Player.pyx":67
+  /* "dfs/Player.pyx":72
  *         # return f"name: {self.name}"
  *         #return self.name
  *         toRet = f"name: {self.name}, position: {self.position}, team: {self.team}, salary: {self.salary}, median: {self.median}, "             # <<<<<<<<<<<<<<
  *         toRet += f"value: {self.median_value}" if hasattr(self, "median_value") else ""
  *         return toRet
  */
-  __pyx_t_1 = PyTuple_New(11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __Pyx_TraceLine(72,0,__PYX_ERR(0, 72, __pyx_L1_error))
+  __pyx_t_1 = PyTuple_New(11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = 0;
   __pyx_t_3 = 127;
@@ -3301,7 +3708,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_10__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 6;
   __Pyx_GIVEREF(__pyx_kp_u_name_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_name_2);
-  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->name, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->name, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
   __pyx_t_2 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -3312,7 +3719,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_10__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 12;
   __Pyx_GIVEREF(__pyx_kp_u_position_2);
   PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_position_2);
-  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->position, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->position, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
   __pyx_t_2 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -3323,7 +3730,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_10__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 8;
   __Pyx_GIVEREF(__pyx_kp_u_team_2);
   PyTuple_SET_ITEM(__pyx_t_1, 4, __pyx_kp_u_team_2);
-  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->team, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->team, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
   __pyx_t_2 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -3334,9 +3741,9 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_10__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 10;
   __Pyx_GIVEREF(__pyx_kp_u_salary_2);
   PyTuple_SET_ITEM(__pyx_t_1, 6, __pyx_kp_u_salary_2);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->salary); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->salary); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) : __pyx_t_3;
@@ -3348,9 +3755,9 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_10__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 10;
   __Pyx_GIVEREF(__pyx_kp_u_median_2);
   PyTuple_SET_ITEM(__pyx_t_1, 8, __pyx_kp_u_median_2);
-  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_self->median); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_self->median); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_t_5, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_t_5, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
@@ -3358,55 +3765,57 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_10__str__(struct __pyx_obj_3dfs_6
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_1, 9, __pyx_t_4);
   __pyx_t_4 = 0;
-  __Pyx_INCREF(__pyx_kp_u__5);
+  __Pyx_INCREF(__pyx_kp_u__9);
   __pyx_t_2 += 2;
-  __Pyx_GIVEREF(__pyx_kp_u__5);
-  PyTuple_SET_ITEM(__pyx_t_1, 10, __pyx_kp_u__5);
-  __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_1, 11, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __Pyx_GIVEREF(__pyx_kp_u__9);
+  PyTuple_SET_ITEM(__pyx_t_1, 10, __pyx_kp_u__9);
+  __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_1, 11, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_toRet = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "dfs/Player.pyx":68
+  /* "dfs/Player.pyx":73
  *         #return self.name
  *         toRet = f"name: {self.name}, position: {self.position}, team: {self.team}, salary: {self.salary}, median: {self.median}, "
  *         toRet += f"value: {self.median_value}" if hasattr(self, "median_value") else ""             # <<<<<<<<<<<<<<
  *         return toRet
  */
-  __pyx_t_6 = __Pyx_HasAttr(((PyObject *)__pyx_v_self), __pyx_n_s_median_value); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 68, __pyx_L1_error)
+  __Pyx_TraceLine(73,0,__PYX_ERR(0, 73, __pyx_L1_error))
+  __pyx_t_6 = __Pyx_HasAttr(((PyObject *)__pyx_v_self), __pyx_n_s_median_value); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 73, __pyx_L1_error)
   if ((__pyx_t_6 != 0)) {
-    __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->median_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L1_error)
+    __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->median_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_1, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 68, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_1, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyUnicode_Concat(__pyx_kp_u_value, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyUnicode_Concat(__pyx_kp_u_value, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_4 = __pyx_t_1;
     __pyx_t_1 = 0;
   } else {
-    __Pyx_INCREF(__pyx_kp_s__6);
-    __pyx_t_4 = __pyx_kp_s__6;
+    __Pyx_INCREF(__pyx_kp_s__10);
+    __pyx_t_4 = __pyx_kp_s__10;
   }
-  __pyx_t_1 = PyNumber_InPlaceAdd(__pyx_v_toRet, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_InPlaceAdd(__pyx_v_toRet, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF_SET(__pyx_v_toRet, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "dfs/Player.pyx":69
+  /* "dfs/Player.pyx":74
  *         toRet = f"name: {self.name}, position: {self.position}, team: {self.team}, salary: {self.salary}, median: {self.median}, "
  *         toRet += f"value: {self.median_value}" if hasattr(self, "median_value") else ""
  *         return toRet             # <<<<<<<<<<<<<<
  */
+  __Pyx_TraceLine(74,0,__PYX_ERR(0, 74, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_toRet);
   __pyx_r = __pyx_v_toRet;
   goto __pyx_L0;
 
-  /* "dfs/Player.pyx":63
+  /* "dfs/Player.pyx":68
  *         except:
  *             pass
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -5023,7 +5432,7 @@ static int __pyx_pf_3dfs_6Player_6Player_11upper_value_2__set__(struct __pyx_obj
  *     cdef public double upper_value
  *     cdef public double lower_value             # <<<<<<<<<<<<<<
  *     cpdef update_player_proj(self, data)
- *     cpdef update_player_dfs(self, data)
+ *     cpdef update_player_dfs(self, data, site=*)
  */
 
 /* Python wrapper */
@@ -5108,6 +5517,7 @@ static int __pyx_pf_3dfs_6Player_6Player_11lower_value_2__set__(struct __pyx_obj
 
 /* Python wrapper */
 static PyObject *__pyx_pw_3dfs_6Player_6Player_13__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_3dfs_6Player_6Player_13__reduce_cython__ = {"__reduce_cython__", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_13__reduce_cython__, METH_NOARGS, 0};
 static PyObject *__pyx_pw_3dfs_6Player_6Player_13__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5137,6 +5547,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
   int __pyx_t_9;
   int __pyx_t_10;
   int __pyx_t_11;
+  __Pyx_TraceFrameInit(__pyx_codeobj__11)
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
   __Pyx_TraceCall("__reduce_cython__", __pyx_f[2], 1, 0, __PYX_ERR(2, 1, __pyx_L1_error));
 
@@ -5147,6 +5558,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
  *     _dict = getattr(self, '__dict__', None)
  *     if _dict is not None:
  */
+  __Pyx_TraceLine(3,0,__PYX_ERR(2, 3, __pyx_L1_error))
   __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->lower); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = PyFloat_FromDouble(__pyx_v_self->lower_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 3, __pyx_L1_error)
@@ -5221,6 +5633,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
  *     if _dict is not None:
  *         state += (_dict,)
  */
+  __Pyx_TraceLine(4,0,__PYX_ERR(2, 4, __pyx_L1_error))
   __pyx_t_8 = __Pyx_GetAttr3(((PyObject *)__pyx_v_self), __pyx_n_s_dict, Py_None); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_v__dict = __pyx_t_8;
@@ -5233,6 +5646,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
  *         state += (_dict,)
  *         use_setstate = True
  */
+  __Pyx_TraceLine(5,0,__PYX_ERR(2, 5, __pyx_L1_error))
   __pyx_t_9 = (__pyx_v__dict != Py_None);
   __pyx_t_10 = (__pyx_t_9 != 0);
   if (__pyx_t_10) {
@@ -5244,6 +5658,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
  *         use_setstate = True
  *     else:
  */
+    __Pyx_TraceLine(6,0,__PYX_ERR(2, 6, __pyx_L1_error))
     __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 6, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_INCREF(__pyx_v__dict);
@@ -5262,6 +5677,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
  *     else:
  *         use_setstate = self.dropoff is not None or self.flex is not None or self.name is not None or self.opposing_team is not None or self.position is not None or self.risk is not None or self.sdPts is not None or self.sdRank is not None or self.team is not None
  */
+    __Pyx_TraceLine(7,0,__PYX_ERR(2, 7, __pyx_L1_error))
     __pyx_v_use_setstate = 1;
 
     /* "(tree fragment)":5
@@ -5281,6 +5697,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
  *     if use_setstate:
  *         return __pyx_unpickle_Player, (type(self), 0x2b81de6, None), state
  */
+  __Pyx_TraceLine(9,0,__PYX_ERR(2, 9, __pyx_L1_error))
   /*else*/ {
     __pyx_t_9 = (__pyx_v_self->dropoff != ((PyObject*)Py_None));
     __pyx_t_11 = (__pyx_t_9 != 0);
@@ -5353,6 +5770,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
  *         return __pyx_unpickle_Player, (type(self), 0x2b81de6, None), state
  *     else:
  */
+  __Pyx_TraceLine(10,0,__PYX_ERR(2, 10, __pyx_L1_error))
   __pyx_t_10 = (__pyx_v_use_setstate != 0);
   if (__pyx_t_10) {
 
@@ -5363,6 +5781,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
  *     else:
  *         return __pyx_unpickle_Player, (type(self), 0x2b81de6, state)
  */
+    __Pyx_TraceLine(11,0,__PYX_ERR(2, 11, __pyx_L1_error))
     __Pyx_XDECREF(__pyx_r);
     __pyx_t_7 = __Pyx_GetModuleGlobalName(__pyx_n_s_pyx_unpickle_Player); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 11, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
@@ -5408,6 +5827,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
  * def __setstate_cython__(self, __pyx_state):
  *     __pyx_unpickle_Player__set_state(self, __pyx_state)
  */
+  __Pyx_TraceLine(13,0,__PYX_ERR(2, 13, __pyx_L1_error))
   /*else*/ {
     __Pyx_XDECREF(__pyx_r);
     __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_pyx_unpickle_Player); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 13, __pyx_L1_error)
@@ -5472,6 +5892,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__reduce_cython__(struct __pyx_
 
 /* Python wrapper */
 static PyObject *__pyx_pw_3dfs_6Player_6Player_15__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static PyMethodDef __pyx_mdef_3dfs_6Player_6Player_15__setstate_cython__ = {"__setstate_cython__", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_15__setstate_cython__, METH_O, 0};
 static PyObject *__pyx_pw_3dfs_6Player_6Player_15__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -5488,6 +5909,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_14__setstate_cython__(struct __py
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
+  __Pyx_TraceFrameInit(__pyx_codeobj__12)
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
   __Pyx_TraceCall("__setstate_cython__", __pyx_f[2], 14, 0, __PYX_ERR(2, 14, __pyx_L1_error));
 
@@ -5496,6 +5918,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_14__setstate_cython__(struct __py
  * def __setstate_cython__(self, __pyx_state):
  *     __pyx_unpickle_Player__set_state(self, __pyx_state)             # <<<<<<<<<<<<<<
  */
+  __Pyx_TraceLine(15,0,__PYX_ERR(2, 15, __pyx_L1_error))
   if (!(likely(PyTuple_CheckExact(__pyx_v___pyx_state))||((__pyx_v___pyx_state) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_v___pyx_state)->tp_name), 0))) __PYX_ERR(2, 15, __pyx_L1_error)
   __pyx_t_1 = __pyx_f_3dfs_6Player___pyx_unpickle_Player__set_state(__pyx_v_self, ((PyObject*)__pyx_v___pyx_state)); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 15, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -5614,7 +6037,7 @@ static PyObject *__pyx_pf_3dfs_6Player___pyx_unpickle_Player(CYTHON_UNUSED PyObj
   PyObject *__pyx_t_5 = NULL;
   PyObject *__pyx_t_6 = NULL;
   int __pyx_t_7;
-  __Pyx_TraceFrameInit(__pyx_codeobj__7)
+  __Pyx_TraceFrameInit(__pyx_codeobj__13)
   __Pyx_RefNannySetupContext("__pyx_unpickle_Player", 0);
   __Pyx_TraceCall("__pyx_unpickle_Player", __pyx_f[2], 1, 0, __PYX_ERR(2, 1, __pyx_L1_error));
 
@@ -5624,6 +6047,7 @@ static PyObject *__pyx_pf_3dfs_6Player___pyx_unpickle_Player(CYTHON_UNUSED PyObj
  *         from pickle import PickleError as __pyx_PickleError
  *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x2b81de6 = (dropoff, flex, lower, lower_value, median, median_value, name, opposing_team, position, risk, salary, sdPts, sdRank, team, upper, upper_value))" % __pyx_checksum)
  */
+  __Pyx_TraceLine(2,0,__PYX_ERR(2, 2, __pyx_L1_error))
   __pyx_t_1 = ((__pyx_v___pyx_checksum != 0x2b81de6) != 0);
   if (__pyx_t_1) {
 
@@ -5634,6 +6058,7 @@ static PyObject *__pyx_pf_3dfs_6Player___pyx_unpickle_Player(CYTHON_UNUSED PyObj
  *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x2b81de6 = (dropoff, flex, lower, lower_value, median, median_value, name, opposing_team, position, risk, salary, sdPts, sdRank, team, upper, upper_value))" % __pyx_checksum)
  *     __pyx_result = Player.__new__(__pyx_type)
  */
+    __Pyx_TraceLine(3,0,__PYX_ERR(2, 3, __pyx_L1_error))
     __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 3, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_INCREF(__pyx_n_s_PickleError);
@@ -5656,6 +6081,7 @@ static PyObject *__pyx_pf_3dfs_6Player___pyx_unpickle_Player(CYTHON_UNUSED PyObj
  *     __pyx_result = Player.__new__(__pyx_type)
  *     if __pyx_state is not None:
  */
+    __Pyx_TraceLine(4,0,__PYX_ERR(2, 4, __pyx_L1_error))
     __pyx_t_2 = __Pyx_PyInt_From_long(__pyx_v___pyx_checksum); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 4, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Incompatible_checksums_s_vs_0x2b, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(2, 4, __pyx_L1_error)
@@ -5727,6 +6153,7 @@ static PyObject *__pyx_pf_3dfs_6Player___pyx_unpickle_Player(CYTHON_UNUSED PyObj
  *     if __pyx_state is not None:
  *         __pyx_unpickle_Player__set_state(<Player> __pyx_result, __pyx_state)
  */
+  __Pyx_TraceLine(5,0,__PYX_ERR(2, 5, __pyx_L1_error))
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_ptype_3dfs_6Player_Player), __pyx_n_s_new); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 5, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_6 = NULL;
@@ -5782,6 +6209,7 @@ static PyObject *__pyx_pf_3dfs_6Player___pyx_unpickle_Player(CYTHON_UNUSED PyObj
  *         __pyx_unpickle_Player__set_state(<Player> __pyx_result, __pyx_state)
  *     return __pyx_result
  */
+  __Pyx_TraceLine(6,0,__PYX_ERR(2, 6, __pyx_L1_error))
   __pyx_t_1 = (__pyx_v___pyx_state != Py_None);
   __pyx_t_7 = (__pyx_t_1 != 0);
   if (__pyx_t_7) {
@@ -5793,6 +6221,7 @@ static PyObject *__pyx_pf_3dfs_6Player___pyx_unpickle_Player(CYTHON_UNUSED PyObj
  *     return __pyx_result
  * cdef __pyx_unpickle_Player__set_state(Player __pyx_result, tuple __pyx_state):
  */
+    __Pyx_TraceLine(7,0,__PYX_ERR(2, 7, __pyx_L1_error))
     if (!(likely(PyTuple_CheckExact(__pyx_v___pyx_state))||((__pyx_v___pyx_state) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_v___pyx_state)->tp_name), 0))) __PYX_ERR(2, 7, __pyx_L1_error)
     __pyx_t_3 = __pyx_f_3dfs_6Player___pyx_unpickle_Player__set_state(((struct __pyx_obj_3dfs_6Player_Player *)__pyx_v___pyx_result), ((PyObject*)__pyx_v___pyx_state)); if (unlikely(!__pyx_t_3)) __PYX_ERR(2, 7, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
@@ -5814,6 +6243,7 @@ static PyObject *__pyx_pf_3dfs_6Player___pyx_unpickle_Player(CYTHON_UNUSED PyObj
  * cdef __pyx_unpickle_Player__set_state(Player __pyx_result, tuple __pyx_state):
  *     __pyx_result.dropoff = __pyx_state[0]; __pyx_result.flex = __pyx_state[1]; __pyx_result.lower = __pyx_state[2]; __pyx_result.lower_value = __pyx_state[3]; __pyx_result.median = __pyx_state[4]; __pyx_result.median_value = __pyx_state[5]; __pyx_result.name = __pyx_state[6]; __pyx_result.opposing_team = __pyx_state[7]; __pyx_result.position = __pyx_state[8]; __pyx_result.risk = __pyx_state[9]; __pyx_result.salary = __pyx_state[10]; __pyx_result.sdPts = __pyx_state[11]; __pyx_result.sdRank = __pyx_state[12]; __pyx_result.team = __pyx_state[13]; __pyx_result.upper = __pyx_state[14]; __pyx_result.upper_value = __pyx_state[15]
  */
+  __Pyx_TraceLine(8,0,__PYX_ERR(2, 8, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v___pyx_result);
   __pyx_r = __pyx_v___pyx_result;
@@ -5876,6 +6306,7 @@ static PyObject *__pyx_f_3dfs_6Player___pyx_unpickle_Player__set_state(struct __
  *     if len(__pyx_state) > 16 and hasattr(__pyx_result, '__dict__'):
  *         __pyx_result.__dict__.update(__pyx_state[16])
  */
+  __Pyx_TraceLine(10,0,__PYX_ERR(2, 10, __pyx_L1_error))
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 10, __pyx_L1_error)
@@ -6054,6 +6485,7 @@ static PyObject *__pyx_f_3dfs_6Player___pyx_unpickle_Player__set_state(struct __
  *     if len(__pyx_state) > 16 and hasattr(__pyx_result, '__dict__'):             # <<<<<<<<<<<<<<
  *         __pyx_result.__dict__.update(__pyx_state[16])
  */
+  __Pyx_TraceLine(11,0,__PYX_ERR(2, 11, __pyx_L1_error))
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
     __PYX_ERR(2, 11, __pyx_L1_error)
@@ -6076,6 +6508,7 @@ static PyObject *__pyx_f_3dfs_6Player___pyx_unpickle_Player__set_state(struct __
  *     if len(__pyx_state) > 16 and hasattr(__pyx_result, '__dict__'):
  *         __pyx_result.__dict__.update(__pyx_state[16])             # <<<<<<<<<<<<<<
  */
+    __Pyx_TraceLine(12,0,__PYX_ERR(2, 12, __pyx_L1_error))
     __pyx_t_8 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v___pyx_result), __pyx_n_s_dict); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 12, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_update); if (unlikely(!__pyx_t_9)) __PYX_ERR(2, 12, __pyx_L1_error)
@@ -6428,10 +6861,6 @@ static int __pyx_setprop_3dfs_6Player_6Player_lower_value(PyObject *o, PyObject 
 }
 
 static PyMethodDef __pyx_methods_3dfs_6Player_Player[] = {
-  {"update_player_proj", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_3update_player_proj, METH_O, 0},
-  {"__deepcopy__", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_5__deepcopy__, METH_O, 0},
-  {"update_player_dfs", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_7update_player_dfs, METH_O, 0},
-  {"get_value", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_9get_value, METH_NOARGS, 0},
   {"__reduce_cython__", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_13__reduce_cython__, METH_NOARGS, 0},
   {"__setstate_cython__", (PyCFunction)__pyx_pw_3dfs_6Player_6Player_15__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
@@ -6552,19 +6981,30 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_n_s_DK, __pyx_k_DK, sizeof(__pyx_k_DK), 0, 0, 1, 1},
   {&__pyx_kp_s_Game_Info, __pyx_k_Game_Info, sizeof(__pyx_k_Game_Info), 0, 0, 1, 0},
   {&__pyx_kp_s_Incompatible_checksums_s_vs_0x2b, __pyx_k_Incompatible_checksums_s_vs_0x2b, sizeof(__pyx_k_Incompatible_checksums_s_vs_0x2b), 0, 0, 1, 0},
+  {&__pyx_n_s_Opponent, __pyx_k_Opponent, sizeof(__pyx_k_Opponent), 0, 0, 1, 1},
   {&__pyx_n_s_PickleError, __pyx_k_PickleError, sizeof(__pyx_k_PickleError), 0, 0, 1, 1},
+  {&__pyx_n_s_Player___deepcopy, __pyx_k_Player___deepcopy, sizeof(__pyx_k_Player___deepcopy), 0, 0, 1, 1},
+  {&__pyx_n_s_Player___reduce_cython, __pyx_k_Player___reduce_cython, sizeof(__pyx_k_Player___reduce_cython), 0, 0, 1, 1},
+  {&__pyx_n_s_Player___setstate_cython, __pyx_k_Player___setstate_cython, sizeof(__pyx_k_Player___setstate_cython), 0, 0, 1, 1},
+  {&__pyx_n_s_Player_get_value, __pyx_k_Player_get_value, sizeof(__pyx_k_Player_get_value), 0, 0, 1, 1},
+  {&__pyx_kp_s_Player_pyx, __pyx_k_Player_pyx, sizeof(__pyx_k_Player_pyx), 0, 0, 1, 0},
+  {&__pyx_n_s_Player_update_player_dfs, __pyx_k_Player_update_player_dfs, sizeof(__pyx_k_Player_update_player_dfs), 0, 0, 1, 1},
+  {&__pyx_n_s_Player_update_player_proj, __pyx_k_Player_update_player_proj, sizeof(__pyx_k_Player_update_player_proj), 0, 0, 1, 1},
   {&__pyx_n_s_Salary, __pyx_k_Salary, sizeof(__pyx_k_Salary), 0, 0, 1, 1},
   {&__pyx_n_s_TeamAbbrev, __pyx_k_TeamAbbrev, sizeof(__pyx_k_TeamAbbrev), 0, 0, 1, 1},
-  {&__pyx_kp_u__5, __pyx_k__5, sizeof(__pyx_k__5), 0, 1, 0, 0},
-  {&__pyx_kp_s__6, __pyx_k__6, sizeof(__pyx_k__6), 0, 0, 1, 0},
+  {&__pyx_kp_s__10, __pyx_k__10, sizeof(__pyx_k__10), 0, 0, 1, 0},
+  {&__pyx_kp_u__9, __pyx_k__9, sizeof(__pyx_k__9), 0, 1, 0, 0},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_copy, __pyx_k_copy, sizeof(__pyx_k_copy), 0, 0, 1, 1},
+  {&__pyx_n_s_data, __pyx_k_data, sizeof(__pyx_k_data), 0, 0, 1, 1},
   {&__pyx_n_s_deepcopy, __pyx_k_deepcopy, sizeof(__pyx_k_deepcopy), 0, 0, 1, 1},
   {&__pyx_n_s_deepcopy_2, __pyx_k_deepcopy_2, sizeof(__pyx_k_deepcopy_2), 0, 0, 1, 1},
   {&__pyx_n_s_dfs_Player, __pyx_k_dfs_Player, sizeof(__pyx_k_dfs_Player), 0, 0, 1, 1},
   {&__pyx_n_s_dict, __pyx_k_dict, sizeof(__pyx_k_dict), 0, 0, 1, 1},
+  {&__pyx_n_s_dict_2, __pyx_k_dict_2, sizeof(__pyx_k_dict_2), 0, 0, 1, 1},
   {&__pyx_n_s_dropoff, __pyx_k_dropoff, sizeof(__pyx_k_dropoff), 0, 0, 1, 1},
   {&__pyx_n_s_get, __pyx_k_get, sizeof(__pyx_k_get), 0, 0, 1, 1},
   {&__pyx_n_s_get_value, __pyx_k_get_value, sizeof(__pyx_k_get_value), 0, 0, 1, 1},
@@ -6579,11 +7019,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_median, __pyx_k_median, sizeof(__pyx_k_median), 0, 0, 1, 1},
   {&__pyx_kp_u_median_2, __pyx_k_median_2, sizeof(__pyx_k_median_2), 0, 1, 0, 0},
   {&__pyx_n_s_median_value, __pyx_k_median_value, sizeof(__pyx_k_median_value), 0, 0, 1, 1},
+  {&__pyx_n_s_memo, __pyx_k_memo, sizeof(__pyx_k_memo), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_kp_u_name_2, __pyx_k_name_2, sizeof(__pyx_k_name_2), 0, 1, 0, 0},
   {&__pyx_n_s_name_3, __pyx_k_name_3, sizeof(__pyx_k_name_3), 0, 0, 1, 1},
   {&__pyx_n_s_new, __pyx_k_new, sizeof(__pyx_k_new), 0, 0, 1, 1},
   {&__pyx_n_s_offset, __pyx_k_offset, sizeof(__pyx_k_offset), 0, 0, 1, 1},
+  {&__pyx_n_s_opposing_team, __pyx_k_opposing_team, sizeof(__pyx_k_opposing_team), 0, 0, 1, 1},
   {&__pyx_n_s_pickle, __pyx_k_pickle, sizeof(__pyx_k_pickle), 0, 0, 1, 1},
   {&__pyx_n_s_points, __pyx_k_points, sizeof(__pyx_k_points), 0, 0, 1, 1},
   {&__pyx_n_s_position, __pyx_k_position, sizeof(__pyx_k_position), 0, 0, 1, 1},
@@ -6604,8 +7046,11 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_u_salary_2, __pyx_k_salary_2, sizeof(__pyx_k_salary_2), 0, 1, 0, 0},
   {&__pyx_n_s_sdPts, __pyx_k_sdPts, sizeof(__pyx_k_sdPts), 0, 0, 1, 1},
   {&__pyx_n_s_sdRank, __pyx_k_sdRank, sizeof(__pyx_k_sdRank), 0, 0, 1, 1},
+  {&__pyx_n_s_self, __pyx_k_self, sizeof(__pyx_k_self), 0, 0, 1, 1},
   {&__pyx_n_s_setstate, __pyx_k_setstate, sizeof(__pyx_k_setstate), 0, 0, 1, 1},
   {&__pyx_n_s_setstate_cython, __pyx_k_setstate_cython, sizeof(__pyx_k_setstate_cython), 0, 0, 1, 1},
+  {&__pyx_n_s_site, __pyx_k_site, sizeof(__pyx_k_site), 0, 0, 1, 1},
+  {&__pyx_n_s_state, __pyx_k_state, sizeof(__pyx_k_state), 0, 0, 1, 1},
   {&__pyx_kp_s_stringsource, __pyx_k_stringsource, sizeof(__pyx_k_stringsource), 0, 0, 1, 0},
   {&__pyx_n_s_team, __pyx_k_team, sizeof(__pyx_k_team), 0, 0, 1, 1},
   {&__pyx_kp_u_team_2, __pyx_k_team_2, sizeof(__pyx_k_team_2), 0, 1, 0, 0},
@@ -6615,8 +7060,10 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_update_player_proj, __pyx_k_update_player_proj, sizeof(__pyx_k_update_player_proj), 0, 0, 1, 1},
   {&__pyx_n_s_upper, __pyx_k_upper, sizeof(__pyx_k_upper), 0, 0, 1, 1},
   {&__pyx_n_s_upper_value, __pyx_k_upper_value, sizeof(__pyx_k_upper_value), 0, 0, 1, 1},
+  {&__pyx_n_s_use_setstate, __pyx_k_use_setstate, sizeof(__pyx_k_use_setstate), 0, 0, 1, 1},
   {&__pyx_kp_u_value, __pyx_k_value, sizeof(__pyx_k_value), 0, 1, 0, 0},
   {&__pyx_kp_s_w_w, __pyx_k_w_w, sizeof(__pyx_k_w_w), 0, 0, 1, 0},
+  {&__pyx_n_s_yahoo, __pyx_k_yahoo, sizeof(__pyx_k_yahoo), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
@@ -6630,59 +7077,128 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "dfs/Player.pyx":47
- *         self.salary = float(data['Salary'])
- *         match = re.match(r'(\w+)@(\w+)', data['Game Info'])
- *         if data['TeamAbbrev'] == match.group(1):             # <<<<<<<<<<<<<<
- *             self.opposing_team = match.group(2)
- *         elif data['TeamAbbrev'] == match.group(2):
- */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 47, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple_);
-  __Pyx_GIVEREF(__pyx_tuple_);
-
-  /* "dfs/Player.pyx":48
- *         match = re.match(r'(\w+)@(\w+)', data['Game Info'])
- *         if data['TeamAbbrev'] == match.group(1):
- *             self.opposing_team = match.group(2)             # <<<<<<<<<<<<<<
- *         elif data['TeamAbbrev'] == match.group(2):
- *             self.opposing_team = match.group(1)
- */
-  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 48, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__2);
-  __Pyx_GIVEREF(__pyx_tuple__2);
-
   /* "dfs/Player.pyx":49
- *         if data['TeamAbbrev'] == match.group(1):
- *             self.opposing_team = match.group(2)
- *         elif data['TeamAbbrev'] == match.group(2):             # <<<<<<<<<<<<<<
- *             self.opposing_team = match.group(1)
- * 
+ *         if site == "DK":
+ *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+ *             if data['TeamAbbrev'] == match.group(1):             # <<<<<<<<<<<<<<
+ *                 self.opposing_team = match.group(2)
+ *             elif data['TeamAbbrev'] == match.group(2):
  */
-  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 49, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__3);
-  __Pyx_GIVEREF(__pyx_tuple__3);
-
-  /* "dfs/Player.pyx":50
- *             self.opposing_team = match.group(2)
- *         elif data['TeamAbbrev'] == match.group(2):
- *             self.opposing_team = match.group(1)             # <<<<<<<<<<<<<<
- * 
- * 
- */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 49, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
+
+  /* "dfs/Player.pyx":50
+ *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+ *             if data['TeamAbbrev'] == match.group(1):
+ *                 self.opposing_team = match.group(2)             # <<<<<<<<<<<<<<
+ *             elif data['TeamAbbrev'] == match.group(2):
+ *                 self.opposing_team = match.group(1)
+ */
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
+
+  /* "dfs/Player.pyx":51
+ *             if data['TeamAbbrev'] == match.group(1):
+ *                 self.opposing_team = match.group(2)
+ *             elif data['TeamAbbrev'] == match.group(2):             # <<<<<<<<<<<<<<
+ *                 self.opposing_team = match.group(1)
+ *         elif site == "yahoo":
+ */
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 51, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
+
+  /* "dfs/Player.pyx":52
+ *                 self.opposing_team = match.group(2)
+ *             elif data['TeamAbbrev'] == match.group(2):
+ *                 self.opposing_team = match.group(1)             # <<<<<<<<<<<<<<
+ *         elif site == "yahoo":
+ *             self.opposing_team = data['Opponent']
+ */
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 52, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+
+  /* "dfs/Player.pyx":12
+ *         # self.offset = offset
+ * 
+ *     cpdef update_player_proj(self, data):             # <<<<<<<<<<<<<<
+ *         self.team = data['team']
+ *         self.position = data['position']
+ */
+  __pyx_tuple__14 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_data); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
+  __pyx_codeobj_ = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Player_pyx, __pyx_n_s_update_player_proj, 12, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj_)) __PYX_ERR(0, 12, __pyx_L1_error)
+
+  /* "dfs/Player.pyx":23
+ *         self.risk = data['risk']
+ * 
+ *     cpdef __deepcopy__(self, memo):             # <<<<<<<<<<<<<<
+ *         id_self = id(self)        # memoization avoids unnecesary recursion
+ *         _copy = memo.get(id_self)
+ */
+  __pyx_tuple__15 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_memo); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Player_pyx, __pyx_n_s_deepcopy, 23, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 23, __pyx_L1_error)
+
+  /* "dfs/Player.pyx":44
+ *         return _copy
+ * 
+ *     cpdef update_player_dfs(self, data, site="DK"):             # <<<<<<<<<<<<<<
+ *         # self.isFlex = "FLEX" in data['Roster Position']
+ *         self.salary = float(data['Salary'])
+ */
+  __pyx_tuple__16 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_data, __pyx_n_s_site); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__16);
+  __Pyx_GIVEREF(__pyx_tuple__16);
+  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Player_pyx, __pyx_n_s_update_player_dfs, 44, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(0, 44, __pyx_L1_error)
+
+  /* "dfs/Player.pyx":57
+ * 
+ * 
+ *     cpdef get_value(self, site):             # <<<<<<<<<<<<<<
+ *         divi = 1000 if site == "DK" else 10
+ *         try:
+ */
+  __pyx_tuple__17 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_site); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__17);
+  __Pyx_GIVEREF(__pyx_tuple__17);
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Player_pyx, __pyx_n_s_get_value, 57, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 57, __pyx_L1_error)
+
+  /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     cdef bint use_setstate
+ *     state = (self.dropoff, self.flex, self.lower, self.lower_value, self.median, self.median_value, self.name, self.opposing_team, self.position, self.risk, self.salary, self.sdPts, self.sdRank, self.team, self.upper, self.upper_value)
+ */
+  __pyx_tuple__18 = PyTuple_Pack(4, __pyx_n_s_self, __pyx_n_s_use_setstate, __pyx_n_s_state, __pyx_n_s_dict_2); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__18);
+  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) __PYX_ERR(2, 1, __pyx_L1_error)
+
+  /* "(tree fragment)":14
+ *     else:
+ *         return __pyx_unpickle_Player, (type(self), 0x2b81de6, state)
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     __pyx_unpickle_Player__set_state(self, __pyx_state)
+ */
+  __pyx_tuple__19 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_pyx_state); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(2, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__19);
+  __Pyx_GIVEREF(__pyx_tuple__19);
+  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 14, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(2, 14, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_Player(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     if __pyx_checksum != 0x2b81de6:
  *         from pickle import PickleError as __pyx_PickleError
  */
-  __pyx_tuple__8 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(2, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__8);
-  __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Player, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_tuple__20 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__20);
+  __Pyx_GIVEREF(__pyx_tuple__20);
+  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__20, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Player, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -6694,6 +7210,8 @@ static int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_2 = PyInt_FromLong(2); if (unlikely(!__pyx_int_2)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_10 = PyInt_FromLong(10); if (unlikely(!__pyx_int_10)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_1000 = PyInt_FromLong(1000); if (unlikely(!__pyx_int_1000)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_45620710 = PyInt_FromLong(45620710L); if (unlikely(!__pyx_int_45620710)) __PYX_ERR(0, 1, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
@@ -6738,8 +7256,8 @@ static int __Pyx_modinit_type_init_code(void) {
   /*--- Type init code ---*/
   __pyx_vtabptr_3dfs_6Player_Player = &__pyx_vtable_3dfs_6Player_Player;
   __pyx_vtable_3dfs_6Player_Player.update_player_proj = (PyObject *(*)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch))__pyx_f_3dfs_6Player_6Player_update_player_proj;
-  __pyx_vtable_3dfs_6Player_Player.update_player_dfs = (PyObject *(*)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch))__pyx_f_3dfs_6Player_6Player_update_player_dfs;
-  __pyx_vtable_3dfs_6Player_Player.get_value = (PyObject *(*)(struct __pyx_obj_3dfs_6Player_Player *, int __pyx_skip_dispatch))__pyx_f_3dfs_6Player_6Player_get_value;
+  __pyx_vtable_3dfs_6Player_Player.update_player_dfs = (PyObject *(*)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_3dfs_6Player_6Player_update_player_dfs *__pyx_optional_args))__pyx_f_3dfs_6Player_6Player_update_player_dfs;
+  __pyx_vtable_3dfs_6Player_Player.get_value = (PyObject *(*)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch))__pyx_f_3dfs_6Player_6Player_get_value;
   __pyx_vtable_3dfs_6Player_Player.__pyx___deepcopy__ = (PyObject *(*)(struct __pyx_obj_3dfs_6Player_Player *, PyObject *, int __pyx_skip_dispatch))__pyx_f_3dfs_6Player_6Player___deepcopy__;
   if (PyType_Ready(&__pyx_type_3dfs_6Player_Player) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
   __pyx_type_3dfs_6Player_Player.tp_print = 0;
@@ -6964,6 +7482,7 @@ if (!__Pyx_RefNanny) {
  * 
  * from copy import copy, deepcopy
  */
+  __Pyx_TraceLine(3,0,__PYX_ERR(0, 3, __pyx_L1_error))
   __pyx_t_1 = __Pyx_Import(__pyx_n_s_re, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_re, __pyx_t_1) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
@@ -6976,6 +7495,7 @@ if (!__Pyx_RefNanny) {
  * 
  * cdef class Player:
  */
+  __Pyx_TraceLine(5,0,__PYX_ERR(0, 5, __pyx_L1_error))
   __pyx_t_1 = PyList_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_copy);
@@ -6997,12 +7517,92 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
+  /* "dfs/Player.pyx":12
+ *         # self.offset = offset
+ * 
+ *     cpdef update_player_proj(self, data):             # <<<<<<<<<<<<<<
+ *         self.team = data['team']
+ *         self.position = data['position']
+ */
+  __Pyx_TraceLine(12,0,__PYX_ERR(0, 12, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_3update_player_proj, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player_update_player_proj, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj_)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Player_Player->tp_dict, __pyx_n_s_update_player_proj, __pyx_t_2) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  PyType_Modified(__pyx_ptype_3dfs_6Player_Player);
+
+  /* "dfs/Player.pyx":23
+ *         self.risk = data['risk']
+ * 
+ *     cpdef __deepcopy__(self, memo):             # <<<<<<<<<<<<<<
+ *         id_self = id(self)        # memoization avoids unnecesary recursion
+ *         _copy = memo.get(id_self)
+ */
+  __Pyx_TraceLine(23,0,__PYX_ERR(0, 23, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_5__deepcopy__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player___deepcopy, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Player_Player->tp_dict, __pyx_n_s_deepcopy, __pyx_t_2) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  PyType_Modified(__pyx_ptype_3dfs_6Player_Player);
+
+  /* "dfs/Player.pyx":44
+ *         return _copy
+ * 
+ *     cpdef update_player_dfs(self, data, site="DK"):             # <<<<<<<<<<<<<<
+ *         # self.isFlex = "FLEX" in data['Roster Position']
+ *         self.salary = float(data['Salary'])
+ */
+  __Pyx_TraceLine(44,0,__PYX_ERR(0, 44, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_7update_player_dfs, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player_update_player_dfs, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__3)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Player_Player->tp_dict, __pyx_n_s_update_player_dfs, __pyx_t_2) < 0) __PYX_ERR(0, 44, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  PyType_Modified(__pyx_ptype_3dfs_6Player_Player);
+
+  /* "dfs/Player.pyx":57
+ * 
+ * 
+ *     cpdef get_value(self, site):             # <<<<<<<<<<<<<<
+ *         divi = 1000 if site == "DK" else 10
+ *         try:
+ */
+  __Pyx_TraceLine(57,0,__PYX_ERR(0, 57, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_9get_value, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player_get_value, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__8)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Player_Player->tp_dict, __pyx_n_s_get_value, __pyx_t_2) < 0) __PYX_ERR(0, 57, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  PyType_Modified(__pyx_ptype_3dfs_6Player_Player);
+
+  /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     cdef bint use_setstate
+ *     state = (self.dropoff, self.flex, self.lower, self.lower_value, self.median, self.median_value, self.name, self.opposing_team, self.position, self.risk, self.salary, self.sdPts, self.sdRank, self.team, self.upper, self.upper_value)
+ */
+  __Pyx_TraceLine(1,0,__PYX_ERR(2, 1, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_13__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player___reduce_cython, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__11)); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_reduce_cython, __pyx_t_2) < 0) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "(tree fragment)":14
+ *     else:
+ *         return __pyx_unpickle_Player, (type(self), 0x2b81de6, state)
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     __pyx_unpickle_Player__set_state(self, __pyx_state)
+ */
+  __Pyx_TraceLine(14,0,__PYX_ERR(2, 14, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_15__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player___setstate_cython, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__12)); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_setstate_cython, __pyx_t_2) < 0) __PYX_ERR(2, 14, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
   /* "(tree fragment)":1
  * def __pyx_unpickle_Player(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     if __pyx_checksum != 0x2b81de6:
  *         from pickle import PickleError as __pyx_PickleError
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_3dfs_6Player_1__pyx_unpickle_Player, NULL, __pyx_n_s_dfs_Player); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_TraceLine(1,0,__PYX_ERR(2, 1, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_1__pyx_unpickle_Player, 0, __pyx_n_s_pyx_unpickle_Player, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__13)); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyx_unpickle_Player, __pyx_t_2) < 0) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -7012,6 +7612,7 @@ if (!__Pyx_RefNanny) {
  * 
  * import re
  */
+  __Pyx_TraceLine(1,0,__PYX_ERR(0, 1, __pyx_L1_error))
   __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -7787,29 +8388,157 @@ static CYTHON_INLINE int __Pyx_PyObject_SetAttrStr(PyObject* obj, PyObject* attr
 }
 #endif
 
-/* PyObjectCallNoArg */
-    #if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
-#if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(func)) {
-        return __Pyx_PyFunction_FastCall(func, NULL, 0);
-    }
-#endif
-#ifdef __Pyx_CyFunction_USED
-    if (likely(PyCFunction_Check(func) || __Pyx_TypeCheck(func, __pyx_CyFunctionType))) {
+/* BytesEquals */
+    static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals) {
+#if CYTHON_COMPILING_IN_PYPY
+    return PyObject_RichCompareBool(s1, s2, equals);
 #else
-    if (likely(PyCFunction_Check(func))) {
+    if (s1 == s2) {
+        return (equals == Py_EQ);
+    } else if (PyBytes_CheckExact(s1) & PyBytes_CheckExact(s2)) {
+        const char *ps1, *ps2;
+        Py_ssize_t length = PyBytes_GET_SIZE(s1);
+        if (length != PyBytes_GET_SIZE(s2))
+            return (equals == Py_NE);
+        ps1 = PyBytes_AS_STRING(s1);
+        ps2 = PyBytes_AS_STRING(s2);
+        if (ps1[0] != ps2[0]) {
+            return (equals == Py_NE);
+        } else if (length == 1) {
+            return (equals == Py_EQ);
+        } else {
+            int result;
+#if CYTHON_USE_UNICODE_INTERNALS
+            Py_hash_t hash1, hash2;
+            hash1 = ((PyBytesObject*)s1)->ob_shash;
+            hash2 = ((PyBytesObject*)s2)->ob_shash;
+            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
+                return (equals == Py_NE);
+            }
 #endif
-        if (likely(PyCFunction_GET_FLAGS(func) & METH_NOARGS)) {
-            return __Pyx_PyObject_CallMethO(func, NULL);
+            result = memcmp(ps1, ps2, (size_t)length);
+            return (equals == Py_EQ) ? (result == 0) : (result != 0);
         }
+    } else if ((s1 == Py_None) & PyBytes_CheckExact(s2)) {
+        return (equals == Py_NE);
+    } else if ((s2 == Py_None) & PyBytes_CheckExact(s1)) {
+        return (equals == Py_NE);
+    } else {
+        int result;
+        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
+        if (!py_result)
+            return -1;
+        result = __Pyx_PyObject_IsTrue(py_result);
+        Py_DECREF(py_result);
+        return result;
     }
-    return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
-}
 #endif
+}
+
+/* UnicodeEquals */
+    static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals) {
+#if CYTHON_COMPILING_IN_PYPY
+    return PyObject_RichCompareBool(s1, s2, equals);
+#else
+#if PY_MAJOR_VERSION < 3
+    PyObject* owned_ref = NULL;
+#endif
+    int s1_is_unicode, s2_is_unicode;
+    if (s1 == s2) {
+        goto return_eq;
+    }
+    s1_is_unicode = PyUnicode_CheckExact(s1);
+    s2_is_unicode = PyUnicode_CheckExact(s2);
+#if PY_MAJOR_VERSION < 3
+    if ((s1_is_unicode & (!s2_is_unicode)) && PyString_CheckExact(s2)) {
+        owned_ref = PyUnicode_FromObject(s2);
+        if (unlikely(!owned_ref))
+            return -1;
+        s2 = owned_ref;
+        s2_is_unicode = 1;
+    } else if ((s2_is_unicode & (!s1_is_unicode)) && PyString_CheckExact(s1)) {
+        owned_ref = PyUnicode_FromObject(s1);
+        if (unlikely(!owned_ref))
+            return -1;
+        s1 = owned_ref;
+        s1_is_unicode = 1;
+    } else if (((!s2_is_unicode) & (!s1_is_unicode))) {
+        return __Pyx_PyBytes_Equals(s1, s2, equals);
+    }
+#endif
+    if (s1_is_unicode & s2_is_unicode) {
+        Py_ssize_t length;
+        int kind;
+        void *data1, *data2;
+        if (unlikely(__Pyx_PyUnicode_READY(s1) < 0) || unlikely(__Pyx_PyUnicode_READY(s2) < 0))
+            return -1;
+        length = __Pyx_PyUnicode_GET_LENGTH(s1);
+        if (length != __Pyx_PyUnicode_GET_LENGTH(s2)) {
+            goto return_ne;
+        }
+#if CYTHON_USE_UNICODE_INTERNALS
+        {
+            Py_hash_t hash1, hash2;
+        #if CYTHON_PEP393_ENABLED
+            hash1 = ((PyASCIIObject*)s1)->hash;
+            hash2 = ((PyASCIIObject*)s2)->hash;
+        #else
+            hash1 = ((PyUnicodeObject*)s1)->hash;
+            hash2 = ((PyUnicodeObject*)s2)->hash;
+        #endif
+            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
+                goto return_ne;
+            }
+        }
+#endif
+        kind = __Pyx_PyUnicode_KIND(s1);
+        if (kind != __Pyx_PyUnicode_KIND(s2)) {
+            goto return_ne;
+        }
+        data1 = __Pyx_PyUnicode_DATA(s1);
+        data2 = __Pyx_PyUnicode_DATA(s2);
+        if (__Pyx_PyUnicode_READ(kind, data1, 0) != __Pyx_PyUnicode_READ(kind, data2, 0)) {
+            goto return_ne;
+        } else if (length == 1) {
+            goto return_eq;
+        } else {
+            int result = memcmp(data1, data2, (size_t)(length * kind));
+            #if PY_MAJOR_VERSION < 3
+            Py_XDECREF(owned_ref);
+            #endif
+            return (equals == Py_EQ) ? (result == 0) : (result != 0);
+        }
+    } else if ((s1 == Py_None) & s2_is_unicode) {
+        goto return_ne;
+    } else if ((s2 == Py_None) & s1_is_unicode) {
+        goto return_ne;
+    } else {
+        int result;
+        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
+        #if PY_MAJOR_VERSION < 3
+        Py_XDECREF(owned_ref);
+        #endif
+        if (!py_result)
+            return -1;
+        result = __Pyx_PyObject_IsTrue(py_result);
+        Py_DECREF(py_result);
+        return result;
+    }
+return_eq:
+    #if PY_MAJOR_VERSION < 3
+    Py_XDECREF(owned_ref);
+    #endif
+    return (equals == Py_EQ);
+return_ne:
+    #if PY_MAJOR_VERSION < 3
+    Py_XDECREF(owned_ref);
+    #endif
+    return (equals == Py_NE);
+#endif
+}
 
 /* SaveResetException */
-      #if CYTHON_FAST_THREAD_STATE
+    #if CYTHON_FAST_THREAD_STATE
 static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
     #if PY_VERSION_HEX >= 0x030700A3
     *type = tstate->exc_state.exc_type;
@@ -7848,7 +8577,7 @@ static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject 
 #endif
 
 /* JoinPyUnicode */
-      static PyObject* __Pyx_PyUnicode_Join(PyObject* value_tuple, Py_ssize_t value_count, Py_ssize_t result_ulength,
+    static PyObject* __Pyx_PyUnicode_Join(PyObject* value_tuple, Py_ssize_t value_count, Py_ssize_t result_ulength,
                                       CYTHON_UNUSED Py_UCS4 max_char) {
 #if CYTHON_USE_UNICODE_INTERNALS && CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
     PyObject *result_uval;
@@ -7910,7 +8639,7 @@ bad:
 }
 
 /* GetAttr */
-      static CYTHON_INLINE PyObject *__Pyx_GetAttr(PyObject *o, PyObject *n) {
+    static CYTHON_INLINE PyObject *__Pyx_GetAttr(PyObject *o, PyObject *n) {
 #if CYTHON_USE_TYPE_SLOTS
 #if PY_MAJOR_VERSION >= 3
     if (likely(PyUnicode_Check(n)))
@@ -7923,7 +8652,7 @@ bad:
 }
 
 /* HasAttr */
-      static CYTHON_INLINE int __Pyx_HasAttr(PyObject *o, PyObject *n) {
+    static CYTHON_INLINE int __Pyx_HasAttr(PyObject *o, PyObject *n) {
     PyObject *r;
     if (unlikely(!__Pyx_PyBaseString_Check(n))) {
         PyErr_SetString(PyExc_TypeError,
@@ -7941,7 +8670,7 @@ bad:
 }
 
 /* PyErrExceptionMatches */
-      #if CYTHON_FAST_THREAD_STATE
+    #if CYTHON_FAST_THREAD_STATE
 static int __Pyx_PyErr_ExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
     Py_ssize_t i, n;
     n = PyTuple_GET_SIZE(tuple);
@@ -7966,7 +8695,7 @@ static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tsta
 #endif
 
 /* GetAttr3 */
-      static PyObject *__Pyx_GetAttr3Default(PyObject *d) {
+    static PyObject *__Pyx_GetAttr3Default(PyObject *d) {
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
     if (unlikely(!__Pyx_PyErr_ExceptionMatches(PyExc_AttributeError)))
@@ -7981,7 +8710,7 @@ static CYTHON_INLINE PyObject *__Pyx_GetAttr3(PyObject *o, PyObject *n, PyObject
 }
 
 /* Import */
-      static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
+    static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
     PyObject *empty_list = 0;
     PyObject *module = 0;
     PyObject *global_dict = 0;
@@ -8046,7 +8775,7 @@ bad:
 }
 
 /* ImportFrom */
-      static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
+    static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
     PyObject* value = __Pyx_PyObject_GetAttrStr(module, name);
     if (unlikely(!value) && PyErr_ExceptionMatches(PyExc_AttributeError)) {
         PyErr_Format(PyExc_ImportError,
@@ -8060,7 +8789,7 @@ bad:
 }
 
 /* RaiseException */
-      #if PY_MAJOR_VERSION < 3
+    #if PY_MAJOR_VERSION < 3
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb,
                         CYTHON_UNUSED PyObject *cause) {
     __Pyx_PyThreadState_declare
@@ -8219,7 +8948,7 @@ bad:
 #endif
 
 /* PyObject_GenericGetAttrNoDict */
-      #if CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP && PY_VERSION_HEX < 0x03070000
+    #if CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP && PY_VERSION_HEX < 0x03070000
 static PyObject *__Pyx_RaiseGenericGetAttributeError(PyTypeObject *tp, PyObject *attr_name) {
     PyErr_Format(PyExc_AttributeError,
 #if PY_MAJOR_VERSION >= 3
@@ -8259,7 +8988,7 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_GenericGetAttrNoDict(PyObject* obj
 #endif
 
 /* PyObject_GenericGetAttr */
-      #if CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP && PY_VERSION_HEX < 0x03070000
+    #if CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP && PY_VERSION_HEX < 0x03070000
 static PyObject* __Pyx_PyObject_GenericGetAttr(PyObject* obj, PyObject* attr_name) {
     if (unlikely(Py_TYPE(obj)->tp_dictoffset)) {
         return PyObject_GenericGetAttr(obj, attr_name);
@@ -8269,7 +8998,7 @@ static PyObject* __Pyx_PyObject_GenericGetAttr(PyObject* obj, PyObject* attr_nam
 #endif
 
 /* SetVTable */
-      static int __Pyx_SetVtable(PyObject *dict, void *vtable) {
+    static int __Pyx_SetVtable(PyObject *dict, void *vtable) {
 #if PY_VERSION_HEX >= 0x02070000
     PyObject *ob = PyCapsule_New(vtable, 0, 0);
 #else
@@ -8287,7 +9016,7 @@ bad:
 }
 
 /* SetupReduce */
-      static int __Pyx_setup_reduce_is_named(PyObject* meth, PyObject* name) {
+    static int __Pyx_setup_reduce_is_named(PyObject* meth, PyObject* name) {
   int ret;
   PyObject *name_attr;
   name_attr = __Pyx_PyObject_GetAttrStr(meth, __pyx_n_s_name_3);
@@ -8362,8 +9091,641 @@ GOOD:
     return ret;
 }
 
+/* FetchCommonType */
+    static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type) {
+    PyObject* fake_module;
+    PyTypeObject* cached_type = NULL;
+    fake_module = PyImport_AddModule((char*) "_cython_" CYTHON_ABI);
+    if (!fake_module) return NULL;
+    Py_INCREF(fake_module);
+    cached_type = (PyTypeObject*) PyObject_GetAttrString(fake_module, type->tp_name);
+    if (cached_type) {
+        if (!PyType_Check((PyObject*)cached_type)) {
+            PyErr_Format(PyExc_TypeError,
+                "Shared Cython type %.200s is not a type object",
+                type->tp_name);
+            goto bad;
+        }
+        if (cached_type->tp_basicsize != type->tp_basicsize) {
+            PyErr_Format(PyExc_TypeError,
+                "Shared Cython type %.200s has the wrong size, try recompiling",
+                type->tp_name);
+            goto bad;
+        }
+    } else {
+        if (!PyErr_ExceptionMatches(PyExc_AttributeError)) goto bad;
+        PyErr_Clear();
+        if (PyType_Ready(type) < 0) goto bad;
+        if (PyObject_SetAttrString(fake_module, type->tp_name, (PyObject*) type) < 0)
+            goto bad;
+        Py_INCREF(type);
+        cached_type = type;
+    }
+done:
+    Py_DECREF(fake_module);
+    return cached_type;
+bad:
+    Py_XDECREF(cached_type);
+    cached_type = NULL;
+    goto done;
+}
+
+/* CythonFunction */
+    #include <structmember.h>
+static PyObject *
+__Pyx_CyFunction_get_doc(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *closure)
+{
+    if (unlikely(op->func_doc == NULL)) {
+        if (op->func.m_ml->ml_doc) {
+#if PY_MAJOR_VERSION >= 3
+            op->func_doc = PyUnicode_FromString(op->func.m_ml->ml_doc);
+#else
+            op->func_doc = PyString_FromString(op->func.m_ml->ml_doc);
+#endif
+            if (unlikely(op->func_doc == NULL))
+                return NULL;
+        } else {
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+    }
+    Py_INCREF(op->func_doc);
+    return op->func_doc;
+}
+static int
+__Pyx_CyFunction_set_doc(__pyx_CyFunctionObject *op, PyObject *value)
+{
+    PyObject *tmp = op->func_doc;
+    if (value == NULL) {
+        value = Py_None;
+    }
+    Py_INCREF(value);
+    op->func_doc = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_name(__pyx_CyFunctionObject *op)
+{
+    if (unlikely(op->func_name == NULL)) {
+#if PY_MAJOR_VERSION >= 3
+        op->func_name = PyUnicode_InternFromString(op->func.m_ml->ml_name);
+#else
+        op->func_name = PyString_InternFromString(op->func.m_ml->ml_name);
+#endif
+        if (unlikely(op->func_name == NULL))
+            return NULL;
+    }
+    Py_INCREF(op->func_name);
+    return op->func_name;
+}
+static int
+__Pyx_CyFunction_set_name(__pyx_CyFunctionObject *op, PyObject *value)
+{
+    PyObject *tmp;
+#if PY_MAJOR_VERSION >= 3
+    if (unlikely(value == NULL || !PyUnicode_Check(value))) {
+#else
+    if (unlikely(value == NULL || !PyString_Check(value))) {
+#endif
+        PyErr_SetString(PyExc_TypeError,
+                        "__name__ must be set to a string object");
+        return -1;
+    }
+    tmp = op->func_name;
+    Py_INCREF(value);
+    op->func_name = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_qualname(__pyx_CyFunctionObject *op)
+{
+    Py_INCREF(op->func_qualname);
+    return op->func_qualname;
+}
+static int
+__Pyx_CyFunction_set_qualname(__pyx_CyFunctionObject *op, PyObject *value)
+{
+    PyObject *tmp;
+#if PY_MAJOR_VERSION >= 3
+    if (unlikely(value == NULL || !PyUnicode_Check(value))) {
+#else
+    if (unlikely(value == NULL || !PyString_Check(value))) {
+#endif
+        PyErr_SetString(PyExc_TypeError,
+                        "__qualname__ must be set to a string object");
+        return -1;
+    }
+    tmp = op->func_qualname;
+    Py_INCREF(value);
+    op->func_qualname = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_self(__pyx_CyFunctionObject *m, CYTHON_UNUSED void *closure)
+{
+    PyObject *self;
+    self = m->func_closure;
+    if (self == NULL)
+        self = Py_None;
+    Py_INCREF(self);
+    return self;
+}
+static PyObject *
+__Pyx_CyFunction_get_dict(__pyx_CyFunctionObject *op)
+{
+    if (unlikely(op->func_dict == NULL)) {
+        op->func_dict = PyDict_New();
+        if (unlikely(op->func_dict == NULL))
+            return NULL;
+    }
+    Py_INCREF(op->func_dict);
+    return op->func_dict;
+}
+static int
+__Pyx_CyFunction_set_dict(__pyx_CyFunctionObject *op, PyObject *value)
+{
+    PyObject *tmp;
+    if (unlikely(value == NULL)) {
+        PyErr_SetString(PyExc_TypeError,
+               "function's dictionary may not be deleted");
+        return -1;
+    }
+    if (unlikely(!PyDict_Check(value))) {
+        PyErr_SetString(PyExc_TypeError,
+               "setting function's dictionary to a non-dict");
+        return -1;
+    }
+    tmp = op->func_dict;
+    Py_INCREF(value);
+    op->func_dict = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_globals(__pyx_CyFunctionObject *op)
+{
+    Py_INCREF(op->func_globals);
+    return op->func_globals;
+}
+static PyObject *
+__Pyx_CyFunction_get_closure(CYTHON_UNUSED __pyx_CyFunctionObject *op)
+{
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+static PyObject *
+__Pyx_CyFunction_get_code(__pyx_CyFunctionObject *op)
+{
+    PyObject* result = (op->func_code) ? op->func_code : Py_None;
+    Py_INCREF(result);
+    return result;
+}
+static int
+__Pyx_CyFunction_init_defaults(__pyx_CyFunctionObject *op) {
+    int result = 0;
+    PyObject *res = op->defaults_getter((PyObject *) op);
+    if (unlikely(!res))
+        return -1;
+    #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    op->defaults_tuple = PyTuple_GET_ITEM(res, 0);
+    Py_INCREF(op->defaults_tuple);
+    op->defaults_kwdict = PyTuple_GET_ITEM(res, 1);
+    Py_INCREF(op->defaults_kwdict);
+    #else
+    op->defaults_tuple = PySequence_ITEM(res, 0);
+    if (unlikely(!op->defaults_tuple)) result = -1;
+    else {
+        op->defaults_kwdict = PySequence_ITEM(res, 1);
+        if (unlikely(!op->defaults_kwdict)) result = -1;
+    }
+    #endif
+    Py_DECREF(res);
+    return result;
+}
+static int
+__Pyx_CyFunction_set_defaults(__pyx_CyFunctionObject *op, PyObject* value) {
+    PyObject* tmp;
+    if (!value) {
+        value = Py_None;
+    } else if (value != Py_None && !PyTuple_Check(value)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "__defaults__ must be set to a tuple object");
+        return -1;
+    }
+    Py_INCREF(value);
+    tmp = op->defaults_tuple;
+    op->defaults_tuple = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_defaults(__pyx_CyFunctionObject *op) {
+    PyObject* result = op->defaults_tuple;
+    if (unlikely(!result)) {
+        if (op->defaults_getter) {
+            if (__Pyx_CyFunction_init_defaults(op) < 0) return NULL;
+            result = op->defaults_tuple;
+        } else {
+            result = Py_None;
+        }
+    }
+    Py_INCREF(result);
+    return result;
+}
+static int
+__Pyx_CyFunction_set_kwdefaults(__pyx_CyFunctionObject *op, PyObject* value) {
+    PyObject* tmp;
+    if (!value) {
+        value = Py_None;
+    } else if (value != Py_None && !PyDict_Check(value)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "__kwdefaults__ must be set to a dict object");
+        return -1;
+    }
+    Py_INCREF(value);
+    tmp = op->defaults_kwdict;
+    op->defaults_kwdict = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_kwdefaults(__pyx_CyFunctionObject *op) {
+    PyObject* result = op->defaults_kwdict;
+    if (unlikely(!result)) {
+        if (op->defaults_getter) {
+            if (__Pyx_CyFunction_init_defaults(op) < 0) return NULL;
+            result = op->defaults_kwdict;
+        } else {
+            result = Py_None;
+        }
+    }
+    Py_INCREF(result);
+    return result;
+}
+static int
+__Pyx_CyFunction_set_annotations(__pyx_CyFunctionObject *op, PyObject* value) {
+    PyObject* tmp;
+    if (!value || value == Py_None) {
+        value = NULL;
+    } else if (!PyDict_Check(value)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "__annotations__ must be set to a dict object");
+        return -1;
+    }
+    Py_XINCREF(value);
+    tmp = op->func_annotations;
+    op->func_annotations = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_annotations(__pyx_CyFunctionObject *op) {
+    PyObject* result = op->func_annotations;
+    if (unlikely(!result)) {
+        result = PyDict_New();
+        if (unlikely(!result)) return NULL;
+        op->func_annotations = result;
+    }
+    Py_INCREF(result);
+    return result;
+}
+static PyGetSetDef __pyx_CyFunction_getsets[] = {
+    {(char *) "func_doc", (getter)__Pyx_CyFunction_get_doc, (setter)__Pyx_CyFunction_set_doc, 0, 0},
+    {(char *) "__doc__",  (getter)__Pyx_CyFunction_get_doc, (setter)__Pyx_CyFunction_set_doc, 0, 0},
+    {(char *) "func_name", (getter)__Pyx_CyFunction_get_name, (setter)__Pyx_CyFunction_set_name, 0, 0},
+    {(char *) "__name__", (getter)__Pyx_CyFunction_get_name, (setter)__Pyx_CyFunction_set_name, 0, 0},
+    {(char *) "__qualname__", (getter)__Pyx_CyFunction_get_qualname, (setter)__Pyx_CyFunction_set_qualname, 0, 0},
+    {(char *) "__self__", (getter)__Pyx_CyFunction_get_self, 0, 0, 0},
+    {(char *) "func_dict", (getter)__Pyx_CyFunction_get_dict, (setter)__Pyx_CyFunction_set_dict, 0, 0},
+    {(char *) "__dict__", (getter)__Pyx_CyFunction_get_dict, (setter)__Pyx_CyFunction_set_dict, 0, 0},
+    {(char *) "func_globals", (getter)__Pyx_CyFunction_get_globals, 0, 0, 0},
+    {(char *) "__globals__", (getter)__Pyx_CyFunction_get_globals, 0, 0, 0},
+    {(char *) "func_closure", (getter)__Pyx_CyFunction_get_closure, 0, 0, 0},
+    {(char *) "__closure__", (getter)__Pyx_CyFunction_get_closure, 0, 0, 0},
+    {(char *) "func_code", (getter)__Pyx_CyFunction_get_code, 0, 0, 0},
+    {(char *) "__code__", (getter)__Pyx_CyFunction_get_code, 0, 0, 0},
+    {(char *) "func_defaults", (getter)__Pyx_CyFunction_get_defaults, (setter)__Pyx_CyFunction_set_defaults, 0, 0},
+    {(char *) "__defaults__", (getter)__Pyx_CyFunction_get_defaults, (setter)__Pyx_CyFunction_set_defaults, 0, 0},
+    {(char *) "__kwdefaults__", (getter)__Pyx_CyFunction_get_kwdefaults, (setter)__Pyx_CyFunction_set_kwdefaults, 0, 0},
+    {(char *) "__annotations__", (getter)__Pyx_CyFunction_get_annotations, (setter)__Pyx_CyFunction_set_annotations, 0, 0},
+    {0, 0, 0, 0, 0}
+};
+static PyMemberDef __pyx_CyFunction_members[] = {
+    {(char *) "__module__", T_OBJECT, offsetof(PyCFunctionObject, m_module), PY_WRITE_RESTRICTED, 0},
+    {0, 0, 0,  0, 0}
+};
+static PyObject *
+__Pyx_CyFunction_reduce(__pyx_CyFunctionObject *m, CYTHON_UNUSED PyObject *args)
+{
+#if PY_MAJOR_VERSION >= 3
+    return PyUnicode_FromString(m->func.m_ml->ml_name);
+#else
+    return PyString_FromString(m->func.m_ml->ml_name);
+#endif
+}
+static PyMethodDef __pyx_CyFunction_methods[] = {
+    {"__reduce__", (PyCFunction)__Pyx_CyFunction_reduce, METH_VARARGS, 0},
+    {0, 0, 0, 0}
+};
+#if PY_VERSION_HEX < 0x030500A0
+#define __Pyx_CyFunction_weakreflist(cyfunc) ((cyfunc)->func_weakreflist)
+#else
+#define __Pyx_CyFunction_weakreflist(cyfunc) ((cyfunc)->func.m_weakreflist)
+#endif
+static PyObject *__Pyx_CyFunction_New(PyTypeObject *type, PyMethodDef *ml, int flags, PyObject* qualname,
+                                      PyObject *closure, PyObject *module, PyObject* globals, PyObject* code) {
+    __pyx_CyFunctionObject *op = PyObject_GC_New(__pyx_CyFunctionObject, type);
+    if (op == NULL)
+        return NULL;
+    op->flags = flags;
+    __Pyx_CyFunction_weakreflist(op) = NULL;
+    op->func.m_ml = ml;
+    op->func.m_self = (PyObject *) op;
+    Py_XINCREF(closure);
+    op->func_closure = closure;
+    Py_XINCREF(module);
+    op->func.m_module = module;
+    op->func_dict = NULL;
+    op->func_name = NULL;
+    Py_INCREF(qualname);
+    op->func_qualname = qualname;
+    op->func_doc = NULL;
+    op->func_classobj = NULL;
+    op->func_globals = globals;
+    Py_INCREF(op->func_globals);
+    Py_XINCREF(code);
+    op->func_code = code;
+    op->defaults_pyobjects = 0;
+    op->defaults = NULL;
+    op->defaults_tuple = NULL;
+    op->defaults_kwdict = NULL;
+    op->defaults_getter = NULL;
+    op->func_annotations = NULL;
+    PyObject_GC_Track(op);
+    return (PyObject *) op;
+}
+static int
+__Pyx_CyFunction_clear(__pyx_CyFunctionObject *m)
+{
+    Py_CLEAR(m->func_closure);
+    Py_CLEAR(m->func.m_module);
+    Py_CLEAR(m->func_dict);
+    Py_CLEAR(m->func_name);
+    Py_CLEAR(m->func_qualname);
+    Py_CLEAR(m->func_doc);
+    Py_CLEAR(m->func_globals);
+    Py_CLEAR(m->func_code);
+    Py_CLEAR(m->func_classobj);
+    Py_CLEAR(m->defaults_tuple);
+    Py_CLEAR(m->defaults_kwdict);
+    Py_CLEAR(m->func_annotations);
+    if (m->defaults) {
+        PyObject **pydefaults = __Pyx_CyFunction_Defaults(PyObject *, m);
+        int i;
+        for (i = 0; i < m->defaults_pyobjects; i++)
+            Py_XDECREF(pydefaults[i]);
+        PyObject_Free(m->defaults);
+        m->defaults = NULL;
+    }
+    return 0;
+}
+static void __Pyx__CyFunction_dealloc(__pyx_CyFunctionObject *m)
+{
+    if (__Pyx_CyFunction_weakreflist(m) != NULL)
+        PyObject_ClearWeakRefs((PyObject *) m);
+    __Pyx_CyFunction_clear(m);
+    PyObject_GC_Del(m);
+}
+static void __Pyx_CyFunction_dealloc(__pyx_CyFunctionObject *m)
+{
+    PyObject_GC_UnTrack(m);
+    __Pyx__CyFunction_dealloc(m);
+}
+static int __Pyx_CyFunction_traverse(__pyx_CyFunctionObject *m, visitproc visit, void *arg)
+{
+    Py_VISIT(m->func_closure);
+    Py_VISIT(m->func.m_module);
+    Py_VISIT(m->func_dict);
+    Py_VISIT(m->func_name);
+    Py_VISIT(m->func_qualname);
+    Py_VISIT(m->func_doc);
+    Py_VISIT(m->func_globals);
+    Py_VISIT(m->func_code);
+    Py_VISIT(m->func_classobj);
+    Py_VISIT(m->defaults_tuple);
+    Py_VISIT(m->defaults_kwdict);
+    if (m->defaults) {
+        PyObject **pydefaults = __Pyx_CyFunction_Defaults(PyObject *, m);
+        int i;
+        for (i = 0; i < m->defaults_pyobjects; i++)
+            Py_VISIT(pydefaults[i]);
+    }
+    return 0;
+}
+static PyObject *__Pyx_CyFunction_descr_get(PyObject *func, PyObject *obj, PyObject *type)
+{
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    if (m->flags & __Pyx_CYFUNCTION_STATICMETHOD) {
+        Py_INCREF(func);
+        return func;
+    }
+    if (m->flags & __Pyx_CYFUNCTION_CLASSMETHOD) {
+        if (type == NULL)
+            type = (PyObject *)(Py_TYPE(obj));
+        return __Pyx_PyMethod_New(func, type, (PyObject *)(Py_TYPE(type)));
+    }
+    if (obj == Py_None)
+        obj = NULL;
+    return __Pyx_PyMethod_New(func, obj, type);
+}
+static PyObject*
+__Pyx_CyFunction_repr(__pyx_CyFunctionObject *op)
+{
+#if PY_MAJOR_VERSION >= 3
+    return PyUnicode_FromFormat("<cyfunction %U at %p>",
+                                op->func_qualname, (void *)op);
+#else
+    return PyString_FromFormat("<cyfunction %s at %p>",
+                               PyString_AsString(op->func_qualname), (void *)op);
+#endif
+}
+static PyObject * __Pyx_CyFunction_CallMethod(PyObject *func, PyObject *self, PyObject *arg, PyObject *kw) {
+    PyCFunctionObject* f = (PyCFunctionObject*)func;
+    PyCFunction meth = f->m_ml->ml_meth;
+    Py_ssize_t size;
+    switch (f->m_ml->ml_flags & (METH_VARARGS | METH_KEYWORDS | METH_NOARGS | METH_O)) {
+    case METH_VARARGS:
+        if (likely(kw == NULL || PyDict_Size(kw) == 0))
+            return (*meth)(self, arg);
+        break;
+    case METH_VARARGS | METH_KEYWORDS:
+        return (*(PyCFunctionWithKeywords)meth)(self, arg, kw);
+    case METH_NOARGS:
+        if (likely(kw == NULL || PyDict_Size(kw) == 0)) {
+            size = PyTuple_GET_SIZE(arg);
+            if (likely(size == 0))
+                return (*meth)(self, NULL);
+            PyErr_Format(PyExc_TypeError,
+                "%.200s() takes no arguments (%" CYTHON_FORMAT_SSIZE_T "d given)",
+                f->m_ml->ml_name, size);
+            return NULL;
+        }
+        break;
+    case METH_O:
+        if (likely(kw == NULL || PyDict_Size(kw) == 0)) {
+            size = PyTuple_GET_SIZE(arg);
+            if (likely(size == 1)) {
+                PyObject *result, *arg0;
+                #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+                arg0 = PyTuple_GET_ITEM(arg, 0);
+                #else
+                arg0 = PySequence_ITEM(arg, 0); if (unlikely(!arg0)) return NULL;
+                #endif
+                result = (*meth)(self, arg0);
+                #if !(CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS)
+                Py_DECREF(arg0);
+                #endif
+                return result;
+            }
+            PyErr_Format(PyExc_TypeError,
+                "%.200s() takes exactly one argument (%" CYTHON_FORMAT_SSIZE_T "d given)",
+                f->m_ml->ml_name, size);
+            return NULL;
+        }
+        break;
+    default:
+        PyErr_SetString(PyExc_SystemError, "Bad call flags in "
+                        "__Pyx_CyFunction_Call. METH_OLDARGS is no "
+                        "longer supported!");
+        return NULL;
+    }
+    PyErr_Format(PyExc_TypeError, "%.200s() takes no keyword arguments",
+                 f->m_ml->ml_name);
+    return NULL;
+}
+static CYTHON_INLINE PyObject *__Pyx_CyFunction_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    return __Pyx_CyFunction_CallMethod(func, ((PyCFunctionObject*)func)->m_self, arg, kw);
+}
+static PyObject *__Pyx_CyFunction_CallAsMethod(PyObject *func, PyObject *args, PyObject *kw) {
+    PyObject *result;
+    __pyx_CyFunctionObject *cyfunc = (__pyx_CyFunctionObject *) func;
+    if ((cyfunc->flags & __Pyx_CYFUNCTION_CCLASS) && !(cyfunc->flags & __Pyx_CYFUNCTION_STATICMETHOD)) {
+        Py_ssize_t argc;
+        PyObject *new_args;
+        PyObject *self;
+        argc = PyTuple_GET_SIZE(args);
+        new_args = PyTuple_GetSlice(args, 1, argc);
+        if (unlikely(!new_args))
+            return NULL;
+        self = PyTuple_GetItem(args, 0);
+        if (unlikely(!self)) {
+            Py_DECREF(new_args);
+            return NULL;
+        }
+        result = __Pyx_CyFunction_CallMethod(func, self, new_args, kw);
+        Py_DECREF(new_args);
+    } else {
+        result = __Pyx_CyFunction_Call(func, args, kw);
+    }
+    return result;
+}
+static PyTypeObject __pyx_CyFunctionType_type = {
+    PyVarObject_HEAD_INIT(0, 0)
+    "cython_function_or_method",
+    sizeof(__pyx_CyFunctionObject),
+    0,
+    (destructor) __Pyx_CyFunction_dealloc,
+    0,
+    0,
+    0,
+#if PY_MAJOR_VERSION < 3
+    0,
+#else
+    0,
+#endif
+    (reprfunc) __Pyx_CyFunction_repr,
+    0,
+    0,
+    0,
+    0,
+    __Pyx_CyFunction_CallAsMethod,
+    0,
+    0,
+    0,
+    0,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
+    0,
+    (traverseproc) __Pyx_CyFunction_traverse,
+    (inquiry) __Pyx_CyFunction_clear,
+    0,
+#if PY_VERSION_HEX < 0x030500A0
+    offsetof(__pyx_CyFunctionObject, func_weakreflist),
+#else
+    offsetof(PyCFunctionObject, m_weakreflist),
+#endif
+    0,
+    0,
+    __pyx_CyFunction_methods,
+    __pyx_CyFunction_members,
+    __pyx_CyFunction_getsets,
+    0,
+    0,
+    __Pyx_CyFunction_descr_get,
+    0,
+    offsetof(__pyx_CyFunctionObject, func_dict),
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+#if PY_VERSION_HEX >= 0x030400a1
+    0,
+#endif
+};
+static int __pyx_CyFunction_init(void) {
+    __pyx_CyFunctionType = __Pyx_FetchCommonType(&__pyx_CyFunctionType_type);
+    if (unlikely(__pyx_CyFunctionType == NULL)) {
+        return -1;
+    }
+    return 0;
+}
+static CYTHON_INLINE void *__Pyx_CyFunction_InitDefaults(PyObject *func, size_t size, int pyobjects) {
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    m->defaults = PyObject_Malloc(size);
+    if (unlikely(!m->defaults))
+        return PyErr_NoMemory();
+    memset(m->defaults, 0, size);
+    m->defaults_pyobjects = pyobjects;
+    return m->defaults;
+}
+static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsTuple(PyObject *func, PyObject *tuple) {
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    m->defaults_tuple = tuple;
+    Py_INCREF(tuple);
+}
+static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsKwDict(PyObject *func, PyObject *dict) {
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    m->defaults_kwdict = dict;
+    Py_INCREF(dict);
+}
+static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *func, PyObject *dict) {
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    m->func_annotations = dict;
+    Py_INCREF(dict);
+}
+
 /* CLineInTraceback */
-      #ifndef CYTHON_CLINE_IN_TRACEBACK
+        #ifndef CYTHON_CLINE_IN_TRACEBACK
 static int __Pyx_CLineForTraceback(CYTHON_UNUSED PyThreadState *tstate, int c_line) {
     PyObject *use_cline;
     PyObject *ptype, *pvalue, *ptraceback;
@@ -8403,7 +9765,7 @@ static int __Pyx_CLineForTraceback(CYTHON_UNUSED PyThreadState *tstate, int c_li
 #endif
 
 /* CodeObjectCache */
-      static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
+        static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
     int start = 0, mid = 0, end = count - 1;
     if (end >= 0 && code_line > entries[end].code_line) {
         return count;
@@ -8483,7 +9845,7 @@ static void __pyx_insert_code_object(int code_line, PyCodeObject* code_object) {
 }
 
 /* AddTraceback */
-      #include "compile.h"
+        #include "compile.h"
 #include "frameobject.h"
 #include "traceback.h"
 static PyCodeObject* __Pyx_CreateCodeObjectForTraceback(
@@ -8568,7 +9930,7 @@ bad:
 }
 
 /* CIntFromPyVerify */
-      #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+        #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
 #define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
@@ -8590,7 +9952,7 @@ bad:
     }
 
 /* CIntToPy */
-      static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
+        static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
     const long neg_one = (long) -1, const_zero = (long) 0;
     const int is_unsigned = neg_one > const_zero;
     if (is_unsigned) {
@@ -8621,7 +9983,7 @@ bad:
 }
 
 /* CIntFromPy */
-      static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
+        static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
     const long neg_one = (long) -1, const_zero = (long) 0;
     const int is_unsigned = neg_one > const_zero;
 #if PY_MAJOR_VERSION < 3
@@ -8810,7 +10172,7 @@ raise_neg_overflow:
 }
 
 /* CIntFromPy */
-      static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
+        static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
     const int neg_one = (int) -1, const_zero = (int) 0;
     const int is_unsigned = neg_one > const_zero;
 #if PY_MAJOR_VERSION < 3
@@ -8999,7 +10361,7 @@ raise_neg_overflow:
 }
 
 /* FastTypeChecks */
-      #if CYTHON_COMPILING_IN_CPYTHON
+        #if CYTHON_COMPILING_IN_CPYTHON
 static int __Pyx_InBases(PyTypeObject *a, PyTypeObject *b) {
     while (a) {
         a = a->tp_base;
@@ -9099,7 +10461,7 @@ static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObj
 #endif
 
 /* CheckBinaryVersion */
-      static int __Pyx_check_binary_version(void) {
+        static int __Pyx_check_binary_version(void) {
     char ctversion[4], rtversion[4];
     PyOS_snprintf(ctversion, 4, "%d.%d", PY_MAJOR_VERSION, PY_MINOR_VERSION);
     PyOS_snprintf(rtversion, 4, "%s", Py_GetVersion());
@@ -9115,7 +10477,7 @@ static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObj
 }
 
 /* InitStrings */
-      static int __Pyx_InitStrings(__Pyx_StringTabEntry *t) {
+        static int __Pyx_InitStrings(__Pyx_StringTabEntry *t) {
     while (t->p) {
         #if PY_MAJOR_VERSION < 3
         if (t->is_unicode) {

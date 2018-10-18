@@ -16,6 +16,6 @@ cdef class Player:
     cdef public double upper_value
     cdef public double lower_value
     cpdef update_player_proj(self, data)
-    cpdef update_player_dfs(self, data)
-    cpdef get_value(self)
+    cpdef update_player_dfs(self, data, site=*)
+    cpdef get_value(self, site)
     cpdef __deepcopy__(self, memo)

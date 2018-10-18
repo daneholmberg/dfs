@@ -15,22 +15,22 @@ cdef class Lineup:
         self.decrease_salary_remaining()
         self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}
         self.len_players = len(self.players)
-        for player in self.players:
-            self.remove_needed(player.position, player)
-        if new_player and self.create_new(new_player):
+        if not captain_mode:
+            for player in self.players:
+                self.remove_needed(player.position, player)
+        if new_player and self.create_new(new_player, captain_mode):
             self.add_player(player, captain_mode)
             self.len_players += 1
-
     
 
-    cpdef create_new(self, player):
+    cpdef create_new(self, player, captain_mode):
         sal_remain = self.salary_remaining - int(player.salary)
 
         if sal_remain < 0:
             return False
         if not hasattr(player, "position"):
             return False
-        if not self.remove_needed(player.position, player):
+        if not captain_mode and not self.remove_needed(player.position, player):
             return False
         return True
 
@@ -58,9 +58,9 @@ cdef class Lineup:
         if _copy is None:
             _copy = type(self)()
             memo[id_self] = _copy
-            memo[id_self].salary_remaining = self.salary_remaining + int(self.players[-1].salary)
-            memo[id_self].needed = self.get_needed_back()
-            memo[id_self].players = deepcopy(self.players)[0:-1]
+            memo[id_self].salary_remaining = deepcopy(self.salary_remaining)# + int(self.players[-1].salary)
+            #memo[id_self].needed = self.get_needed_back()
+            memo[id_self].players = deepcopy(self.players)#[0:-1]
 
         return _copy
 
@@ -95,9 +95,9 @@ cdef class Lineup:
         #if player.name == "Alex Smith" or player.name == "Julio Jones" or player.name == "Jordan Reed" or player.name == "Tevin Coleman"\
         #or player.name == "Jameis Winston" or player.name == "Ezekiel Elliot" or player.name in ["Antonio Brown", "Doug Baldwin"]:
             #return False
-        if player.name in ["Geronimo Allison", "Randall Cobb", "Trent Taylor"]:
-            return False
-        mult = 1.5 if captain_mode else 1
+        #if player.name in ["Geronimo Allison", "Randall Cobb", "Trent Taylor"]:
+        #    return False
+        mult = 1.5 if captain_mode and self.len_players == 0 else 1
         sal_remain = self.salary_remaining - (int(player.salary) * mult)
         
         if player.name == "Jay Ajayi":
@@ -117,7 +117,7 @@ cdef class Lineup:
             player_cpt.lower *= 1.5
             player_cpt.upper *= 1.5
 
-        self.salary_remaining = self.salary_remaining - float(player.salary)
+        self.salary_remaining = sal_remain
         if self.len_players == 0 and captain_mode:
             self.players.append(player_cpt)
         else:

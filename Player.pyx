@@ -38,26 +38,31 @@ cdef class Player:
             memo[id_self].name = self.name
             memo[id_self].team = self.team
             memo[id_self].position = self.position
+            memo[id_self].opposing_team = self.opposing_team
         return _copy
 
-    cpdef update_player_dfs(self, data):
+    cpdef update_player_dfs(self, data, site="DK"):
         # self.isFlex = "FLEX" in data['Roster Position']
         self.salary = float(data['Salary'])
-        match = re.match(r'(\w+)@(\w+)', data['Game Info'])
-        if data['TeamAbbrev'] == match.group(1):
-            self.opposing_team = match.group(2)
-        elif data['TeamAbbrev'] == match.group(2):
-            self.opposing_team = match.group(1)
+        if site == "DK":
+            match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+            if data['TeamAbbrev'] == match.group(1):
+                self.opposing_team = match.group(2)
+            elif data['TeamAbbrev'] == match.group(2):
+                self.opposing_team = match.group(1)
+        elif site == "yahoo":
+            self.opposing_team = data['Opponent']
+        
 
-
-    cpdef get_value(self):
+    cpdef get_value(self, site):
+        divi = 1000 if site == "DK" else 10
         try:
         # if hasattr(self, "salary") and hasattr(self, "median"):
-            self.median_value = float(self.median) / (float(self.salary)/1000)
+            self.median_value = float(self.median) / (float(self.salary)/divi)
         # if hasattr(self, "salary") and hasattr(self, "lower"):
-            self.lower_value = float(self.lower) / (float(self.salary)/1000)
+            self.lower_value = float(self.lower) / (float(self.salary)/divi)
         # if hasattr(self, "salary") and hasattr(self, "upper"):
-            self.upper_value = float(self.upper) / (float(self.salary)/1000)
+            self.upper_value = float(self.upper) / (float(self.salary)/divi)
         except:
             pass
     def __str__(self):
