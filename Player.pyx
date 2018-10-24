@@ -7,6 +7,7 @@ from copy import copy, deepcopy
 cdef class Player:
     def __init__(self, name, offset=1):
         self.name = name
+        self.is_captain = False
         # self.offset = offset
     
     cpdef update_player_proj(self, data):
@@ -52,7 +53,13 @@ cdef class Player:
                 self.opposing_team = match.group(1)
         elif site == "yahoo":
             self.opposing_team = data['Opponent']
-        
+    
+    cpdef make_cpt(self):
+        self.salary *= 1.5
+        self.upper *= 1.5
+        self.median *= 1.5
+        self.lower *= 1.5
+        self.is_captain = True
 
     cpdef get_value(self, site):
         divi = 1000 if site == "DK" else 10
@@ -69,6 +76,6 @@ cdef class Player:
         # return f"name: {self.name} " + ", ".join([a for a in dir(self) if "__" not in a])
         # return f"name: {self.name}"
         #return self.name
-        toRet = f"name: {self.name}, position: {self.position}, team: {self.team}, salary: {self.salary}, median: {self.median}, "
+        toRet = f"name: {self.name}, captain: {self.is_captain}, position: {self.position}, team: {self.team}, salary: {self.salary}, median: {self.median}, "
         toRet += f"value: {self.median_value}" if hasattr(self, "median_value") else ""
         return toRet

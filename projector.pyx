@@ -27,17 +27,20 @@ import array
 from libc.stdlib cimport malloc, free
 
 class Projector:
-    def __init__(self, dfs_data, projected_data, tpe="median"):
+    def __init__(self, dfs_data, projected_data, tpe="median", source="ffa"):
         cdef str proj_type
         cdef list lineups
         cdef dict players
 
+        self.starting_players = []
         self.proj_type = tpe
         self.lineups = []
         self.players = {}
+        self.desig_cpt = False
         #self.players_dict = {"QBs": [], "RBs": [], "WRs": [], "TEs": [], "Flexes": [], "DSTs": []}
         self.dfs_data = dfs_data
-        self.projected_data = projected_data
+        self.projected_data = self.normalize_data(projected_data, source)
+        
         
     # def build_players_dict(self):
     #     for player in self.players.values():
@@ -54,24 +57,46 @@ class Projector:
     #            self.players_dict['Flexes'].append(player)
     #        elif player.position == "DST":
     #            self.players_dict['DSTs'].append(player) 
+    def normalize_data(self, projected_data, source):
+        if source == "ffa":
+            return projected_data
+        elif source == "pff":
+            npd = []
+            for row in projected_data:
+                npd.append({})
+                plyer = npd[-1]
+                plyer['player'] = self.clean_name(row['Name'])
+                plyer['team'] = row['Team']
+                plyer['position'] = row['Pos'].upper()
+                plyer['points'] = row['Pts']
+                plyer['lower'] = row['Pts']
+                plyer['upper'] = row['Pts']
+                plyer['sdPts'] = "0"
+                plyer['dropoff'] = "0"
+                plyer['sdRank'] = "0"
+                plyer['risk'] = "0"
+            return npd
 
-    def build_projection_dict(self, removed_players, site="DK"):
+    def build_projection_dict(self, starting_players, removed_players, site="DK", lineup_type="normal", captain=None):
         for proj_row in self.projected_data:
             if proj_row['player'] in removed_players:
                 continue
-            unique_key = proj_row['player'] + proj_row['team'] + proj_row['position']
+            if lineup_type == "normal":
+                team = proj_row['team']
+            else:
+                team = ""
+            unique_key = proj_row['player'] + team + proj_row['position']
             if unique_key not in self.players:
                 self.players[unique_key] = Player.Player(proj_row['player'])
-
             self.players[unique_key].update_player_proj(proj_row)
-        
+
         if site == "DK":
-            self.get_draft_kings_data(removed_players)
+            self.get_draft_kings_data(starting_players, removed_players, lineup_type, captain)
         elif site == "yahoo":
-            self.get_yahoo_data(removed_players)
+            self.get_yahoo_data(starting_players, removed_players, captain)
 
     
-    def get_draft_kings_data(self, removed_players):
+    def get_draft_kings_data(self, starting_players, removed_players, lineup_type, captain):
         for dfs_row in self.dfs_data:
             if "Roster Position" in dfs_row and dfs_row['Roster Position'] == "CPT":
                 continue
@@ -79,12 +104,23 @@ class Projector:
                 continue
             dfs_row['Name'] = self.clean_name(dfs_row['Name'])
             dfs_row['TeamAbbrev'] = self.clean_abbr(dfs_row['TeamAbbrev'])
-            unique_key_dfs = dfs_row['Name'] + dfs_row['TeamAbbrev'] + dfs_row['Position']
+            if lineup_type == "normal":
+                team = dfs_row['TeamAbbrev']
+            else:
+                team = ""
+            unique_key_dfs = dfs_row['Name'] + team + dfs_row['Position']
             if unique_key_dfs not in self.players:
                 self.players[unique_key_dfs] = Player.Player(dfs_row['Name'])
             self.players[unique_key_dfs].update_player_dfs(dfs_row)
+            if self.players[unique_key_dfs].name == captain:
+                self.desig_cpt = True
+                self.players[unique_key_dfs].make_cpt()
+                self.starting_players.append(self.players[unique_key_dfs])
+            elif self.players[unique_key_dfs].name in starting_players:
+                self.starting_players.append(self.players[unique_key_dfs])
 
-    def get_yahoo_data(self, removed_players):
+
+    def get_yahoo_data(self, starting_players, removed_players, captain):
         for dfs_row in self.dfs_data:
             if dfs_row['Position'] != "DEF":
                 name = f"{dfs_row['First Name']} {dfs_row['Last Name']}"
@@ -99,6 +135,13 @@ class Projector:
             if unique_key_dfs not in self.players:
                 self.players[unique_key_dfs] = Player.Player(name)
             self.players[unique_key_dfs].update_player_dfs(dfs_row, "yahoo")
+            if self.players[unique_key_dfs].name == captain:
+                self.desig_cpt = True
+                self.players[unique_key_dfs].make_cpt()
+                self.starting_players.append(self.players[unique_key_dfs])
+            elif self.players[unique_key_dfs].name in starting_players:
+                self.starting_players.append(self.players[unique_key_dfs])
+
 
     def clean_name(self, name):
         name = name.replace(" III", "")
@@ -108,6 +151,9 @@ class Projector:
         name = name.replace("TJ ", "T.J. ")
         name = name.replace("O'Shaughnessy", "OShaughnessy")
         name = name.replace("De'Anthony Thomas", "DeAnthony Thomas")
+        name = name.replace("Odell Beckham Jr.", "Odell Beckham")
+        name = name.replace(" DST", "")
+        
         
         if name == "Le'Veon Bell":
             name = "LeVeon Bell"
@@ -117,7 +163,7 @@ class Projector:
         abbr = abbr.replace("JAX", "JAC")
         return abbr
 
-    def purge_players(self, write, site):
+    def purge_players(self, write, site, lineup_type):
         toRemove = []
         for key, player in self.players.items():
             if not player.salary:
@@ -127,12 +173,12 @@ class Projector:
 
         for key in toRemove:
             self.players.pop(key)
-        self.order_players_by_value(write, site)
+        self.order_players_by_value(write, site, lineup_type)
 
         # self.sorted_players = sorted(self.players.values(), key=lambda player: player.median_value)
         # self.build_players_dict()
 
-    def order_players_by_value(self, write, site):
+    def order_players_by_value(self, write, site, lineup_type):
         if self.proj_type == "ceil":
             self.players = sorted(self.players.values(), key=lambda player: player.upper_value, reverse=True)
         elif self.proj_type == "median":
@@ -140,14 +186,16 @@ class Projector:
         else:
             self.players = sorted(self.players.values(), key=lambda player: player.lower_value, reverse=True)
         if write:
-            self.write_player_csv(site)
+            self.write_player_csv(site, lineup_type)
         #self.reduce_players(6, 10, 14, 7, 5) 
-        #self.reduce_players(6, 8, 12, 6, 5) # 70
-        #self.reduce_players(6, 8, 12, 7, 5) # 70
-        self.reduce_players(5, 7, 9, 5, 5) # 6-7
+        #self.reduce_players(6, 12, 15, 7, 5) # 2 players already
+        #self.reduce_players(5, 9, 12, 5, 5) # 75
+        #self.reduce_players(9, 7, 9, 5, 5) # 6-7
+
+        #self.reduce_players(9, 12, 15, 7, 5) # 51 college
         print(f"Len players: {len(self.players)}")
-        for player in self.players:
-            print(player)
+
+
         # self.reduce_players(4, 17, 14, 9, 12)7 8 12 5 5
 
         # self.players = sorted(self.players, key=lambda player: player.upper, reverse=True)
@@ -194,14 +242,14 @@ class Projector:
     def append_lineup(self, lineup):
         self.lineups.append(lineup)
 
-    def init_numpy(self, r):
-        cdef int[:] np_arr = np.ones(r, dtype=np.intc)
-        cdef int i
-        for i in range(r):
-            np_arr[i] = i
-        return np_arr
+    #def init_numpy(self, r):
+    #    cdef int[:] np_arr = np.ones(r, dtype=np.intc)
+    #    cdef int i
+    #    for i in range(r):
+    #        np_arr[i] = i
+    #    return np_arr
 
-    def lineups_iter(self, int r, cpt=False, starting_players=[], site="DK"):
+    def lineups_iter(self, int r, cpt=False, site="DK", lineup_type="normal"):
         if site == "DK":
             s_cap = 50000
         elif site == "yahoo":
@@ -219,18 +267,40 @@ class Projector:
         #indices = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
         pool = tuple(self.players)
+        starters = deepcopy(self.starting_players)
         n = len(pool)
         if r > n:
             return
 
-        lineup = Lineup.Lineup(starting_players, s_cap, captain_mode=cpt)
+        if cpt and not self.desig_cpt:
+            starters = [pool[0]]
+        lineup = Lineup.Lineup(starters, s_cap, captain_mode=cpt, lineup_type=lineup_type)
 
+        
+        #if cpt and not self.desig_cpt:
+        #    remaining = n
+        #    starters.append(None)
+        #else:
+        #    remaining = 1
+
+        cdef int len_starters = len(starters)
         cdef int i
         cdef int j
         cdef int k
+        cdef int cpt_int = 0
         cdef bint incur
 
-        for i in range(r):
+        # Loop is to make sure we try everyone as a cpt
+        #for cp in range(remaining):
+        #    if cpt and not self.desig_cpt:
+        #        cpt_copy = deepcopy(pool[cp])
+        #        cpt_copy.make_cpt()
+                
+        #        starters = [cpt_copy]
+        #    print(f"starters: {starters}")
+        #    lineup = Lineup.Lineup(starters, s_cap, captain_mode=cpt, lineup_type=lineup_type)
+        #    print(f"lineup: {lineup}")
+        for i in range(len_starters,r):
             added = lineup.add_player(self.players[i], cpt)
             if not added:
                 incur = False
@@ -244,14 +314,34 @@ class Projector:
             incur = True
             yield lineup
         while True:
-            for i in reversed(range(r)):
+            for i in reversed(range(len_starters,r)):
                 if indices[i] < i + n - r:
                     break
             else:
+                if cpt and not self.desig_cpt and cpt_int < n:
+                    print(cpt_int)
+                    indices = self.reset_inds_cpt(cpt_int, r)
+                    print(indices)
+                    lineup = Lineup.Lineup([self.players[cpt_int]], s_cap, captain_mode=cpt, lineup_type=lineup_type)
+                    cpt_int += 1
+                    for i in range(len_starters,r):
+                        added = lineup.add_player(self.players[i], cpt)
+                        if not added:
+                            incur = False
+
+                            indices[i] = indices[i] + 1
+
+                            for j in range(i+1, r):
+                                indices[j] = indices[j-1] + 1
+                            break
+                    else:
+                        incur = True
+                        yield lineup
+                    continue
                 return
 
             if i < lineup.len_players:
-                lineup = Lineup.Lineup(lineup.players[0:i], captain_mode=cpt)
+                lineup = Lineup.Lineup(lineup.players[0:i], captain_mode=cpt, lineup_type=lineup_type)
             if incur:
                 indices[i] += 1
                 for j in range(i+1, r):
@@ -269,14 +359,24 @@ class Projector:
                         if added:
                             continue
                     elif indices[k] > k + n - r:
-                         incur = True
+                        incur = True
                     break
             else:
                 for j in range(i+1, r):
-                     indices[j] = indices[j-1] + 1
+                    indices[j] = indices[j-1] + 1
                 incur = True
                 yield lineup
 
+    def reset_inds_cpt(self, i, length):
+        new_inds = [i]
+        for j in range(length):
+            if len(new_inds) == length:
+                break
+            if j == i:
+                continue
+            else:
+                new_inds.append(j)
+        return new_inds
 
     def sort_linesup(self, limit=50):
         if self.proj_type == "floor":
@@ -285,10 +385,13 @@ class Projector:
             self.lineups = sorted(self.lineups, key=lambda lineup: lineup.points_ceil, reverse=True)[0:limit]
         else:
             self.lineups = sorted(self.lineups, key=lambda lineup: lineup.points_avg, reverse=True)[0:limit]
+
         count = 0
 
 
-    def write_player_csv(self, site):
+    def write_player_csv(self, site, lineup_type):
+        if lineup_type == "normal":
+            lineup_type = ""
         players = []
         for player in self.players:
             players.append({})
@@ -308,11 +411,11 @@ class Projector:
             players[-1]['sdRank'] = player.sdRank
             players[-1]['risk'] = player.risk
 
-        write_csv(f"player_values_{site}.csv", PLAYER_COLUMNS, players)
+        write_csv(f"player_values_{site}_{lineup_type}.csv", PLAYER_COLUMNS, players)
 
 
 
-    def write_linesups_csv(self, tpe, site):
+    def write_linesups_csv(self, tpe, site, lineup_type):
         # print("here", len(self.li))
         rows = []
         for i, lineup in enumerate(self.lineups):
@@ -340,8 +443,10 @@ class Projector:
                 rows[-1] = {**rows[-1], **row_lineup}
                 # print(rows[-1])
             rows.append({})
-
-        write_csv(f"linesups_{site}_{tpe}.csv", LINEUP_COLUMNS, rows)
+        if lineup_type == "normal":
+            lineup_type = ""
+        
+        write_csv(f"linesups_{site}_{tpe}_{lineup_type}.csv", LINEUP_COLUMNS, rows)
 
 
     # def build_lineups_recur(self, player, lineup=Lineup()):

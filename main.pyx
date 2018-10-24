@@ -12,11 +12,14 @@ def parse_args():
     parser.add_argument("projected_data")
     parser.add_argument("type", nargs='?', default="median")
     parser.add_argument("-cpt", action="store_true")
+    parser.add_argument("-cp", "--captain", default=None)
     parser.add_argument("-r", "--remove_players", default=[])
     parser.add_argument("-s", "--starting", default=[])
     parser.add_argument("-sc", "--starting_cpt", default=None)
     parser.add_argument("-ste", "--site", default="DK")
     parser.add_argument("-w", action="store_true")
+    parser.add_argument("-l", "--lineup_type", default="normal")
+    parser.add_argument("-ps", "--proj_source", default="ffa")
 
     return parser.parse_args()
 
@@ -36,23 +39,35 @@ def main(args=None):
     dfs_data = csv.DictReader(open(args.dfs_data))
     projected_data = csv.DictReader(open(args.projected_data))
 
-    Projector = dfs.projector.Projector(dfs_data, projected_data, args.type)
-    Projector.build_projection_dict(remove_players, args.site)
+    Projector = dfs.projector.Projector(dfs_data, projected_data, args.type, args.proj_source)
+    Projector.build_projection_dict(starting_players, remove_players, args.site, args.lineup_type, args.captain)
     # Projector.build_dsf_dict()
 
     if args.cpt:
         iter_times = 6
+    elif args.lineup_type == "college":
+        iter_times = 8
     else:
         iter_times = 9
 
     Projector.add_values(args.site)
-    Projector.purge_players(args.w, args.site)
+    Projector.purge_players(args.w, args.site, args.lineup_type)
     count = 0
     before = time.time()
     length = 26950000
 
-    
-    for lineup in Projector.lineups_iter(iter_times, args.cpt, args.starting, args.site):
+    if args.cpt and not args.captain:
+        remaining = len(Projector.players)
+    else:
+        remaining = 1
+
+    #for cp in range(remaining):
+    #if args.cpt and not args.captain:
+
+    #    Projector.starting_players = Projector.starting_players[0:len(args.starting)]
+    #    Projector.starting_players.append(Projector.players[cp])
+    iterator = Projector.lineups_iter(iter_times, args.cpt, args.site, args.lineup_type)
+    for lineup in iterator:
         lineup.add_points()
         in_it = False
         #for player in lineup.players:
@@ -70,7 +85,7 @@ def main(args=None):
     
     
 
-    Projector.write_linesups_csv(args.type, args.site)
+    Projector.write_linesups_csv(args.type, args.site, args.lineup_type)
     print(time.time() - before)
 
     #dfs_data = csv.DictReader(open(args.dfs_data))

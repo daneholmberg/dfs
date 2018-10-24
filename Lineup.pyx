@@ -5,23 +5,33 @@ cimport Player
 from copy import copy, deepcopy
 
 cdef class Lineup:
-    def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False):
-        if players:
-            self.players = players
-        else:
-            self.players = players
+    def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal"):
+        self.players = []
         self.cap = cap
         self.salary_remaining = cap
-        self.decrease_salary_remaining()
-        self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}
-        self.len_players = len(self.players)
+        #self.decrease_salary_remaining()
+        self.lineup_type = lineup_type
+        self.set_needed()
+        self.len_players = len(players)
+        self.players_dict = {}
+        for player in players:
+            self.players_dict[player.name] = True
+        #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
+        for player in players:
+            self.add_player(player, captain_mode)
+            self.len_players += 1
         if not captain_mode:
             for player in self.players:
                 self.remove_needed(player.position, player)
-        if new_player and self.create_new(new_player, captain_mode):
-            self.add_player(player, captain_mode)
-            self.len_players += 1
+        #if new_player and self.create_new(new_player, captain_mode):
+        #    self.add_player(player, captain_mode)
+        #    self.len_players += 1
     
+    cpdef set_needed(self):
+        if self.lineup_type == "normal":
+            self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}
+        else:
+            self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "S-FLEX": 1}
 
     cpdef create_new(self, player, captain_mode):
         sal_remain = self.salary_remaining - int(player.salary)
@@ -97,18 +107,25 @@ cdef class Lineup:
             #return False
         #if player.name in ["Geronimo Allison", "Randall Cobb", "Trent Taylor"]:
         #    return False
+        
         mult = 1.5 if captain_mode and self.len_players == 0 else 1
         sal_remain = self.salary_remaining - (int(player.salary) * mult)
         
-        if player.name == "Jay Ajayi":
-            return False
         if sal_remain < 0:
             return False
         if not player.position:
             return False
         if not captain_mode and not self.remove_needed(player.position, player):
             return False
+
+        if player.name in self.players_dict:
+            return False
         #if player.position == "DST" and captain_mode:
+        #    return False
+
+        #if player.name in self.required_players:
+        #    self.required_players[player.name] = True
+        #if self.len_players == 8 and not self.check_required():
         #    return False
         if self.len_players == 0 and captain_mode:
             player_cpt = deepcopy(player)
@@ -116,15 +133,23 @@ cdef class Lineup:
             player_cpt.median *= 1.5
             player_cpt.lower *= 1.5
             player_cpt.upper *= 1.5
-
+        
         self.salary_remaining = sal_remain
         if self.len_players == 0 and captain_mode:
             self.players.append(player_cpt)
+            self.players_dict[player_cpt.name] = True
         else:
             self.players.append(player)
+            self.players_dict[player.name] = True
         self.len_players += 1
         return True
     
+    #cdef check_required(self):
+    #    for val in self.required_players.values():
+    #        if not val:
+    #            return False
+    #    return True
+
     cpdef decrease_salary_remaining(self):
         for player in self.players:
             self.salary_remaining = self.salary_remaining - float(player.salary)
@@ -167,36 +192,64 @@ cdef class Lineup:
         return plays
 
     cpdef remove_needed(self, pos, player):
-        if pos == "QB":
-            if self.needed['QB'] == 0:
-                return False
-            self.needed['QB'] = self.needed['QB'] - 1
-        elif pos == "RB":
-            if self.needed['RB'] == 0:
-                if self.needed['FLEX'] == 0:
+        if self.lineup_type =="normal":
+            if pos == "QB":
+                if self.needed['QB'] == 0:
                     return False
-                self.needed['FLEX'] = self.needed['FLEX'] - 1
-                player.flex = "True"
-            else:
-                self.needed['RB'] = self.needed['RB'] - 1
-        elif pos == "WR":
-            if self.needed['WR'] == 0:
-                if self.needed['FLEX'] == 0:
+                self.needed['QB'] = self.needed['QB'] - 1
+            elif pos == "RB":
+                if self.needed['RB'] == 0:
+                    if self.needed['FLEX'] == 0:
+                        return False
+                    self.needed['FLEX'] = self.needed['FLEX'] - 1
+                    player.flex = "True"
+                else:
+                    self.needed['RB'] = self.needed['RB'] - 1
+            elif pos == "WR":
+                if self.needed['WR'] == 0:
+                    if self.needed['FLEX'] == 0:
+                        return False
+                    self.needed['FLEX'] = self.needed['FLEX'] - 1
+                    player.flex = "True"
+                else:
+                    self.needed['WR'] = self.needed['WR'] - 1
+            elif pos == "TE":
+                if self.needed['TE'] == 0:
+                    if self.needed['FLEX'] == 0:
+                        return False
+                    self.needed['FLEX'] = self.needed['FLEX'] - 1
+                    player.flex = "True"
+                else:
+                    self.needed['TE'] = self.needed['TE'] - 1
+            elif pos == "DST":
+                if self.needed['DST'] == 0:
                     return False
-                self.needed['FLEX'] = self.needed['FLEX'] - 1
-                player.flex = "True"
-            else:
-                self.needed['WR'] = self.needed['WR'] - 1
-        elif pos == "TE":
-            if self.needed['TE'] == 0:
-                if self.needed['FLEX'] == 0:
+                self.needed['DST'] = self.needed['DST'] - 1
+            return True
+        else:
+            if pos == "QB":
+                if self.needed['QB'] > 0:
+                    self.needed['QB'] = self.needed['QB'] - 1
+                elif self.needed['S-FLEX'] > 0:
+                    self.needed['S-FLEX'] -= 1
+                else:
                     return False
-                self.needed['FLEX'] = self.needed['FLEX'] - 1
-                player.flex = "True"
-            else:
-                self.needed['TE'] = self.needed['TE'] - 1
-        elif pos == "DST":
-            if self.needed['DST'] == 0:
-                return False
-            self.needed['DST'] = self.needed['DST'] - 1
-        return True
+            elif pos == "RB":
+                if self.needed['RB'] > 0:
+                    self.needed['RB'] = self.needed['RB'] - 1
+                elif self.needed['FLEX'] > 0:
+                    self.needed['FLEX'] = self.needed['FLEX'] - 1
+                elif self.needed['S-FLEX'] > 0:
+                    self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1
+                else:
+                    return False
+            elif pos == "WR":
+                if self.needed['WR'] > 0:
+                    self.needed['WR'] = self.needed['WR'] - 1
+                elif self.needed['FLEX'] > 0:
+                    self.needed['FLEX'] = self.needed['FLEX'] - 1
+                elif self.needed['S-FLEX'] > 0:
+                    self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1
+                else:
+                    return False
+            return True
