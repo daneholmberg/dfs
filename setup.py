@@ -24,4 +24,4 @@ directive_defaults['linetrace'] = True
 directive_defaults['binding'] = True
 
 setup(name=".",
-      ext_modules=cythonize(ext_modules, annotate=True))
+      ext_modules=cythonize(ext_modules, annotate=True, gdb_debug=True))

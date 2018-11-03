@@ -850,9 +850,11 @@ struct __pyx_obj_3dfs_6Lineup_Lineup {
   double points_floor;
   double points_ceil;
   double points_avg;
+  PyObject *stack;
   PyObject *players_dict;
   PyObject *required_players;
   PyObject *lineup_type;
+  int has_cpt;
 };
 
 
@@ -877,7 +879,7 @@ static struct __pyx_vtabstruct_3dfs_6Player_Player *__pyx_vtabptr_3dfs_6Player_P
  * from copy import copy, deepcopy
  * 
  * cdef class Lineup:             # <<<<<<<<<<<<<<
- *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal"):
+ *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal", has_cpt=False):
  *         self.players = []
  */
 
@@ -1569,11 +1571,21 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
+/* Print.proto */
+static int __Pyx_Print(PyObject*, PyObject *, int);
+#if CYTHON_COMPILING_IN_PYPY || PY_MAJOR_VERSION >= 3
+static PyObject* __pyx_print = 0;
+static PyObject* __pyx_print_kwargs = 0;
+#endif
+
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
+
+/* PrintOne.proto */
+static int __Pyx_PrintOne(PyObject* stream, PyObject *o);
 
 /* FastTypeChecks.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
@@ -1636,11 +1648,13 @@ static const char __pyx_k_QB[] = "QB";
 static const char __pyx_k_RB[] = "RB";
 static const char __pyx_k_TE[] = "TE";
 static const char __pyx_k_WR[] = "WR";
+static const char __pyx_k__2[] = "";
 static const char __pyx_k_id[] = "id";
 static const char __pyx_k_DST[] = "DST";
-static const char __pyx_k__11[] = "\n";
-static const char __pyx_k__12[] = " ";
+static const char __pyx_k__12[] = "\n";
+static const char __pyx_k__13[] = " ";
 static const char __pyx_k_cap[] = "cap";
+static const char __pyx_k_end[] = "end";
 static const char __pyx_k_get[] = "get";
 static const char __pyx_k_new[] = "__new__";
 static const char __pyx_k_pos[] = "pos";
@@ -1649,6 +1663,7 @@ static const char __pyx_k_True[] = "True";
 static const char __pyx_k_copy[] = "copy";
 static const char __pyx_k_dict[] = "__dict__";
 static const char __pyx_k_diff[] = "diff";
+static const char __pyx_k_file[] = "file";
 static const char __pyx_k_flex[] = "flex";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_memo[] = "memo";
@@ -1656,6 +1671,7 @@ static const char __pyx_k_name[] = "name";
 static const char __pyx_k_self[] = "self";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_lower[] = "lower";
+static const char __pyx_k_print[] = "print";
 static const char __pyx_k_state[] = "state";
 static const char __pyx_k_upper[] = "upper";
 static const char __pyx_k_S_FLEX[] = "S-FLEX";
@@ -1671,6 +1687,7 @@ static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_salary[] = "salary";
 static const char __pyx_k_update[] = "update";
 static const char __pyx_k_Players[] = "\nPlayers: ";
+static const char __pyx_k_has_cpt[] = "has_cpt";
 static const char __pyx_k_id_self[] = "id_self";
 static const char __pyx_k_players[] = "players";
 static const char __pyx_k_deepcopy[] = "deepcopy";
@@ -1678,7 +1695,6 @@ static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_position[] = "position";
 static const char __pyx_k_pyx_type[] = "__pyx_type";
 static const char __pyx_k_setstate[] = "__setstate__";
-static const char __pyx_k_Jay_Ajayi[] = "Jay Ajayi";
 static const char __pyx_k_enumerate[] = "enumerate";
 static const char __pyx_k_pyx_state[] = "__pyx_state";
 static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
@@ -1689,6 +1705,7 @@ static const char __pyx_k_add_points[] = "add_points";
 static const char __pyx_k_create_new[] = "create_new";
 static const char __pyx_k_deepcopy_2[] = "__deepcopy__";
 static const char __pyx_k_dfs_Lineup[] = "dfs.Lineup";
+static const char __pyx_k_is_captain[] = "is_captain";
 static const char __pyx_k_new_player[] = "new_player";
 static const char __pyx_k_pyx_result[] = "__pyx_result";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
@@ -1702,6 +1719,7 @@ static const char __pyx_k_stringsource[] = "stringsource";
 static const char __pyx_k_use_setstate[] = "use_setstate";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
 static const char __pyx_k_remove_needed[] = "remove_needed";
+static const char __pyx_k_Deshaun_Watson[] = "Deshaun Watson";
 static const char __pyx_k_get_new_salary[] = "get_new_salary";
 static const char __pyx_k_get_needed_back[] = "get_needed_back";
 static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
@@ -1722,12 +1740,12 @@ static const char __pyx_k_Lineup___reduce_cython[] = "Lineup.__reduce_cython__";
 static const char __pyx_k_Lineup_get_needed_back[] = "Lineup.get_needed_back";
 static const char __pyx_k_Lineup___setstate_cython[] = "Lineup.__setstate_cython__";
 static const char __pyx_k_decrease_salary_remaining[] = "decrease_salary_remaining";
-static const char __pyx_k_Incompatible_checksums_s_vs_0x28[] = "Incompatible checksums (%s vs 0x28658dd = (cap, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining))";
+static const char __pyx_k_Incompatible_checksums_s_vs_0xb5[] = "Incompatible checksums (%s vs 0xb56a029 = (cap, has_cpt, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining, stack))";
 static const char __pyx_k_Lineup_decrease_salary_remaining[] = "Lineup.decrease_salary_remaining";
 static PyObject *__pyx_n_s_DST;
+static PyObject *__pyx_kp_s_Deshaun_Watson;
 static PyObject *__pyx_n_s_FLEX;
-static PyObject *__pyx_kp_s_Incompatible_checksums_s_vs_0x28;
-static PyObject *__pyx_kp_s_Jay_Ajayi;
+static PyObject *__pyx_kp_s_Incompatible_checksums_s_vs_0xb5;
 static PyObject *__pyx_n_s_Lineup___deepcopy;
 static PyObject *__pyx_n_s_Lineup___reduce_cython;
 static PyObject *__pyx_n_s_Lineup___setstate_cython;
@@ -1751,8 +1769,9 @@ static PyObject *__pyx_kp_u_Salary_remaining;
 static PyObject *__pyx_n_s_TE;
 static PyObject *__pyx_n_s_True;
 static PyObject *__pyx_n_s_WR;
-static PyObject *__pyx_kp_u__11;
 static PyObject *__pyx_kp_u__12;
+static PyObject *__pyx_kp_u__13;
+static PyObject *__pyx_kp_s__2;
 static PyObject *__pyx_n_s_add_player;
 static PyObject *__pyx_n_s_add_points;
 static PyObject *__pyx_n_s_cap;
@@ -1768,15 +1787,19 @@ static PyObject *__pyx_n_s_dfs_Lineup;
 static PyObject *__pyx_n_s_dict;
 static PyObject *__pyx_n_s_dict_2;
 static PyObject *__pyx_n_s_diff;
+static PyObject *__pyx_n_s_end;
 static PyObject *__pyx_n_s_enumerate;
+static PyObject *__pyx_n_s_file;
 static PyObject *__pyx_n_s_flex;
 static PyObject *__pyx_n_s_get;
 static PyObject *__pyx_n_s_get_needed_back;
 static PyObject *__pyx_n_s_get_new_salary;
 static PyObject *__pyx_n_s_getstate;
+static PyObject *__pyx_n_s_has_cpt;
 static PyObject *__pyx_n_s_id;
 static PyObject *__pyx_n_s_id_self;
 static PyObject *__pyx_n_s_import;
+static PyObject *__pyx_n_s_is_captain;
 static PyObject *__pyx_n_s_lineup_type;
 static PyObject *__pyx_n_s_lower;
 static PyObject *__pyx_n_s_main;
@@ -1793,6 +1816,7 @@ static PyObject *__pyx_n_s_player;
 static PyObject *__pyx_n_s_players;
 static PyObject *__pyx_n_s_pos;
 static PyObject *__pyx_n_s_position;
+static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_pyx_PickleError;
 static PyObject *__pyx_n_s_pyx_checksum;
 static PyObject *__pyx_n_s_pyx_result;
@@ -1816,7 +1840,7 @@ static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_update;
 static PyObject *__pyx_n_s_upper;
 static PyObject *__pyx_n_s_use_setstate;
-static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v_players, int __pyx_v_cap, CYTHON_UNUSED PyObject *__pyx_v_new_player, int __pyx_v_captain_mode, PyObject *__pyx_v_lineup_type); /* proto */
+static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v_players, int __pyx_v_cap, CYTHON_UNUSED PyObject *__pyx_v_new_player, int __pyx_v_captain_mode, PyObject *__pyx_v_lineup_type, PyObject *__pyx_v_has_cpt); /* proto */
 static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_2set_needed(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_4create_new(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v_player, PyObject *__pyx_v_captain_mode); /* proto */
 static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_6add_points(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self); /* proto */
@@ -1841,6 +1865,9 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_11points_ceil___get__(struct __py
 static int __pyx_pf_3dfs_6Lineup_6Lineup_11points_ceil_2__set__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10points_avg___get__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self); /* proto */
 static int __pyx_pf_3dfs_6Lineup_6Lineup_10points_avg_2__set__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_5stack___get__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self); /* proto */
+static int __pyx_pf_3dfs_6Lineup_6Lineup_5stack_2__set__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static int __pyx_pf_3dfs_6Lineup_6Lineup_5stack_4__del__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_24__reduce_cython__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_26__setstate_cython__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_3dfs_6Lineup___pyx_unpickle_Lineup(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
@@ -1850,9 +1877,8 @@ static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_int_2;
 static PyObject *__pyx_int_3;
-static PyObject *__pyx_int_42359005;
+static PyObject *__pyx_int_190226473;
 static PyObject *__pyx_k_;
-static PyObject *__pyx_tuple__17;
 static PyObject *__pyx_tuple__18;
 static PyObject *__pyx_tuple__19;
 static PyObject *__pyx_tuple__20;
@@ -1865,7 +1891,7 @@ static PyObject *__pyx_tuple__26;
 static PyObject *__pyx_tuple__27;
 static PyObject *__pyx_tuple__28;
 static PyObject *__pyx_tuple__29;
-static PyObject *__pyx_codeobj__2;
+static PyObject *__pyx_tuple__30;
 static PyObject *__pyx_codeobj__3;
 static PyObject *__pyx_codeobj__4;
 static PyObject *__pyx_codeobj__5;
@@ -1874,16 +1900,17 @@ static PyObject *__pyx_codeobj__7;
 static PyObject *__pyx_codeobj__8;
 static PyObject *__pyx_codeobj__9;
 static PyObject *__pyx_codeobj__10;
-static PyObject *__pyx_codeobj__13;
+static PyObject *__pyx_codeobj__11;
 static PyObject *__pyx_codeobj__14;
 static PyObject *__pyx_codeobj__15;
 static PyObject *__pyx_codeobj__16;
+static PyObject *__pyx_codeobj__17;
 /* Late includes */
 
 /* "dfs/Lineup.pyx":8
  * 
  * cdef class Lineup:
- *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal"):             # <<<<<<<<<<<<<<
+ *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal", has_cpt=False):             # <<<<<<<<<<<<<<
  *         self.players = []
  *         self.cap = cap
  */
@@ -1896,19 +1923,23 @@ static int __pyx_pw_3dfs_6Lineup_6Lineup_1__init__(PyObject *__pyx_v_self, PyObj
   CYTHON_UNUSED PyObject *__pyx_v_new_player = 0;
   int __pyx_v_captain_mode;
   PyObject *__pyx_v_lineup_type = 0;
+  PyObject *__pyx_v_has_cpt = 0;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_players,&__pyx_n_s_cap,&__pyx_n_s_new_player,&__pyx_n_s_captain_mode,&__pyx_n_s_lineup_type,0};
-    PyObject* values[5] = {0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_players,&__pyx_n_s_cap,&__pyx_n_s_new_player,&__pyx_n_s_captain_mode,&__pyx_n_s_lineup_type,&__pyx_n_s_has_cpt,0};
+    PyObject* values[6] = {0,0,0,0,0,0};
     values[0] = __pyx_k_;
     values[2] = ((PyObject *)Py_None);
     values[4] = ((PyObject *)__pyx_n_s_normal);
+    values[5] = ((PyObject *)Py_False);
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  6: values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+        CYTHON_FALLTHROUGH;
         case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
         CYTHON_FALLTHROUGH;
         case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
@@ -1953,12 +1984,20 @@ static int __pyx_pw_3dfs_6Lineup_6Lineup_1__init__(PyObject *__pyx_v_self, PyObj
           PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_lineup_type);
           if (value) { values[4] = value; kw_args--; }
         }
+        CYTHON_FALLTHROUGH;
+        case  5:
+        if (kw_args > 0) {
+          PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_has_cpt);
+          if (value) { values[5] = value; kw_args--; }
+        }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 8, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
+        case  6: values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+        CYTHON_FALLTHROUGH;
         case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
         CYTHON_FALLTHROUGH;
         case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
@@ -1986,39 +2025,41 @@ static int __pyx_pw_3dfs_6Lineup_6Lineup_1__init__(PyObject *__pyx_v_self, PyObj
       __pyx_v_captain_mode = ((int)0);
     }
     __pyx_v_lineup_type = values[4];
+    __pyx_v_has_cpt = values[5];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 0, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 8, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 0, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 8, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("dfs.Lineup.Lineup.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_3dfs_6Lineup_6Lineup___init__(((struct __pyx_obj_3dfs_6Lineup_Lineup *)__pyx_v_self), __pyx_v_players, __pyx_v_cap, __pyx_v_new_player, __pyx_v_captain_mode, __pyx_v_lineup_type);
+  __pyx_r = __pyx_pf_3dfs_6Lineup_6Lineup___init__(((struct __pyx_obj_3dfs_6Lineup_Lineup *)__pyx_v_self), __pyx_v_players, __pyx_v_cap, __pyx_v_new_player, __pyx_v_captain_mode, __pyx_v_lineup_type, __pyx_v_has_cpt);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v_players, int __pyx_v_cap, CYTHON_UNUSED PyObject *__pyx_v_new_player, int __pyx_v_captain_mode, PyObject *__pyx_v_lineup_type) {
+static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v_players, int __pyx_v_cap, CYTHON_UNUSED PyObject *__pyx_v_new_player, int __pyx_v_captain_mode, PyObject *__pyx_v_lineup_type, PyObject *__pyx_v_has_cpt) {
   PyObject *__pyx_v_player = NULL;
+  CYTHON_UNUSED PyObject *__pyx_v_added = NULL;
   int __pyx_r;
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  Py_ssize_t __pyx_t_2;
-  PyObject *(*__pyx_t_3)(PyObject *);
-  PyObject *__pyx_t_4 = NULL;
+  int __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  PyObject *(*__pyx_t_4)(PyObject *);
   PyObject *__pyx_t_5 = NULL;
-  int __pyx_t_6;
+  PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("__init__", 0);
   __Pyx_TraceCall("__init__", __pyx_f[0], 8, 0, __PYX_ERR(0, 8, __pyx_L1_error));
 
   /* "dfs/Lineup.pyx":9
  * cdef class Lineup:
- *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal"):
+ *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal", has_cpt=False):
  *         self.players = []             # <<<<<<<<<<<<<<
  *         self.cap = cap
  *         self.salary_remaining = cap
@@ -2033,11 +2074,11 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_
   __pyx_t_1 = 0;
 
   /* "dfs/Lineup.pyx":10
- *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal"):
+ *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal", has_cpt=False):
  *         self.players = []
  *         self.cap = cap             # <<<<<<<<<<<<<<
  *         self.salary_remaining = cap
- *         #self.decrease_salary_remaining()
+ *         #self.decrease_salary_remaining() #
  */
   __Pyx_TraceLine(10,0,__PYX_ERR(0, 10, __pyx_L1_error))
   __pyx_v_self->cap = __pyx_v_cap;
@@ -2046,7 +2087,7 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_
  *         self.players = []
  *         self.cap = cap
  *         self.salary_remaining = cap             # <<<<<<<<<<<<<<
- *         #self.decrease_salary_remaining()
+ *         #self.decrease_salary_remaining() #
  *         self.lineup_type = lineup_type
  */
   __Pyx_TraceLine(11,0,__PYX_ERR(0, 11, __pyx_L1_error))
@@ -2054,10 +2095,10 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_
 
   /* "dfs/Lineup.pyx":13
  *         self.salary_remaining = cap
- *         #self.decrease_salary_remaining()
+ *         #self.decrease_salary_remaining() #
  *         self.lineup_type = lineup_type             # <<<<<<<<<<<<<<
  *         self.set_needed()
- *         self.len_players = len(players)
+ *         self.len_players = 0 # len players
  */
   __Pyx_TraceLine(13,0,__PYX_ERR(0, 13, __pyx_L1_error))
   if (!(likely(PyString_CheckExact(__pyx_v_lineup_type))||((__pyx_v_lineup_type) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_v_lineup_type)->tp_name), 0))) __PYX_ERR(0, 13, __pyx_L1_error)
@@ -2070,10 +2111,10 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_
   __pyx_t_1 = 0;
 
   /* "dfs/Lineup.pyx":14
- *         #self.decrease_salary_remaining()
+ *         #self.decrease_salary_remaining() #
  *         self.lineup_type = lineup_type
  *         self.set_needed()             # <<<<<<<<<<<<<<
- *         self.len_players = len(players)
+ *         self.len_players = 0 # len players
  *         self.players_dict = {}
  */
   __Pyx_TraceLine(14,0,__PYX_ERR(0, 14, __pyx_L1_error))
@@ -2084,20 +2125,19 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_
   /* "dfs/Lineup.pyx":15
  *         self.lineup_type = lineup_type
  *         self.set_needed()
- *         self.len_players = len(players)             # <<<<<<<<<<<<<<
+ *         self.len_players = 0 # len players             # <<<<<<<<<<<<<<
  *         self.players_dict = {}
- *         for player in players:
+ *         self.has_cpt = has_cpt
  */
   __Pyx_TraceLine(15,0,__PYX_ERR(0, 15, __pyx_L1_error))
-  __pyx_t_2 = PyObject_Length(__pyx_v_players); if (unlikely(__pyx_t_2 == ((Py_ssize_t)-1))) __PYX_ERR(0, 15, __pyx_L1_error)
-  __pyx_v_self->len_players = __pyx_t_2;
+  __pyx_v_self->len_players = 0;
 
   /* "dfs/Lineup.pyx":16
  *         self.set_needed()
- *         self.len_players = len(players)
+ *         self.len_players = 0 # len players
  *         self.players_dict = {}             # <<<<<<<<<<<<<<
- *         for player in players:
- *             self.players_dict[player.name] = True
+ *         self.has_cpt = has_cpt
+ *         self.stack = ""
  */
   __Pyx_TraceLine(16,0,__PYX_ERR(0, 16, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
@@ -2109,243 +2149,111 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_
   __pyx_t_1 = 0;
 
   /* "dfs/Lineup.pyx":17
- *         self.len_players = len(players)
+ *         self.len_players = 0 # len players
  *         self.players_dict = {}
- *         for player in players:             # <<<<<<<<<<<<<<
- *             self.players_dict[player.name] = True
- *         #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
+ *         self.has_cpt = has_cpt             # <<<<<<<<<<<<<<
+ *         self.stack = ""
+ *         #for player in players: #
  */
   __Pyx_TraceLine(17,0,__PYX_ERR(0, 17, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_v_has_cpt); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_v_self->has_cpt = __pyx_t_2;
+
+  /* "dfs/Lineup.pyx":18
+ *         self.players_dict = {}
+ *         self.has_cpt = has_cpt
+ *         self.stack = ""             # <<<<<<<<<<<<<<
+ *         #for player in players: #
+ *         #    self.players_dict[player.name] = True #
+ */
+  __Pyx_TraceLine(18,0,__PYX_ERR(0, 18, __pyx_L1_error))
+  __Pyx_INCREF(__pyx_kp_s__2);
+  __Pyx_GIVEREF(__pyx_kp_s__2);
+  __Pyx_GOTREF(__pyx_v_self->stack);
+  __Pyx_DECREF(__pyx_v_self->stack);
+  __pyx_v_self->stack = __pyx_kp_s__2;
+
+  /* "dfs/Lineup.pyx":22
+ *         #    self.players_dict[player.name] = True #
+ *         #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
+ *         for player in players:             # <<<<<<<<<<<<<<
+ *             added = self.add_player(player, captain_mode)
+ *             #if not added:
+ */
+  __Pyx_TraceLine(22,0,__PYX_ERR(0, 22, __pyx_L1_error))
   if (likely(PyList_CheckExact(__pyx_v_players)) || PyTuple_CheckExact(__pyx_v_players)) {
-    __pyx_t_1 = __pyx_v_players; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
-    __pyx_t_3 = NULL;
+    __pyx_t_1 = __pyx_v_players; __Pyx_INCREF(__pyx_t_1); __pyx_t_3 = 0;
+    __pyx_t_4 = NULL;
   } else {
-    __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_players); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
+    __pyx_t_3 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_players); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 17, __pyx_L1_error)
+    __pyx_t_4 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 22, __pyx_L1_error)
   }
   for (;;) {
-    if (likely(!__pyx_t_3)) {
+    if (likely(!__pyx_t_4)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
-        if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_1)) break;
+        if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 17, __pyx_L1_error)
+        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 22, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 17, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 22, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
         #endif
       } else {
-        if (__pyx_t_2 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
+        if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 17, __pyx_L1_error)
+        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 22, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 17, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 22, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
         #endif
       }
     } else {
-      __pyx_t_4 = __pyx_t_3(__pyx_t_1);
-      if (unlikely(!__pyx_t_4)) {
+      __pyx_t_5 = __pyx_t_4(__pyx_t_1);
+      if (unlikely(!__pyx_t_5)) {
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 17, __pyx_L1_error)
+          else __PYX_ERR(0, 22, __pyx_L1_error)
         }
         break;
       }
-      __Pyx_GOTREF(__pyx_t_4);
-    }
-    __Pyx_XDECREF_SET(__pyx_v_player, __pyx_t_4);
-    __pyx_t_4 = 0;
-
-    /* "dfs/Lineup.pyx":18
- *         self.players_dict = {}
- *         for player in players:
- *             self.players_dict[player.name] = True             # <<<<<<<<<<<<<<
- *         #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
- *         for player in players:
- */
-    __Pyx_TraceLine(18,0,__PYX_ERR(0, 18, __pyx_L1_error))
-    if (unlikely(__pyx_v_self->players_dict == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 18, __pyx_L1_error)
-    }
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_name); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 18, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    if (unlikely(PyDict_SetItem(__pyx_v_self->players_dict, __pyx_t_4, Py_True) < 0)) __PYX_ERR(0, 18, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-
-    /* "dfs/Lineup.pyx":17
- *         self.len_players = len(players)
- *         self.players_dict = {}
- *         for player in players:             # <<<<<<<<<<<<<<
- *             self.players_dict[player.name] = True
- *         #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
- */
-    __Pyx_TraceLine(17,0,__PYX_ERR(0, 17, __pyx_L1_error))
-  }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "dfs/Lineup.pyx":20
- *             self.players_dict[player.name] = True
- *         #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
- *         for player in players:             # <<<<<<<<<<<<<<
- *             self.add_player(player, captain_mode)
- *             self.len_players += 1
- */
-  __Pyx_TraceLine(20,0,__PYX_ERR(0, 20, __pyx_L1_error))
-  if (likely(PyList_CheckExact(__pyx_v_players)) || PyTuple_CheckExact(__pyx_v_players)) {
-    __pyx_t_1 = __pyx_v_players; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
-    __pyx_t_3 = NULL;
-  } else {
-    __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_players); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 20, __pyx_L1_error)
-  }
-  for (;;) {
-    if (likely(!__pyx_t_3)) {
-      if (likely(PyList_CheckExact(__pyx_t_1))) {
-        if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_1)) break;
-        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 20, __pyx_L1_error)
-        #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 20, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        #endif
-      } else {
-        if (__pyx_t_2 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
-        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 20, __pyx_L1_error)
-        #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 20, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_4);
-        #endif
-      }
-    } else {
-      __pyx_t_4 = __pyx_t_3(__pyx_t_1);
-      if (unlikely(!__pyx_t_4)) {
-        PyObject* exc_type = PyErr_Occurred();
-        if (exc_type) {
-          if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 20, __pyx_L1_error)
-        }
-        break;
-      }
-      __Pyx_GOTREF(__pyx_t_4);
-    }
-    __Pyx_XDECREF_SET(__pyx_v_player, __pyx_t_4);
-    __pyx_t_4 = 0;
-
-    /* "dfs/Lineup.pyx":21
- *         #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
- *         for player in players:
- *             self.add_player(player, captain_mode)             # <<<<<<<<<<<<<<
- *             self.len_players += 1
- *         if not captain_mode:
- */
-    __Pyx_TraceLine(21,0,__PYX_ERR(0, 21, __pyx_L1_error))
-    __pyx_t_4 = __Pyx_PyBool_FromLong(__pyx_v_captain_mode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 21, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = ((struct __pyx_vtabstruct_3dfs_6Lineup_Lineup *)__pyx_v_self->__pyx_vtab)->add_player(__pyx_v_self, __pyx_v_player, __pyx_t_4, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 21, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-
-    /* "dfs/Lineup.pyx":22
- *         for player in players:
- *             self.add_player(player, captain_mode)
- *             self.len_players += 1             # <<<<<<<<<<<<<<
- *         if not captain_mode:
- *             for player in self.players:
- */
-    __Pyx_TraceLine(22,0,__PYX_ERR(0, 22, __pyx_L1_error))
-    __pyx_v_self->len_players = (__pyx_v_self->len_players + 1);
-
-    /* "dfs/Lineup.pyx":20
- *             self.players_dict[player.name] = True
- *         #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
- *         for player in players:             # <<<<<<<<<<<<<<
- *             self.add_player(player, captain_mode)
- *             self.len_players += 1
- */
-    __Pyx_TraceLine(20,0,__PYX_ERR(0, 20, __pyx_L1_error))
-  }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "dfs/Lineup.pyx":23
- *             self.add_player(player, captain_mode)
- *             self.len_players += 1
- *         if not captain_mode:             # <<<<<<<<<<<<<<
- *             for player in self.players:
- *                 self.remove_needed(player.position, player)
- */
-  __Pyx_TraceLine(23,0,__PYX_ERR(0, 23, __pyx_L1_error))
-  __pyx_t_6 = ((!(__pyx_v_captain_mode != 0)) != 0);
-  if (__pyx_t_6) {
-
-    /* "dfs/Lineup.pyx":24
- *             self.len_players += 1
- *         if not captain_mode:
- *             for player in self.players:             # <<<<<<<<<<<<<<
- *                 self.remove_needed(player.position, player)
- *         #if new_player and self.create_new(new_player, captain_mode):
- */
-    __Pyx_TraceLine(24,0,__PYX_ERR(0, 24, __pyx_L1_error))
-    if (unlikely(__pyx_v_self->players == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-      __PYX_ERR(0, 24, __pyx_L1_error)
-    }
-    __pyx_t_1 = __pyx_v_self->players; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
-    for (;;) {
-      if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_1)) break;
-      #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-      __pyx_t_5 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_5); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 24, __pyx_L1_error)
-      #else
-      __pyx_t_5 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 24, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      #endif
-      __Pyx_XDECREF_SET(__pyx_v_player, __pyx_t_5);
-      __pyx_t_5 = 0;
-
-      /* "dfs/Lineup.pyx":25
- *         if not captain_mode:
- *             for player in self.players:
- *                 self.remove_needed(player.position, player)             # <<<<<<<<<<<<<<
- *         #if new_player and self.create_new(new_player, captain_mode):
- *         #    self.add_player(player, captain_mode)
- */
-      __Pyx_TraceLine(25,0,__PYX_ERR(0, 25, __pyx_L1_error))
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 25, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_4 = ((struct __pyx_vtabstruct_3dfs_6Lineup_Lineup *)__pyx_v_self->__pyx_vtab)->remove_needed(__pyx_v_self, __pyx_t_5, __pyx_v_player, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 25, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-
-      /* "dfs/Lineup.pyx":24
- *             self.len_players += 1
- *         if not captain_mode:
- *             for player in self.players:             # <<<<<<<<<<<<<<
- *                 self.remove_needed(player.position, player)
- *         #if new_player and self.create_new(new_player, captain_mode):
- */
-      __Pyx_TraceLine(24,0,__PYX_ERR(0, 24, __pyx_L1_error))
     }
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_player, __pyx_t_5);
+    __pyx_t_5 = 0;
 
     /* "dfs/Lineup.pyx":23
- *             self.add_player(player, captain_mode)
- *             self.len_players += 1
- *         if not captain_mode:             # <<<<<<<<<<<<<<
- *             for player in self.players:
- *                 self.remove_needed(player.position, player)
+ *         #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
+ *         for player in players:
+ *             added = self.add_player(player, captain_mode)             # <<<<<<<<<<<<<<
+ *             #if not added:
+ *                 #print()
  */
+    __Pyx_TraceLine(23,0,__PYX_ERR(0, 23, __pyx_L1_error))
+    __pyx_t_5 = __Pyx_PyBool_FromLong(__pyx_v_captain_mode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = ((struct __pyx_vtabstruct_3dfs_6Lineup_Lineup *)__pyx_v_self->__pyx_vtab)->add_player(__pyx_v_self, __pyx_v_player, __pyx_t_5, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_added, __pyx_t_6);
+    __pyx_t_6 = 0;
+
+    /* "dfs/Lineup.pyx":22
+ *         #    self.players_dict[player.name] = True #
+ *         #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
+ *         for player in players:             # <<<<<<<<<<<<<<
+ *             added = self.add_player(player, captain_mode)
+ *             #if not added:
+ */
+    __Pyx_TraceLine(22,0,__PYX_ERR(0, 22, __pyx_L1_error))
   }
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "dfs/Lineup.pyx":8
  * 
  * cdef class Lineup:
- *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal"):             # <<<<<<<<<<<<<<
+ *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal", has_cpt=False):             # <<<<<<<<<<<<<<
  *         self.players = []
  *         self.cap = cap
  */
@@ -2355,19 +2263,20 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup___init__(struct __pyx_obj_3dfs_6Lineup_
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
   __Pyx_AddTraceback("dfs.Lineup.Lineup.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_player);
+  __Pyx_XDECREF(__pyx_v_added);
   __Pyx_TraceReturn(Py_None, 0);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":30
- *         #    self.len_players += 1
+/* "dfs/Lineup.pyx":38
+ *         #print(self)
  * 
  *     cpdef set_needed(self):             # <<<<<<<<<<<<<<
  *         if self.lineup_type == "normal":
@@ -2385,14 +2294,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_set_needed(struct __pyx_obj_3dfs_6
   PyObject *__pyx_t_4 = NULL;
   int __pyx_t_5;
   int __pyx_t_6;
-  __Pyx_TraceFrameInit(__pyx_codeobj__2)
+  __Pyx_TraceFrameInit(__pyx_codeobj__3)
   __Pyx_RefNannySetupContext("set_needed", 0);
-  __Pyx_TraceCall("set_needed", __pyx_f[0], 30, 0, __PYX_ERR(0, 30, __pyx_L1_error));
+  __Pyx_TraceCall("set_needed", __pyx_f[0], 38, 0, __PYX_ERR(0, 38, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_needed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_needed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_3set_needed)) {
       __Pyx_XDECREF(__pyx_r);
@@ -2408,10 +2317,10 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_set_needed(struct __pyx_obj_3dfs_6
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 30, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 30, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -2423,41 +2332,41 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_set_needed(struct __pyx_obj_3dfs_6
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Lineup.pyx":31
+  /* "dfs/Lineup.pyx":39
  * 
  *     cpdef set_needed(self):
  *         if self.lineup_type == "normal":             # <<<<<<<<<<<<<<
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}
  *         else:
  */
-  __Pyx_TraceLine(31,0,__PYX_ERR(0, 31, __pyx_L1_error))
-  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_self->lineup_type, __pyx_n_s_normal, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 31, __pyx_L1_error)
+  __Pyx_TraceLine(39,0,__PYX_ERR(0, 39, __pyx_L1_error))
+  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_self->lineup_type, __pyx_n_s_normal, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 39, __pyx_L1_error)
   __pyx_t_6 = (__pyx_t_5 != 0);
   if (__pyx_t_6) {
 
-    /* "dfs/Lineup.pyx":32
+    /* "dfs/Lineup.pyx":40
  *     cpdef set_needed(self):
  *         if self.lineup_type == "normal":
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}             # <<<<<<<<<<<<<<
  *         else:
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "S-FLEX": 1}
  */
-    __Pyx_TraceLine(32,0,__PYX_ERR(0, 32, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_PyDict_NewPresized(6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+    __Pyx_TraceLine(40,0,__PYX_ERR(0, 40, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_PyDict_NewPresized(6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_QB, __pyx_int_1) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_RB, __pyx_int_2) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_WR, __pyx_int_3) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_FLEX, __pyx_int_1) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_TE, __pyx_int_1) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_DST, __pyx_int_1) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_QB, __pyx_int_1) < 0) __PYX_ERR(0, 40, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_RB, __pyx_int_2) < 0) __PYX_ERR(0, 40, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_WR, __pyx_int_3) < 0) __PYX_ERR(0, 40, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_FLEX, __pyx_int_1) < 0) __PYX_ERR(0, 40, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_TE, __pyx_int_1) < 0) __PYX_ERR(0, 40, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_DST, __pyx_int_1) < 0) __PYX_ERR(0, 40, __pyx_L1_error)
     __Pyx_GIVEREF(__pyx_t_1);
     __Pyx_GOTREF(__pyx_v_self->needed);
     __Pyx_DECREF(__pyx_v_self->needed);
     __pyx_v_self->needed = ((PyObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "dfs/Lineup.pyx":31
+    /* "dfs/Lineup.pyx":39
  * 
  *     cpdef set_needed(self):
  *         if self.lineup_type == "normal":             # <<<<<<<<<<<<<<
@@ -2467,22 +2376,22 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_set_needed(struct __pyx_obj_3dfs_6
     goto __pyx_L3;
   }
 
-  /* "dfs/Lineup.pyx":34
+  /* "dfs/Lineup.pyx":42
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}
  *         else:
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "S-FLEX": 1}             # <<<<<<<<<<<<<<
  * 
  *     cpdef create_new(self, player, captain_mode):
  */
-  __Pyx_TraceLine(34,0,__PYX_ERR(0, 34, __pyx_L1_error))
+  __Pyx_TraceLine(42,0,__PYX_ERR(0, 42, __pyx_L1_error))
   /*else*/ {
-    __pyx_t_1 = __Pyx_PyDict_NewPresized(5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyDict_NewPresized(5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_QB, __pyx_int_1) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_RB, __pyx_int_2) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_WR, __pyx_int_3) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_FLEX, __pyx_int_1) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
-    if (PyDict_SetItem(__pyx_t_1, __pyx_kp_s_S_FLEX, __pyx_int_1) < 0) __PYX_ERR(0, 34, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_QB, __pyx_int_1) < 0) __PYX_ERR(0, 42, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_RB, __pyx_int_2) < 0) __PYX_ERR(0, 42, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_WR, __pyx_int_3) < 0) __PYX_ERR(0, 42, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_FLEX, __pyx_int_1) < 0) __PYX_ERR(0, 42, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_1, __pyx_kp_s_S_FLEX, __pyx_int_1) < 0) __PYX_ERR(0, 42, __pyx_L1_error)
     __Pyx_GIVEREF(__pyx_t_1);
     __Pyx_GOTREF(__pyx_v_self->needed);
     __Pyx_DECREF(__pyx_v_self->needed);
@@ -2491,8 +2400,8 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_set_needed(struct __pyx_obj_3dfs_6
   }
   __pyx_L3:;
 
-  /* "dfs/Lineup.pyx":30
- *         #    self.len_players += 1
+  /* "dfs/Lineup.pyx":38
+ *         #print(self)
  * 
  *     cpdef set_needed(self):             # <<<<<<<<<<<<<<
  *         if self.lineup_type == "normal":
@@ -2535,11 +2444,11 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_2set_needed(struct __pyx_obj_3dfs
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__2)
+  __Pyx_TraceFrameInit(__pyx_codeobj__3)
   __Pyx_RefNannySetupContext("set_needed", 0);
-  __Pyx_TraceCall("set_needed (wrapper)", __pyx_f[0], 30, 0, __PYX_ERR(0, 30, __pyx_L1_error));
+  __Pyx_TraceCall("set_needed (wrapper)", __pyx_f[0], 38, 0, __PYX_ERR(0, 38, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_set_needed(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_set_needed(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2557,7 +2466,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_2set_needed(struct __pyx_obj_3dfs
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":36
+/* "dfs/Lineup.pyx":44
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "S-FLEX": 1}
  * 
  *     cpdef create_new(self, player, captain_mode):             # <<<<<<<<<<<<<<
@@ -2580,14 +2489,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_create_new(struct __pyx_obj_3dfs_6
   int __pyx_t_7;
   int __pyx_t_8;
   int __pyx_t_9;
-  __Pyx_TraceFrameInit(__pyx_codeobj__3)
+  __Pyx_TraceFrameInit(__pyx_codeobj__4)
   __Pyx_RefNannySetupContext("create_new", 0);
-  __Pyx_TraceCall("create_new", __pyx_f[0], 36, 0, __PYX_ERR(0, 36, __pyx_L1_error));
+  __Pyx_TraceCall("create_new", __pyx_f[0], 44, 0, __PYX_ERR(0, 44, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_create_new); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_create_new); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 44, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_5create_new)) {
       __Pyx_XDECREF(__pyx_r);
@@ -2607,7 +2516,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_create_new(struct __pyx_obj_3dfs_6
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_3)) {
         PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_player, __pyx_v_captain_mode};
-        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
@@ -2615,13 +2524,13 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_create_new(struct __pyx_obj_3dfs_6
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
         PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_player, __pyx_v_captain_mode};
-        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
       #endif
       {
-        __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 36, __pyx_L1_error)
+        __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 44, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         if (__pyx_t_4) {
           __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -2632,7 +2541,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_create_new(struct __pyx_obj_3dfs_6
         __Pyx_INCREF(__pyx_v_captain_mode);
         __Pyx_GIVEREF(__pyx_v_captain_mode);
         PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_5, __pyx_v_captain_mode);
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       }
@@ -2645,55 +2554,55 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_create_new(struct __pyx_obj_3dfs_6
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Lineup.pyx":37
+  /* "dfs/Lineup.pyx":45
  * 
  *     cpdef create_new(self, player, captain_mode):
  *         sal_remain = self.salary_remaining - int(player.salary)             # <<<<<<<<<<<<<<
  * 
  *         if sal_remain < 0:
  */
-  __Pyx_TraceLine(37,0,__PYX_ERR(0, 37, __pyx_L1_error))
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_TraceLine(45,0,__PYX_ERR(0, 45, __pyx_L1_error))
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_salary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_salary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyNumber_Int(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyNumber_Int(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyNumber_Subtract(__pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_Subtract(__pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_sal_remain = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "dfs/Lineup.pyx":39
+  /* "dfs/Lineup.pyx":47
  *         sal_remain = self.salary_remaining - int(player.salary)
  * 
  *         if sal_remain < 0:             # <<<<<<<<<<<<<<
  *             return False
  *         if not hasattr(player, "position"):
  */
-  __Pyx_TraceLine(39,0,__PYX_ERR(0, 39, __pyx_L1_error))
-  __pyx_t_2 = PyObject_RichCompare(__pyx_v_sal_remain, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
-  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __Pyx_TraceLine(47,0,__PYX_ERR(0, 47, __pyx_L1_error))
+  __pyx_t_2 = PyObject_RichCompare(__pyx_v_sal_remain, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 47, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_7) {
 
-    /* "dfs/Lineup.pyx":40
+    /* "dfs/Lineup.pyx":48
  * 
  *         if sal_remain < 0:
  *             return False             # <<<<<<<<<<<<<<
  *         if not hasattr(player, "position"):
  *             return False
  */
-    __Pyx_TraceLine(40,0,__PYX_ERR(0, 40, __pyx_L1_error))
+    __Pyx_TraceLine(48,0,__PYX_ERR(0, 48, __pyx_L1_error))
     __Pyx_XDECREF(__pyx_r);
     __Pyx_INCREF(Py_False);
     __pyx_r = Py_False;
     goto __pyx_L0;
 
-    /* "dfs/Lineup.pyx":39
+    /* "dfs/Lineup.pyx":47
  *         sal_remain = self.salary_remaining - int(player.salary)
  * 
  *         if sal_remain < 0:             # <<<<<<<<<<<<<<
@@ -2702,32 +2611,32 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_create_new(struct __pyx_obj_3dfs_6
  */
   }
 
-  /* "dfs/Lineup.pyx":41
+  /* "dfs/Lineup.pyx":49
  *         if sal_remain < 0:
  *             return False
  *         if not hasattr(player, "position"):             # <<<<<<<<<<<<<<
  *             return False
  *         if not captain_mode and not self.remove_needed(player.position, player):
  */
-  __Pyx_TraceLine(41,0,__PYX_ERR(0, 41, __pyx_L1_error))
-  __pyx_t_7 = __Pyx_HasAttr(__pyx_v_player, __pyx_n_s_position); if (unlikely(__pyx_t_7 == ((int)-1))) __PYX_ERR(0, 41, __pyx_L1_error)
+  __Pyx_TraceLine(49,0,__PYX_ERR(0, 49, __pyx_L1_error))
+  __pyx_t_7 = __Pyx_HasAttr(__pyx_v_player, __pyx_n_s_position); if (unlikely(__pyx_t_7 == ((int)-1))) __PYX_ERR(0, 49, __pyx_L1_error)
   __pyx_t_8 = ((!(__pyx_t_7 != 0)) != 0);
   if (__pyx_t_8) {
 
-    /* "dfs/Lineup.pyx":42
+    /* "dfs/Lineup.pyx":50
  *             return False
  *         if not hasattr(player, "position"):
  *             return False             # <<<<<<<<<<<<<<
  *         if not captain_mode and not self.remove_needed(player.position, player):
  *             return False
  */
-    __Pyx_TraceLine(42,0,__PYX_ERR(0, 42, __pyx_L1_error))
+    __Pyx_TraceLine(50,0,__PYX_ERR(0, 50, __pyx_L1_error))
     __Pyx_XDECREF(__pyx_r);
     __Pyx_INCREF(Py_False);
     __pyx_r = Py_False;
     goto __pyx_L0;
 
-    /* "dfs/Lineup.pyx":41
+    /* "dfs/Lineup.pyx":49
  *         if sal_remain < 0:
  *             return False
  *         if not hasattr(player, "position"):             # <<<<<<<<<<<<<<
@@ -2736,47 +2645,47 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_create_new(struct __pyx_obj_3dfs_6
  */
   }
 
-  /* "dfs/Lineup.pyx":43
+  /* "dfs/Lineup.pyx":51
  *         if not hasattr(player, "position"):
  *             return False
  *         if not captain_mode and not self.remove_needed(player.position, player):             # <<<<<<<<<<<<<<
  *             return False
  *         return True
  */
-  __Pyx_TraceLine(43,0,__PYX_ERR(0, 43, __pyx_L1_error))
-  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __Pyx_TraceLine(51,0,__PYX_ERR(0, 51, __pyx_L1_error))
+  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 51, __pyx_L1_error)
   __pyx_t_9 = ((!__pyx_t_7) != 0);
   if (__pyx_t_9) {
   } else {
     __pyx_t_8 = __pyx_t_9;
     goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = ((struct __pyx_vtabstruct_3dfs_6Lineup_Lineup *)__pyx_v_self->__pyx_vtab)->remove_needed(__pyx_v_self, __pyx_t_2, __pyx_v_player, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_t_3 = ((struct __pyx_vtabstruct_3dfs_6Lineup_Lineup *)__pyx_v_self->__pyx_vtab)->remove_needed(__pyx_v_self, __pyx_t_2, __pyx_v_player, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_7 = ((!__pyx_t_9) != 0);
   __pyx_t_8 = __pyx_t_7;
   __pyx_L6_bool_binop_done:;
   if (__pyx_t_8) {
 
-    /* "dfs/Lineup.pyx":44
+    /* "dfs/Lineup.pyx":52
  *             return False
  *         if not captain_mode and not self.remove_needed(player.position, player):
  *             return False             # <<<<<<<<<<<<<<
  *         return True
  * 
  */
-    __Pyx_TraceLine(44,0,__PYX_ERR(0, 44, __pyx_L1_error))
+    __Pyx_TraceLine(52,0,__PYX_ERR(0, 52, __pyx_L1_error))
     __Pyx_XDECREF(__pyx_r);
     __Pyx_INCREF(Py_False);
     __pyx_r = Py_False;
     goto __pyx_L0;
 
-    /* "dfs/Lineup.pyx":43
+    /* "dfs/Lineup.pyx":51
  *         if not hasattr(player, "position"):
  *             return False
  *         if not captain_mode and not self.remove_needed(player.position, player):             # <<<<<<<<<<<<<<
@@ -2785,20 +2694,20 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_create_new(struct __pyx_obj_3dfs_6
  */
   }
 
-  /* "dfs/Lineup.pyx":45
+  /* "dfs/Lineup.pyx":53
  *         if not captain_mode and not self.remove_needed(player.position, player):
  *             return False
  *         return True             # <<<<<<<<<<<<<<
  * 
  *     cpdef add_points(self):
  */
-  __Pyx_TraceLine(45,0,__PYX_ERR(0, 45, __pyx_L1_error))
+  __Pyx_TraceLine(53,0,__PYX_ERR(0, 53, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(Py_True);
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "dfs/Lineup.pyx":36
+  /* "dfs/Lineup.pyx":44
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "S-FLEX": 1}
  * 
  *     cpdef create_new(self, player, captain_mode):             # <<<<<<<<<<<<<<
@@ -2855,11 +2764,11 @@ static PyObject *__pyx_pw_3dfs_6Lineup_6Lineup_5create_new(PyObject *__pyx_v_sel
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_captain_mode)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("create_new", 1, 2, 2, 1); __PYX_ERR(0, 36, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("create_new", 1, 2, 2, 1); __PYX_ERR(0, 44, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "create_new") < 0)) __PYX_ERR(0, 36, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "create_new") < 0)) __PYX_ERR(0, 44, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -2872,7 +2781,7 @@ static PyObject *__pyx_pw_3dfs_6Lineup_6Lineup_5create_new(PyObject *__pyx_v_sel
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("create_new", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 36, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("create_new", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 44, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("dfs.Lineup.Lineup.create_new", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2890,11 +2799,11 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_4create_new(struct __pyx_obj_3dfs
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__3)
+  __Pyx_TraceFrameInit(__pyx_codeobj__4)
   __Pyx_RefNannySetupContext("create_new", 0);
-  __Pyx_TraceCall("create_new (wrapper)", __pyx_f[0], 36, 0, __PYX_ERR(0, 36, __pyx_L1_error));
+  __Pyx_TraceCall("create_new (wrapper)", __pyx_f[0], 44, 0, __PYX_ERR(0, 44, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_create_new(__pyx_v_self, __pyx_v_player, __pyx_v_captain_mode, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_create_new(__pyx_v_self, __pyx_v_player, __pyx_v_captain_mode, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2912,7 +2821,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_4create_new(struct __pyx_obj_3dfs
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":47
+/* "dfs/Lineup.pyx":55
  *         return True
  * 
  *     cpdef add_points(self):             # <<<<<<<<<<<<<<
@@ -2932,14 +2841,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_points(struct __pyx_obj_3dfs_6
   PyObject *__pyx_t_4 = NULL;
   Py_ssize_t __pyx_t_5;
   double __pyx_t_6;
-  __Pyx_TraceFrameInit(__pyx_codeobj__4)
+  __Pyx_TraceFrameInit(__pyx_codeobj__5)
   __Pyx_RefNannySetupContext("add_points", 0);
-  __Pyx_TraceCall("add_points", __pyx_f[0], 47, 0, __PYX_ERR(0, 47, __pyx_L1_error));
+  __Pyx_TraceCall("add_points", __pyx_f[0], 55, 0, __PYX_ERR(0, 55, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_add_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_add_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_7add_points)) {
       __Pyx_XDECREF(__pyx_r);
@@ -2955,10 +2864,10 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_points(struct __pyx_obj_3dfs_6
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -2970,114 +2879,114 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_points(struct __pyx_obj_3dfs_6
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Lineup.pyx":48
+  /* "dfs/Lineup.pyx":56
  * 
  *     cpdef add_points(self):
  *         self.points_floor = 0             # <<<<<<<<<<<<<<
  *         self.points_ceil = 0
  *         self.points_avg = 0
  */
-  __Pyx_TraceLine(48,0,__PYX_ERR(0, 48, __pyx_L1_error))
+  __Pyx_TraceLine(56,0,__PYX_ERR(0, 56, __pyx_L1_error))
   __pyx_v_self->points_floor = 0.0;
 
-  /* "dfs/Lineup.pyx":49
+  /* "dfs/Lineup.pyx":57
  *     cpdef add_points(self):
  *         self.points_floor = 0
  *         self.points_ceil = 0             # <<<<<<<<<<<<<<
  *         self.points_avg = 0
  *         for player in self.players:
  */
-  __Pyx_TraceLine(49,0,__PYX_ERR(0, 49, __pyx_L1_error))
+  __Pyx_TraceLine(57,0,__PYX_ERR(0, 57, __pyx_L1_error))
   __pyx_v_self->points_ceil = 0.0;
 
-  /* "dfs/Lineup.pyx":50
+  /* "dfs/Lineup.pyx":58
  *         self.points_floor = 0
  *         self.points_ceil = 0
  *         self.points_avg = 0             # <<<<<<<<<<<<<<
  *         for player in self.players:
  *             self.points_floor = self.points_floor + float(player.lower)
  */
-  __Pyx_TraceLine(50,0,__PYX_ERR(0, 50, __pyx_L1_error))
+  __Pyx_TraceLine(58,0,__PYX_ERR(0, 58, __pyx_L1_error))
   __pyx_v_self->points_avg = 0.0;
 
-  /* "dfs/Lineup.pyx":51
+  /* "dfs/Lineup.pyx":59
  *         self.points_ceil = 0
  *         self.points_avg = 0
  *         for player in self.players:             # <<<<<<<<<<<<<<
  *             self.points_floor = self.points_floor + float(player.lower)
  *             self.points_ceil = self.points_ceil + float(player.upper)
  */
-  __Pyx_TraceLine(51,0,__PYX_ERR(0, 51, __pyx_L1_error))
+  __Pyx_TraceLine(59,0,__PYX_ERR(0, 59, __pyx_L1_error))
   if (unlikely(__pyx_v_self->players == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 51, __pyx_L1_error)
+    __PYX_ERR(0, 59, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_v_self->players; __Pyx_INCREF(__pyx_t_1); __pyx_t_5 = 0;
   for (;;) {
     if (__pyx_t_5 >= PyList_GET_SIZE(__pyx_t_1)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 51, __pyx_L1_error)
+    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 59, __pyx_L1_error)
     #else
-    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 51, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 59, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     #endif
     __Pyx_XDECREF_SET(__pyx_v_player, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "dfs/Lineup.pyx":52
+    /* "dfs/Lineup.pyx":60
  *         self.points_avg = 0
  *         for player in self.players:
  *             self.points_floor = self.points_floor + float(player.lower)             # <<<<<<<<<<<<<<
  *             self.points_ceil = self.points_ceil + float(player.upper)
  *             self.points_avg = self.points_avg + float(player.median)
  */
-    __Pyx_TraceLine(52,0,__PYX_ERR(0, 52, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_lower); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 52, __pyx_L1_error)
+    __Pyx_TraceLine(60,0,__PYX_ERR(0, 60, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_lower); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 60, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_2); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 52, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_2); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 60, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_self->points_floor = (__pyx_v_self->points_floor + __pyx_t_6);
 
-    /* "dfs/Lineup.pyx":53
+    /* "dfs/Lineup.pyx":61
  *         for player in self.players:
  *             self.points_floor = self.points_floor + float(player.lower)
  *             self.points_ceil = self.points_ceil + float(player.upper)             # <<<<<<<<<<<<<<
  *             self.points_avg = self.points_avg + float(player.median)
  * 
  */
-    __Pyx_TraceLine(53,0,__PYX_ERR(0, 53, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_upper); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __Pyx_TraceLine(61,0,__PYX_ERR(0, 61, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_upper); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_2); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 53, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_2); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 61, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_self->points_ceil = (__pyx_v_self->points_ceil + __pyx_t_6);
 
-    /* "dfs/Lineup.pyx":54
+    /* "dfs/Lineup.pyx":62
  *             self.points_floor = self.points_floor + float(player.lower)
  *             self.points_ceil = self.points_ceil + float(player.upper)
  *             self.points_avg = self.points_avg + float(player.median)             # <<<<<<<<<<<<<<
  * 
  *     cpdef get_new_salary(self, diff):
  */
-    __Pyx_TraceLine(54,0,__PYX_ERR(0, 54, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_median); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 54, __pyx_L1_error)
+    __Pyx_TraceLine(62,0,__PYX_ERR(0, 62, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_median); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_2); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 54, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_2); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 62, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_self->points_avg = (__pyx_v_self->points_avg + __pyx_t_6);
 
-    /* "dfs/Lineup.pyx":51
+    /* "dfs/Lineup.pyx":59
  *         self.points_ceil = 0
  *         self.points_avg = 0
  *         for player in self.players:             # <<<<<<<<<<<<<<
  *             self.points_floor = self.points_floor + float(player.lower)
  *             self.points_ceil = self.points_ceil + float(player.upper)
  */
-    __Pyx_TraceLine(51,0,__PYX_ERR(0, 51, __pyx_L1_error))
+    __Pyx_TraceLine(59,0,__PYX_ERR(0, 59, __pyx_L1_error))
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":47
+  /* "dfs/Lineup.pyx":55
  *         return True
  * 
  *     cpdef add_points(self):             # <<<<<<<<<<<<<<
@@ -3122,11 +3031,11 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_6add_points(struct __pyx_obj_3dfs
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__4)
+  __Pyx_TraceFrameInit(__pyx_codeobj__5)
   __Pyx_RefNannySetupContext("add_points", 0);
-  __Pyx_TraceCall("add_points (wrapper)", __pyx_f[0], 47, 0, __PYX_ERR(0, 47, __pyx_L1_error));
+  __Pyx_TraceCall("add_points (wrapper)", __pyx_f[0], 55, 0, __PYX_ERR(0, 55, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_add_points(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_add_points(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3144,7 +3053,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_6add_points(struct __pyx_obj_3dfs
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":56
+/* "dfs/Lineup.pyx":64
  *             self.points_avg = self.points_avg + float(player.median)
  * 
  *     cpdef get_new_salary(self, diff):             # <<<<<<<<<<<<<<
@@ -3169,14 +3078,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
   Py_ssize_t __pyx_t_7;
   PyObject *(*__pyx_t_8)(PyObject *);
   int __pyx_t_9;
-  __Pyx_TraceFrameInit(__pyx_codeobj__5)
+  __Pyx_TraceFrameInit(__pyx_codeobj__6)
   __Pyx_RefNannySetupContext("get_new_salary", 0);
-  __Pyx_TraceCall("get_new_salary", __pyx_f[0], 56, 0, __PYX_ERR(0, 56, __pyx_L1_error));
+  __Pyx_TraceCall("get_new_salary", __pyx_f[0], 64, 0, __PYX_ERR(0, 64, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_new_salary); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_new_salary); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_9get_new_salary)) {
       __Pyx_XDECREF(__pyx_r);
@@ -3192,13 +3101,13 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
         }
       }
       if (!__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_diff); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_diff); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
       } else {
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_3)) {
           PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_diff};
-          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_GOTREF(__pyx_t_2);
         } else
@@ -3206,19 +3115,19 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
           PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_diff};
-          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_GOTREF(__pyx_t_2);
         } else
         #endif
         {
-          __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 56, __pyx_L1_error)
+          __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 64, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
           __Pyx_INCREF(__pyx_v_diff);
           __Pyx_GIVEREF(__pyx_v_diff);
           PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_diff);
-          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         }
@@ -3232,17 +3141,17 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Lineup.pyx":57
+  /* "dfs/Lineup.pyx":65
  * 
  *     cpdef get_new_salary(self, diff):
  *         new_salary = deepcopy(self.salary_remaining)             # <<<<<<<<<<<<<<
  *         for i, player in enumerate(self.players.reverse()):
  *             if i + 1 > diff:
  */
-  __Pyx_TraceLine(57,0,__PYX_ERR(0, 57, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __Pyx_TraceLine(65,0,__PYX_ERR(0, 65, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __pyx_t_3 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_5 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -3255,14 +3164,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
     }
   }
   if (!__pyx_t_5) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else {
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_2)) {
       PyObject *__pyx_temp[2] = {__pyx_t_5, __pyx_t_3};
-      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3271,20 +3180,20 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
       PyObject *__pyx_temp[2] = {__pyx_t_5, __pyx_t_3};
-      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     } else
     #endif
     {
-      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 57, __pyx_L1_error)
+      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 65, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5); __pyx_t_5 = NULL;
       __Pyx_GIVEREF(__pyx_t_3);
       PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_t_3);
       __pyx_t_3 = 0;
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
@@ -3293,30 +3202,30 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
   __pyx_v_new_salary = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":58
+  /* "dfs/Lineup.pyx":66
  *     cpdef get_new_salary(self, diff):
  *         new_salary = deepcopy(self.salary_remaining)
  *         for i, player in enumerate(self.players.reverse()):             # <<<<<<<<<<<<<<
  *             if i + 1 > diff:
  *                 break
  */
-  __Pyx_TraceLine(58,0,__PYX_ERR(0, 58, __pyx_L1_error))
+  __Pyx_TraceLine(66,0,__PYX_ERR(0, 66, __pyx_L1_error))
   __Pyx_INCREF(__pyx_int_0);
   __pyx_t_1 = __pyx_int_0;
   if (unlikely(__pyx_v_self->players == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "reverse");
-    __PYX_ERR(0, 58, __pyx_L1_error)
+    __PYX_ERR(0, 66, __pyx_L1_error)
   }
-  __pyx_t_6 = PyList_Reverse(__pyx_v_self->players); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 58, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_Owned_Py_None(__pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_t_6 = PyList_Reverse(__pyx_v_self->players); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 66, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Owned_Py_None(__pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (likely(PyList_CheckExact(__pyx_t_2)) || PyTuple_CheckExact(__pyx_t_2)) {
     __pyx_t_4 = __pyx_t_2; __Pyx_INCREF(__pyx_t_4); __pyx_t_7 = 0;
     __pyx_t_8 = NULL;
   } else {
-    __pyx_t_7 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __pyx_t_7 = -1; __pyx_t_4 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 66, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_8 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __pyx_t_8 = Py_TYPE(__pyx_t_4)->tp_iternext; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 66, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   for (;;) {
@@ -3324,17 +3233,17 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
       if (likely(PyList_CheckExact(__pyx_t_4))) {
         if (__pyx_t_7 >= PyList_GET_SIZE(__pyx_t_4)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_2 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_7); __Pyx_INCREF(__pyx_t_2); __pyx_t_7++; if (unlikely(0 < 0)) __PYX_ERR(0, 58, __pyx_L1_error)
+        __pyx_t_2 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_7); __Pyx_INCREF(__pyx_t_2); __pyx_t_7++; if (unlikely(0 < 0)) __PYX_ERR(0, 66, __pyx_L1_error)
         #else
-        __pyx_t_2 = PySequence_ITEM(__pyx_t_4, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
+        __pyx_t_2 = PySequence_ITEM(__pyx_t_4, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         #endif
       } else {
         if (__pyx_t_7 >= PyTuple_GET_SIZE(__pyx_t_4)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_7); __Pyx_INCREF(__pyx_t_2); __pyx_t_7++; if (unlikely(0 < 0)) __PYX_ERR(0, 58, __pyx_L1_error)
+        __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_4, __pyx_t_7); __Pyx_INCREF(__pyx_t_2); __pyx_t_7++; if (unlikely(0 < 0)) __PYX_ERR(0, 66, __pyx_L1_error)
         #else
-        __pyx_t_2 = PySequence_ITEM(__pyx_t_4, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
+        __pyx_t_2 = PySequence_ITEM(__pyx_t_4, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         #endif
       }
@@ -3344,7 +3253,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 58, __pyx_L1_error)
+          else __PYX_ERR(0, 66, __pyx_L1_error)
         }
         break;
       }
@@ -3354,39 +3263,39 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
     __pyx_t_2 = 0;
     __Pyx_INCREF(__pyx_t_1);
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
-    __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1);
     __pyx_t_1 = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "dfs/Lineup.pyx":59
+    /* "dfs/Lineup.pyx":67
  *         new_salary = deepcopy(self.salary_remaining)
  *         for i, player in enumerate(self.players.reverse()):
  *             if i + 1 > diff:             # <<<<<<<<<<<<<<
  *                 break
  *             new_salary = new_salary + player.salary
  */
-    __Pyx_TraceLine(59,0,__PYX_ERR(0, 59, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_v_i, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __Pyx_TraceLine(67,0,__PYX_ERR(0, 67, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_v_i, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 67, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_v_diff, Py_GT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_v_diff, Py_GT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 67, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 67, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_9) {
 
-      /* "dfs/Lineup.pyx":60
+      /* "dfs/Lineup.pyx":68
  *         for i, player in enumerate(self.players.reverse()):
  *             if i + 1 > diff:
  *                 break             # <<<<<<<<<<<<<<
  *             new_salary = new_salary + player.salary
  *         return new_salary
  */
-      __Pyx_TraceLine(60,0,__PYX_ERR(0, 60, __pyx_L1_error))
+      __Pyx_TraceLine(68,0,__PYX_ERR(0, 68, __pyx_L1_error))
       goto __pyx_L4_break;
 
-      /* "dfs/Lineup.pyx":59
+      /* "dfs/Lineup.pyx":67
  *         new_salary = deepcopy(self.salary_remaining)
  *         for i, player in enumerate(self.players.reverse()):
  *             if i + 1 > diff:             # <<<<<<<<<<<<<<
@@ -3395,49 +3304,49 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(struct __pyx_obj_3d
  */
     }
 
-    /* "dfs/Lineup.pyx":61
+    /* "dfs/Lineup.pyx":69
  *             if i + 1 > diff:
  *                 break
  *             new_salary = new_salary + player.salary             # <<<<<<<<<<<<<<
  *         return new_salary
  * 
  */
-    __Pyx_TraceLine(61,0,__PYX_ERR(0, 61, __pyx_L1_error))
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_salary); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_TraceLine(69,0,__PYX_ERR(0, 69, __pyx_L1_error))
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_salary); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 69, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_2 = PyNumber_Add(__pyx_v_new_salary, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __pyx_t_2 = PyNumber_Add(__pyx_v_new_salary, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 69, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF_SET(__pyx_v_new_salary, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "dfs/Lineup.pyx":58
+    /* "dfs/Lineup.pyx":66
  *     cpdef get_new_salary(self, diff):
  *         new_salary = deepcopy(self.salary_remaining)
  *         for i, player in enumerate(self.players.reverse()):             # <<<<<<<<<<<<<<
  *             if i + 1 > diff:
  *                 break
  */
-    __Pyx_TraceLine(58,0,__PYX_ERR(0, 58, __pyx_L1_error))
+    __Pyx_TraceLine(66,0,__PYX_ERR(0, 66, __pyx_L1_error))
   }
   __pyx_L4_break:;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":62
+  /* "dfs/Lineup.pyx":70
  *                 break
  *             new_salary = new_salary + player.salary
  *         return new_salary             # <<<<<<<<<<<<<<
  * 
  *     # REMOVES LAST PLAYER
  */
-  __Pyx_TraceLine(62,0,__PYX_ERR(0, 62, __pyx_L1_error))
+  __Pyx_TraceLine(70,0,__PYX_ERR(0, 70, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_new_salary);
   __pyx_r = __pyx_v_new_salary;
   goto __pyx_L0;
 
-  /* "dfs/Lineup.pyx":56
+  /* "dfs/Lineup.pyx":64
  *             self.points_avg = self.points_avg + float(player.median)
  * 
  *     cpdef get_new_salary(self, diff):             # <<<<<<<<<<<<<<
@@ -3483,11 +3392,11 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_8get_new_salary(struct __pyx_obj_
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__5)
+  __Pyx_TraceFrameInit(__pyx_codeobj__6)
   __Pyx_RefNannySetupContext("get_new_salary", 0);
-  __Pyx_TraceCall("get_new_salary (wrapper)", __pyx_f[0], 56, 0, __PYX_ERR(0, 56, __pyx_L1_error));
+  __Pyx_TraceCall("get_new_salary (wrapper)", __pyx_f[0], 64, 0, __PYX_ERR(0, 64, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(__pyx_v_self, __pyx_v_diff, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_get_new_salary(__pyx_v_self, __pyx_v_diff, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3505,7 +3414,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_8get_new_salary(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":65
+/* "dfs/Lineup.pyx":73
  * 
  *     # REMOVES LAST PLAYER
  *     def __deepcopy__(self, memo): # memo is a dict of id's to copies             # <<<<<<<<<<<<<<
@@ -3540,32 +3449,32 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
   int __pyx_t_5;
   int __pyx_t_6;
   PyObject *__pyx_t_7 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__6)
+  __Pyx_TraceFrameInit(__pyx_codeobj__7)
   __Pyx_RefNannySetupContext("__deepcopy__", 0);
-  __Pyx_TraceCall("__deepcopy__", __pyx_f[0], 65, 0, __PYX_ERR(0, 65, __pyx_L1_error));
+  __Pyx_TraceCall("__deepcopy__", __pyx_f[0], 73, 0, __PYX_ERR(0, 73, __pyx_L1_error));
 
-  /* "dfs/Lineup.pyx":66
+  /* "dfs/Lineup.pyx":74
  *     # REMOVES LAST PLAYER
  *     def __deepcopy__(self, memo): # memo is a dict of id's to copies
  *         id_self = id(self)        # memoization avoids unnecesary recursion             # <<<<<<<<<<<<<<
  *         _copy = memo.get(id_self)
  *         if _copy is None:
  */
-  __Pyx_TraceLine(66,0,__PYX_ERR(0, 66, __pyx_L1_error))
-  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_id, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
+  __Pyx_TraceLine(74,0,__PYX_ERR(0, 74, __pyx_L1_error))
+  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_id, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_id_self = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":67
+  /* "dfs/Lineup.pyx":75
  *     def __deepcopy__(self, memo): # memo is a dict of id's to copies
  *         id_self = id(self)        # memoization avoids unnecesary recursion
  *         _copy = memo.get(id_self)             # <<<<<<<<<<<<<<
  *         if _copy is None:
  *             _copy = type(self)()
  */
-  __Pyx_TraceLine(67,0,__PYX_ERR(0, 67, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_memo, __pyx_n_s_get); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __Pyx_TraceLine(75,0,__PYX_ERR(0, 75, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_memo, __pyx_n_s_get); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -3578,13 +3487,13 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_id_self); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_id_self); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   } else {
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_2)) {
       PyObject *__pyx_temp[2] = {__pyx_t_3, __pyx_v_id_self};
-      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_GOTREF(__pyx_t_1);
     } else
@@ -3592,19 +3501,19 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
       PyObject *__pyx_temp[2] = {__pyx_t_3, __pyx_v_id_self};
-      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_GOTREF(__pyx_t_1);
     } else
     #endif
     {
-      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 67, __pyx_L1_error)
+      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 75, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
       __Pyx_INCREF(__pyx_v_id_self);
       __Pyx_GIVEREF(__pyx_v_id_self);
       PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_id_self);
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
@@ -3613,26 +3522,26 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
   __pyx_v__copy = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":68
+  /* "dfs/Lineup.pyx":76
  *         id_self = id(self)        # memoization avoids unnecesary recursion
  *         _copy = memo.get(id_self)
  *         if _copy is None:             # <<<<<<<<<<<<<<
  *             _copy = type(self)()
  *             memo[id_self] = _copy
  */
-  __Pyx_TraceLine(68,0,__PYX_ERR(0, 68, __pyx_L1_error))
+  __Pyx_TraceLine(76,0,__PYX_ERR(0, 76, __pyx_L1_error))
   __pyx_t_5 = (__pyx_v__copy == Py_None);
   __pyx_t_6 = (__pyx_t_5 != 0);
   if (__pyx_t_6) {
 
-    /* "dfs/Lineup.pyx":69
+    /* "dfs/Lineup.pyx":77
  *         _copy = memo.get(id_self)
  *         if _copy is None:
  *             _copy = type(self)()             # <<<<<<<<<<<<<<
  *             memo[id_self] = _copy
  *             memo[id_self].salary_remaining = deepcopy(self.salary_remaining)# + int(self.players[-1].salary)
  */
-    __Pyx_TraceLine(69,0,__PYX_ERR(0, 69, __pyx_L1_error))
+    __Pyx_TraceLine(77,0,__PYX_ERR(0, 77, __pyx_L1_error))
     __Pyx_INCREF(((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
     __pyx_t_2 = ((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))); __pyx_t_4 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -3645,37 +3554,37 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
       }
     }
     if (__pyx_t_4) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     } else {
-      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
     }
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF_SET(__pyx_v__copy, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "dfs/Lineup.pyx":70
+    /* "dfs/Lineup.pyx":78
  *         if _copy is None:
  *             _copy = type(self)()
  *             memo[id_self] = _copy             # <<<<<<<<<<<<<<
  *             memo[id_self].salary_remaining = deepcopy(self.salary_remaining)# + int(self.players[-1].salary)
  *             #memo[id_self].needed = self.get_needed_back()
  */
-    __Pyx_TraceLine(70,0,__PYX_ERR(0, 70, __pyx_L1_error))
-    if (unlikely(PyObject_SetItem(__pyx_v_memo, __pyx_v_id_self, __pyx_v__copy) < 0)) __PYX_ERR(0, 70, __pyx_L1_error)
+    __Pyx_TraceLine(78,0,__PYX_ERR(0, 78, __pyx_L1_error))
+    if (unlikely(PyObject_SetItem(__pyx_v_memo, __pyx_v_id_self, __pyx_v__copy) < 0)) __PYX_ERR(0, 78, __pyx_L1_error)
 
-    /* "dfs/Lineup.pyx":71
+    /* "dfs/Lineup.pyx":79
  *             _copy = type(self)()
  *             memo[id_self] = _copy
  *             memo[id_self].salary_remaining = deepcopy(self.salary_remaining)# + int(self.players[-1].salary)             # <<<<<<<<<<<<<<
  *             #memo[id_self].needed = self.get_needed_back()
  *             memo[id_self].players = deepcopy(self.players)#[0:-1]
  */
-    __Pyx_TraceLine(71,0,__PYX_ERR(0, 71, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __Pyx_TraceLine(79,0,__PYX_ERR(0, 79, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -3688,14 +3597,14 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
       }
     }
     if (!__pyx_t_3) {
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_GOTREF(__pyx_t_1);
     } else {
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_2)) {
         PyObject *__pyx_temp[2] = {__pyx_t_3, __pyx_t_4};
-        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -3704,40 +3613,40 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
         PyObject *__pyx_temp[2] = {__pyx_t_3, __pyx_t_4};
-        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else
       #endif
       {
-        __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 71, __pyx_L1_error)
+        __pyx_t_7 = PyTuple_New(1+1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 79, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_3); __pyx_t_3 = NULL;
         __Pyx_GIVEREF(__pyx_t_4);
         PyTuple_SET_ITEM(__pyx_t_7, 0+1, __pyx_t_4);
         __pyx_t_4 = 0;
-        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       }
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    if (__Pyx_PyObject_SetAttrStr(__pyx_t_2, __pyx_n_s_salary_remaining, __pyx_t_1) < 0) __PYX_ERR(0, 71, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_t_2, __pyx_n_s_salary_remaining, __pyx_t_1) < 0) __PYX_ERR(0, 79, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "dfs/Lineup.pyx":73
+    /* "dfs/Lineup.pyx":81
  *             memo[id_self].salary_remaining = deepcopy(self.salary_remaining)# + int(self.players[-1].salary)
  *             #memo[id_self].needed = self.get_needed_back()
  *             memo[id_self].players = deepcopy(self.players)#[0:-1]             # <<<<<<<<<<<<<<
  * 
  *         return _copy
  */
-    __Pyx_TraceLine(73,0,__PYX_ERR(0, 73, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __Pyx_TraceLine(81,0,__PYX_ERR(0, 81, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_7 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
@@ -3750,13 +3659,13 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
       }
     }
     if (!__pyx_t_7) {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_self->players); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_self->players); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
     } else {
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_1)) {
         PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_self->players};
-        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_1, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
@@ -3764,31 +3673,31 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_1)) {
         PyObject *__pyx_temp[2] = {__pyx_t_7, __pyx_v_self->players};
-        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_1, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
       #endif
       {
-        __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 73, __pyx_L1_error)
+        __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 81, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_7); __pyx_t_7 = NULL;
         __Pyx_INCREF(__pyx_v_self->players);
         __Pyx_GIVEREF(__pyx_v_self->players);
         PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_self->players);
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_4, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_4, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       }
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_memo, __pyx_v_id_self); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_n_s_players, __pyx_t_2) < 0) __PYX_ERR(0, 73, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_n_s_players, __pyx_t_2) < 0) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "dfs/Lineup.pyx":68
+    /* "dfs/Lineup.pyx":76
  *         id_self = id(self)        # memoization avoids unnecesary recursion
  *         _copy = memo.get(id_self)
  *         if _copy is None:             # <<<<<<<<<<<<<<
@@ -3797,20 +3706,20 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
  */
   }
 
-  /* "dfs/Lineup.pyx":75
+  /* "dfs/Lineup.pyx":83
  *             memo[id_self].players = deepcopy(self.players)#[0:-1]
  * 
  *         return _copy             # <<<<<<<<<<<<<<
  * 
  *     cpdef get_needed_back(self):
  */
-  __Pyx_TraceLine(75,0,__PYX_ERR(0, 75, __pyx_L1_error))
+  __Pyx_TraceLine(83,0,__PYX_ERR(0, 83, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v__copy);
   __pyx_r = __pyx_v__copy;
   goto __pyx_L0;
 
-  /* "dfs/Lineup.pyx":65
+  /* "dfs/Lineup.pyx":73
  * 
  *     # REMOVES LAST PLAYER
  *     def __deepcopy__(self, memo): # memo is a dict of id's to copies             # <<<<<<<<<<<<<<
@@ -3836,7 +3745,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_10__deepcopy__(struct __pyx_obj_3
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":77
+/* "dfs/Lineup.pyx":85
  *         return _copy
  * 
  *     cpdef get_needed_back(self):             # <<<<<<<<<<<<<<
@@ -3856,14 +3765,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
   int __pyx_t_5;
-  __Pyx_TraceFrameInit(__pyx_codeobj__7)
+  __Pyx_TraceFrameInit(__pyx_codeobj__8)
   __Pyx_RefNannySetupContext("get_needed_back", 0);
-  __Pyx_TraceCall("get_needed_back", __pyx_f[0], 77, 0, __PYX_ERR(0, 77, __pyx_L1_error));
+  __Pyx_TraceCall("get_needed_back", __pyx_f[0], 85, 0, __PYX_ERR(0, 85, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_needed_back); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_needed_back); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 85, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_13get_needed_back)) {
       __Pyx_XDECREF(__pyx_r);
@@ -3879,10 +3788,10 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 85, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 85, __pyx_L1_error)
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3894,15 +3803,15 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Lineup.pyx":78
+  /* "dfs/Lineup.pyx":86
  * 
  *     cpdef get_needed_back(self):
  *         needed = deepcopy(self.needed)             # <<<<<<<<<<<<<<
  *         last_player = self.players[-1]
  *         if last_player.position == "QB":
  */
-  __Pyx_TraceLine(78,0,__PYX_ERR(0, 78, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 78, __pyx_L1_error)
+  __Pyx_TraceLine(86,0,__PYX_ERR(0, 86, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 86, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -3915,13 +3824,13 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_self->needed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_self->needed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   } else {
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_2)) {
       PyObject *__pyx_temp[2] = {__pyx_t_3, __pyx_v_self->needed};
-      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_GOTREF(__pyx_t_1);
     } else
@@ -3929,19 +3838,19 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
       PyObject *__pyx_temp[2] = {__pyx_t_3, __pyx_v_self->needed};
-      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_GOTREF(__pyx_t_1);
     } else
     #endif
     {
-      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 78, __pyx_L1_error)
+      __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 86, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
       __Pyx_INCREF(__pyx_v_self->needed);
       __Pyx_GIVEREF(__pyx_v_self->needed);
       PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_self->needed);
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
@@ -3950,54 +3859,54 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
   __pyx_v_needed = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":79
+  /* "dfs/Lineup.pyx":87
  *     cpdef get_needed_back(self):
  *         needed = deepcopy(self.needed)
  *         last_player = self.players[-1]             # <<<<<<<<<<<<<<
  *         if last_player.position == "QB":
  *             needed['QB'] = needed['QB'] + 1
  */
-  __Pyx_TraceLine(79,0,__PYX_ERR(0, 79, __pyx_L1_error))
+  __Pyx_TraceLine(87,0,__PYX_ERR(0, 87, __pyx_L1_error))
   if (unlikely(__pyx_v_self->players == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 79, __pyx_L1_error)
+    __PYX_ERR(0, 87, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_self->players, -1L, long, 1, __Pyx_PyInt_From_long, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_self->players, -1L, long, 1, __Pyx_PyInt_From_long, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_last_player = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":80
+  /* "dfs/Lineup.pyx":88
  *         needed = deepcopy(self.needed)
  *         last_player = self.players[-1]
  *         if last_player.position == "QB":             # <<<<<<<<<<<<<<
  *             needed['QB'] = needed['QB'] + 1
  *         elif last_player.position == "RB":
  */
-  __Pyx_TraceLine(80,0,__PYX_ERR(0, 80, __pyx_L1_error))
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_TraceLine(88,0,__PYX_ERR(0, 88, __pyx_L1_error))
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_QB, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_QB, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 88, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_5) {
 
-    /* "dfs/Lineup.pyx":81
+    /* "dfs/Lineup.pyx":89
  *         last_player = self.players[-1]
  *         if last_player.position == "QB":
  *             needed['QB'] = needed['QB'] + 1             # <<<<<<<<<<<<<<
  *         elif last_player.position == "RB":
  *             if last_player.flex == "True":
  */
-    __Pyx_TraceLine(81,0,__PYX_ERR(0, 81, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
+    __Pyx_TraceLine(89,0,__PYX_ERR(0, 89, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 89, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 89, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_QB, __pyx_t_2) < 0)) __PYX_ERR(0, 81, __pyx_L1_error)
+    if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_QB, __pyx_t_2) < 0)) __PYX_ERR(0, 89, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "dfs/Lineup.pyx":80
+    /* "dfs/Lineup.pyx":88
  *         needed = deepcopy(self.needed)
  *         last_player = self.players[-1]
  *         if last_player.position == "QB":             # <<<<<<<<<<<<<<
@@ -4007,51 +3916,51 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
     goto __pyx_L3;
   }
 
-  /* "dfs/Lineup.pyx":82
+  /* "dfs/Lineup.pyx":90
  *         if last_player.position == "QB":
  *             needed['QB'] = needed['QB'] + 1
  *         elif last_player.position == "RB":             # <<<<<<<<<<<<<<
  *             if last_player.flex == "True":
  *                 needed['FLEX'] = needed['FLEX'] + 1
  */
-  __Pyx_TraceLine(82,0,__PYX_ERR(0, 82, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __Pyx_TraceLine(90,0,__PYX_ERR(0, 90, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 90, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_RB, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_RB, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 90, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_5) {
 
-    /* "dfs/Lineup.pyx":83
+    /* "dfs/Lineup.pyx":91
  *             needed['QB'] = needed['QB'] + 1
  *         elif last_player.position == "RB":
  *             if last_player.flex == "True":             # <<<<<<<<<<<<<<
  *                 needed['FLEX'] = needed['FLEX'] + 1
  *             else:
  */
-    __Pyx_TraceLine(83,0,__PYX_ERR(0, 83, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_flex); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 83, __pyx_L1_error)
+    __Pyx_TraceLine(91,0,__PYX_ERR(0, 91, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_flex); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_True, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 83, __pyx_L1_error)
+    __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_True, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 91, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_5) {
 
-      /* "dfs/Lineup.pyx":84
+      /* "dfs/Lineup.pyx":92
  *         elif last_player.position == "RB":
  *             if last_player.flex == "True":
  *                 needed['FLEX'] = needed['FLEX'] + 1             # <<<<<<<<<<<<<<
  *             else:
  *                 needed['RB'] = needed['RB'] + 1
  */
-      __Pyx_TraceLine(84,0,__PYX_ERR(0, 84, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 84, __pyx_L1_error)
+      __Pyx_TraceLine(92,0,__PYX_ERR(0, 92, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 92, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 84, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 92, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "dfs/Lineup.pyx":83
+      /* "dfs/Lineup.pyx":91
  *             needed['QB'] = needed['QB'] + 1
  *         elif last_player.position == "RB":
  *             if last_player.flex == "True":             # <<<<<<<<<<<<<<
@@ -4061,26 +3970,26 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
       goto __pyx_L4;
     }
 
-    /* "dfs/Lineup.pyx":86
+    /* "dfs/Lineup.pyx":94
  *                 needed['FLEX'] = needed['FLEX'] + 1
  *             else:
  *                 needed['RB'] = needed['RB'] + 1             # <<<<<<<<<<<<<<
  *         elif last_player.position == "WR":
  *             if last_player.flex == "True":
  */
-    __Pyx_TraceLine(86,0,__PYX_ERR(0, 86, __pyx_L1_error))
+    __Pyx_TraceLine(94,0,__PYX_ERR(0, 94, __pyx_L1_error))
     /*else*/ {
-      __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 86, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_RB, __pyx_t_2) < 0)) __PYX_ERR(0, 86, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_RB, __pyx_t_2) < 0)) __PYX_ERR(0, 94, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
     __pyx_L4:;
 
-    /* "dfs/Lineup.pyx":82
+    /* "dfs/Lineup.pyx":90
  *         if last_player.position == "QB":
  *             needed['QB'] = needed['QB'] + 1
  *         elif last_player.position == "RB":             # <<<<<<<<<<<<<<
@@ -4090,51 +3999,51 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
     goto __pyx_L3;
   }
 
-  /* "dfs/Lineup.pyx":87
+  /* "dfs/Lineup.pyx":95
  *             else:
  *                 needed['RB'] = needed['RB'] + 1
  *         elif last_player.position == "WR":             # <<<<<<<<<<<<<<
  *             if last_player.flex == "True":
  *                 needed['FLEX'] = needed['FLEX'] + 1
  */
-  __Pyx_TraceLine(87,0,__PYX_ERR(0, 87, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 87, __pyx_L1_error)
+  __Pyx_TraceLine(95,0,__PYX_ERR(0, 95, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 95, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_WR, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 87, __pyx_L1_error)
+  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_WR, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 95, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_5) {
 
-    /* "dfs/Lineup.pyx":88
+    /* "dfs/Lineup.pyx":96
  *                 needed['RB'] = needed['RB'] + 1
  *         elif last_player.position == "WR":
  *             if last_player.flex == "True":             # <<<<<<<<<<<<<<
  *                 needed['FLEX'] = needed['FLEX'] + 1
  *             else:
  */
-    __Pyx_TraceLine(88,0,__PYX_ERR(0, 88, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_flex); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_TraceLine(96,0,__PYX_ERR(0, 96, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_flex); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 96, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_True, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_True, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 96, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_5) {
 
-      /* "dfs/Lineup.pyx":89
+      /* "dfs/Lineup.pyx":97
  *         elif last_player.position == "WR":
  *             if last_player.flex == "True":
  *                 needed['FLEX'] = needed['FLEX'] + 1             # <<<<<<<<<<<<<<
  *             else:
  *                 needed['WR'] = needed['WR'] + 1
  */
-      __Pyx_TraceLine(89,0,__PYX_ERR(0, 89, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 89, __pyx_L1_error)
+      __Pyx_TraceLine(97,0,__PYX_ERR(0, 97, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 97, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 89, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 89, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 97, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "dfs/Lineup.pyx":88
+      /* "dfs/Lineup.pyx":96
  *                 needed['RB'] = needed['RB'] + 1
  *         elif last_player.position == "WR":
  *             if last_player.flex == "True":             # <<<<<<<<<<<<<<
@@ -4144,26 +4053,26 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
       goto __pyx_L5;
     }
 
-    /* "dfs/Lineup.pyx":91
+    /* "dfs/Lineup.pyx":99
  *                 needed['FLEX'] = needed['FLEX'] + 1
  *             else:
  *                 needed['WR'] = needed['WR'] + 1             # <<<<<<<<<<<<<<
  *         elif last_player.position == "TE":
  *             if last_player.flex == "True":
  */
-    __Pyx_TraceLine(91,0,__PYX_ERR(0, 91, __pyx_L1_error))
+    __Pyx_TraceLine(99,0,__PYX_ERR(0, 99, __pyx_L1_error))
     /*else*/ {
-      __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 99, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_WR, __pyx_t_2) < 0)) __PYX_ERR(0, 91, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_WR, __pyx_t_2) < 0)) __PYX_ERR(0, 99, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
     __pyx_L5:;
 
-    /* "dfs/Lineup.pyx":87
+    /* "dfs/Lineup.pyx":95
  *             else:
  *                 needed['RB'] = needed['RB'] + 1
  *         elif last_player.position == "WR":             # <<<<<<<<<<<<<<
@@ -4173,51 +4082,51 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
     goto __pyx_L3;
   }
 
-  /* "dfs/Lineup.pyx":92
+  /* "dfs/Lineup.pyx":100
  *             else:
  *                 needed['WR'] = needed['WR'] + 1
  *         elif last_player.position == "TE":             # <<<<<<<<<<<<<<
  *             if last_player.flex == "True":
  *                 needed['FLEX'] = needed['FLEX'] + 1
  */
-  __Pyx_TraceLine(92,0,__PYX_ERR(0, 92, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __Pyx_TraceLine(100,0,__PYX_ERR(0, 100, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 100, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_TE, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_TE, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 100, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_5) {
 
-    /* "dfs/Lineup.pyx":93
+    /* "dfs/Lineup.pyx":101
  *                 needed['WR'] = needed['WR'] + 1
  *         elif last_player.position == "TE":
  *             if last_player.flex == "True":             # <<<<<<<<<<<<<<
  *                 needed['FLEX'] = needed['FLEX'] + 1
  *             else:
  */
-    __Pyx_TraceLine(93,0,__PYX_ERR(0, 93, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_flex); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 93, __pyx_L1_error)
+    __Pyx_TraceLine(101,0,__PYX_ERR(0, 101, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_flex); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 101, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_True, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 93, __pyx_L1_error)
+    __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_True, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 101, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_5) {
 
-      /* "dfs/Lineup.pyx":94
+      /* "dfs/Lineup.pyx":102
  *         elif last_player.position == "TE":
  *             if last_player.flex == "True":
  *                 needed['FLEX'] = needed['FLEX'] + 1             # <<<<<<<<<<<<<<
  *             else:
  *                 needed['TE'] = needed['TE'] + 1
  */
-      __Pyx_TraceLine(94,0,__PYX_ERR(0, 94, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __Pyx_TraceLine(102,0,__PYX_ERR(0, 102, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 102, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 102, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 94, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 102, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "dfs/Lineup.pyx":93
+      /* "dfs/Lineup.pyx":101
  *                 needed['WR'] = needed['WR'] + 1
  *         elif last_player.position == "TE":
  *             if last_player.flex == "True":             # <<<<<<<<<<<<<<
@@ -4227,26 +4136,26 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
       goto __pyx_L6;
     }
 
-    /* "dfs/Lineup.pyx":96
+    /* "dfs/Lineup.pyx":104
  *                 needed['FLEX'] = needed['FLEX'] + 1
  *             else:
  *                 needed['TE'] = needed['TE'] + 1             # <<<<<<<<<<<<<<
  *         elif last_player.position == "DST":
  *             needed['DST'] = needed['DST'] + 1
  */
-    __Pyx_TraceLine(96,0,__PYX_ERR(0, 96, __pyx_L1_error))
+    __Pyx_TraceLine(104,0,__PYX_ERR(0, 104, __pyx_L1_error))
     /*else*/ {
-      __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_TE); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_TE); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 104, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 96, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 104, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_TE, __pyx_t_2) < 0)) __PYX_ERR(0, 96, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_TE, __pyx_t_2) < 0)) __PYX_ERR(0, 104, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
     __pyx_L6:;
 
-    /* "dfs/Lineup.pyx":92
+    /* "dfs/Lineup.pyx":100
  *             else:
  *                 needed['WR'] = needed['WR'] + 1
  *         elif last_player.position == "TE":             # <<<<<<<<<<<<<<
@@ -4256,37 +4165,37 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
     goto __pyx_L3;
   }
 
-  /* "dfs/Lineup.pyx":97
+  /* "dfs/Lineup.pyx":105
  *             else:
  *                 needed['TE'] = needed['TE'] + 1
  *         elif last_player.position == "DST":             # <<<<<<<<<<<<<<
  *             needed['DST'] = needed['DST'] + 1
  *         return needed
  */
-  __Pyx_TraceLine(97,0,__PYX_ERR(0, 97, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 97, __pyx_L1_error)
+  __Pyx_TraceLine(105,0,__PYX_ERR(0, 105, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_last_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_DST, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 97, __pyx_L1_error)
+  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_DST, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_5) {
 
-    /* "dfs/Lineup.pyx":98
+    /* "dfs/Lineup.pyx":106
  *                 needed['TE'] = needed['TE'] + 1
  *         elif last_player.position == "DST":
  *             needed['DST'] = needed['DST'] + 1             # <<<<<<<<<<<<<<
  *         return needed
  * 
  */
-    __Pyx_TraceLine(98,0,__PYX_ERR(0, 98, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_DST); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __Pyx_TraceLine(106,0,__PYX_ERR(0, 106, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_needed, __pyx_n_s_DST); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 106, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 106, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_DST, __pyx_t_1) < 0)) __PYX_ERR(0, 98, __pyx_L1_error)
+    if (unlikely(PyObject_SetItem(__pyx_v_needed, __pyx_n_s_DST, __pyx_t_1) < 0)) __PYX_ERR(0, 106, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "dfs/Lineup.pyx":97
+    /* "dfs/Lineup.pyx":105
  *             else:
  *                 needed['TE'] = needed['TE'] + 1
  *         elif last_player.position == "DST":             # <<<<<<<<<<<<<<
@@ -4296,20 +4205,20 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(struct __pyx_obj_3
   }
   __pyx_L3:;
 
-  /* "dfs/Lineup.pyx":99
+  /* "dfs/Lineup.pyx":107
  *         elif last_player.position == "DST":
  *             needed['DST'] = needed['DST'] + 1
  *         return needed             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __Pyx_TraceLine(99,0,__PYX_ERR(0, 99, __pyx_L1_error))
+  __Pyx_TraceLine(107,0,__PYX_ERR(0, 107, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_needed);
   __pyx_r = __pyx_v_needed;
   goto __pyx_L0;
 
-  /* "dfs/Lineup.pyx":77
+  /* "dfs/Lineup.pyx":85
  *         return _copy
  * 
  *     cpdef get_needed_back(self):             # <<<<<<<<<<<<<<
@@ -4353,11 +4262,11 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_12get_needed_back(struct __pyx_ob
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__7)
+  __Pyx_TraceFrameInit(__pyx_codeobj__8)
   __Pyx_RefNannySetupContext("get_needed_back", 0);
-  __Pyx_TraceCall("get_needed_back (wrapper)", __pyx_f[0], 77, 0, __PYX_ERR(0, 77, __pyx_L1_error));
+  __Pyx_TraceCall("get_needed_back (wrapper)", __pyx_f[0], 85, 0, __PYX_ERR(0, 85, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_get_needed_back(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 85, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4375,7 +4284,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_12get_needed_back(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":102
+/* "dfs/Lineup.pyx":110
  * 
  * 
  *     cpdef add_player(self, player, captain_mode):             # <<<<<<<<<<<<<<
@@ -4402,14 +4311,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
   int __pyx_t_9;
   int __pyx_t_10;
   int __pyx_t_11;
-  __Pyx_TraceFrameInit(__pyx_codeobj__8)
+  __Pyx_TraceFrameInit(__pyx_codeobj__9)
   __Pyx_RefNannySetupContext("add_player", 0);
-  __Pyx_TraceCall("add_player", __pyx_f[0], 102, 0, __PYX_ERR(0, 102, __pyx_L1_error));
+  __Pyx_TraceCall("add_player", __pyx_f[0], 110, 0, __PYX_ERR(0, 110, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_add_player); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 102, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_add_player); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_15add_player)) {
       __Pyx_XDECREF(__pyx_r);
@@ -4429,7 +4338,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_3)) {
         PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_player, __pyx_v_captain_mode};
-        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 102, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
@@ -4437,13 +4346,13 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
         PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_player, __pyx_v_captain_mode};
-        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 102, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
       #endif
       {
-        __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 102, __pyx_L1_error)
+        __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 110, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         if (__pyx_t_4) {
           __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -4454,7 +4363,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
         __Pyx_INCREF(__pyx_v_captain_mode);
         __Pyx_GIVEREF(__pyx_v_captain_mode);
         PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_5, __pyx_v_captain_mode);
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 102, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       }
@@ -4467,21 +4376,27 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Lineup.pyx":111
+  /* "dfs/Lineup.pyx":119
  *         #    return False
  * 
- *         mult = 1.5 if captain_mode and self.len_players == 0 else 1             # <<<<<<<<<<<<<<
+ *         mult = 1.5 if captain_mode and self.len_players == 0 and not self.has_cpt else 1             # <<<<<<<<<<<<<<
+ *         #print(mult, self.has_cpt)
  *         sal_remain = self.salary_remaining - (int(player.salary) * mult)
- * 
  */
-  __Pyx_TraceLine(111,0,__PYX_ERR(0, 111, __pyx_L1_error))
-  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 111, __pyx_L1_error)
+  __Pyx_TraceLine(119,0,__PYX_ERR(0, 119, __pyx_L1_error))
+  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 119, __pyx_L1_error)
   if (__pyx_t_9) {
   } else {
     __pyx_t_8 = __pyx_t_9;
     goto __pyx_L3_bool_binop_done;
   }
   __pyx_t_9 = ((__pyx_v_self->len_players == 0) != 0);
+  if (__pyx_t_9) {
+  } else {
+    __pyx_t_8 = __pyx_t_9;
+    goto __pyx_L3_bool_binop_done;
+  }
+  __pyx_t_9 = ((!(__pyx_v_self->has_cpt != 0)) != 0);
   __pyx_t_8 = __pyx_t_9;
   __pyx_L3_bool_binop_done:;
   if (__pyx_t_8) {
@@ -4491,216 +4406,53 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
   }
   __pyx_v_mult = __pyx_t_7;
 
-  /* "dfs/Lineup.pyx":112
- * 
- *         mult = 1.5 if captain_mode and self.len_players == 0 else 1
+  /* "dfs/Lineup.pyx":121
+ *         mult = 1.5 if captain_mode and self.len_players == 0 and not self.has_cpt else 1
+ *         #print(mult, self.has_cpt)
  *         sal_remain = self.salary_remaining - (int(player.salary) * mult)             # <<<<<<<<<<<<<<
  * 
- *         if player.name == "Jay Ajayi":
+ *         if sal_remain < 0:
  */
-  __Pyx_TraceLine(112,0,__PYX_ERR(0, 112, __pyx_L1_error))
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __Pyx_TraceLine(121,0,__PYX_ERR(0, 121, __pyx_L1_error))
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 121, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_salary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_salary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 121, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyNumber_Int(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyNumber_Int(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 121, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_mult); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_mult); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 121, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_6 = PyNumber_Multiply(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_6 = PyNumber_Multiply(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 121, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyNumber_Subtract(__pyx_t_1, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_Subtract(__pyx_t_1, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 121, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_sal_remain = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "dfs/Lineup.pyx":114
- *         sal_remain = self.salary_remaining - (int(player.salary) * mult)
- * 
- *         if player.name == "Jay Ajayi":             # <<<<<<<<<<<<<<
- *             return False
- *         if sal_remain < 0:
- */
-  __Pyx_TraceLine(114,0,__PYX_ERR(0, 114, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_name); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 114, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_kp_s_Jay_Ajayi, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 114, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (__pyx_t_8) {
-
-    /* "dfs/Lineup.pyx":115
- * 
- *         if player.name == "Jay Ajayi":
- *             return False             # <<<<<<<<<<<<<<
- *         if sal_remain < 0:
- *             return False
- */
-    __Pyx_TraceLine(115,0,__PYX_ERR(0, 115, __pyx_L1_error))
-    __Pyx_XDECREF(__pyx_r);
-    __Pyx_INCREF(Py_False);
-    __pyx_r = Py_False;
-    goto __pyx_L0;
-
-    /* "dfs/Lineup.pyx":114
- *         sal_remain = self.salary_remaining - (int(player.salary) * mult)
- * 
- *         if player.name == "Jay Ajayi":             # <<<<<<<<<<<<<<
- *             return False
- *         if sal_remain < 0:
- */
-  }
-
-  /* "dfs/Lineup.pyx":116
- *         if player.name == "Jay Ajayi":
- *             return False
- *         if sal_remain < 0:             # <<<<<<<<<<<<<<
- *             return False
- *         if not player.position:
- */
-  __Pyx_TraceLine(116,0,__PYX_ERR(0, 116, __pyx_L1_error))
-  __pyx_t_2 = PyObject_RichCompare(__pyx_v_sal_remain, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (__pyx_t_8) {
-
-    /* "dfs/Lineup.pyx":117
- *             return False
- *         if sal_remain < 0:
- *             return False             # <<<<<<<<<<<<<<
- *         if not player.position:
- *             return False
- */
-    __Pyx_TraceLine(117,0,__PYX_ERR(0, 117, __pyx_L1_error))
-    __Pyx_XDECREF(__pyx_r);
-    __Pyx_INCREF(Py_False);
-    __pyx_r = Py_False;
-    goto __pyx_L0;
-
-    /* "dfs/Lineup.pyx":116
- *         if player.name == "Jay Ajayi":
- *             return False
- *         if sal_remain < 0:             # <<<<<<<<<<<<<<
- *             return False
- *         if not player.position:
- */
-  }
-
-  /* "dfs/Lineup.pyx":118
- *         if sal_remain < 0:
- *             return False
- *         if not player.position:             # <<<<<<<<<<<<<<
- *             return False
- *         if not captain_mode and not self.remove_needed(player.position, player):
- */
-  __Pyx_TraceLine(118,0,__PYX_ERR(0, 118, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 118, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_9 = ((!__pyx_t_8) != 0);
-  if (__pyx_t_9) {
-
-    /* "dfs/Lineup.pyx":119
- *             return False
- *         if not player.position:
- *             return False             # <<<<<<<<<<<<<<
- *         if not captain_mode and not self.remove_needed(player.position, player):
- *             return False
- */
-    __Pyx_TraceLine(119,0,__PYX_ERR(0, 119, __pyx_L1_error))
-    __Pyx_XDECREF(__pyx_r);
-    __Pyx_INCREF(Py_False);
-    __pyx_r = Py_False;
-    goto __pyx_L0;
-
-    /* "dfs/Lineup.pyx":118
- *         if sal_remain < 0:
- *             return False
- *         if not player.position:             # <<<<<<<<<<<<<<
- *             return False
- *         if not captain_mode and not self.remove_needed(player.position, player):
- */
-  }
-
-  /* "dfs/Lineup.pyx":120
- *         if not player.position:
- *             return False
- *         if not captain_mode and not self.remove_needed(player.position, player):             # <<<<<<<<<<<<<<
- *             return False
- * 
- */
-  __Pyx_TraceLine(120,0,__PYX_ERR(0, 120, __pyx_L1_error))
-  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 120, __pyx_L1_error)
-  __pyx_t_10 = ((!__pyx_t_8) != 0);
-  if (__pyx_t_10) {
-  } else {
-    __pyx_t_9 = __pyx_t_10;
-    goto __pyx_L9_bool_binop_done;
-  }
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 120, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_6 = ((struct __pyx_vtabstruct_3dfs_6Lineup_Lineup *)__pyx_v_self->__pyx_vtab)->remove_needed(__pyx_v_self, __pyx_t_2, __pyx_v_player, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 120, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_10 < 0)) __PYX_ERR(0, 120, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_8 = ((!__pyx_t_10) != 0);
-  __pyx_t_9 = __pyx_t_8;
-  __pyx_L9_bool_binop_done:;
-  if (__pyx_t_9) {
-
-    /* "dfs/Lineup.pyx":121
- *             return False
- *         if not captain_mode and not self.remove_needed(player.position, player):
- *             return False             # <<<<<<<<<<<<<<
- * 
- *         if player.name in self.players_dict:
- */
-    __Pyx_TraceLine(121,0,__PYX_ERR(0, 121, __pyx_L1_error))
-    __Pyx_XDECREF(__pyx_r);
-    __Pyx_INCREF(Py_False);
-    __pyx_r = Py_False;
-    goto __pyx_L0;
-
-    /* "dfs/Lineup.pyx":120
- *         if not player.position:
- *             return False
- *         if not captain_mode and not self.remove_needed(player.position, player):             # <<<<<<<<<<<<<<
- *             return False
- * 
- */
-  }
-
   /* "dfs/Lineup.pyx":123
- *             return False
+ *         sal_remain = self.salary_remaining - (int(player.salary) * mult)
  * 
- *         if player.name in self.players_dict:             # <<<<<<<<<<<<<<
+ *         if sal_remain < 0:             # <<<<<<<<<<<<<<
  *             return False
- *         #if player.position == "DST" and captain_mode:
+ *         if not player.position:
  */
   __Pyx_TraceLine(123,0,__PYX_ERR(0, 123, __pyx_L1_error))
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 123, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  if (unlikely(__pyx_v_self->players_dict == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 123, __pyx_L1_error)
-  }
-  __pyx_t_9 = (__Pyx_PyDict_ContainsTF(__pyx_t_6, __pyx_v_self->players_dict, Py_EQ)); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 123, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_8 = (__pyx_t_9 != 0);
+  __pyx_t_2 = PyObject_RichCompare(__pyx_v_sal_remain, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_8) {
 
     /* "dfs/Lineup.pyx":124
  * 
- *         if player.name in self.players_dict:
+ *         if sal_remain < 0:
  *             return False             # <<<<<<<<<<<<<<
- *         #if player.position == "DST" and captain_mode:
- *         #    return False
+ *         if not player.position:
+ *             return False
  */
     __Pyx_TraceLine(124,0,__PYX_ERR(0, 124, __pyx_L1_error))
     __Pyx_XDECREF(__pyx_r);
@@ -4709,6 +4461,133 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
     goto __pyx_L0;
 
     /* "dfs/Lineup.pyx":123
+ *         sal_remain = self.salary_remaining - (int(player.salary) * mult)
+ * 
+ *         if sal_remain < 0:             # <<<<<<<<<<<<<<
+ *             return False
+ *         if not player.position:
+ */
+  }
+
+  /* "dfs/Lineup.pyx":125
+ *         if sal_remain < 0:
+ *             return False
+ *         if not player.position:             # <<<<<<<<<<<<<<
+ *             return False
+ *         if not captain_mode and not self.remove_needed(player.position, player):
+ */
+  __Pyx_TraceLine(125,0,__PYX_ERR(0, 125, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_9 = ((!__pyx_t_8) != 0);
+  if (__pyx_t_9) {
+
+    /* "dfs/Lineup.pyx":126
+ *             return False
+ *         if not player.position:
+ *             return False             # <<<<<<<<<<<<<<
+ *         if not captain_mode and not self.remove_needed(player.position, player):
+ *             return False
+ */
+    __Pyx_TraceLine(126,0,__PYX_ERR(0, 126, __pyx_L1_error))
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(Py_False);
+    __pyx_r = Py_False;
+    goto __pyx_L0;
+
+    /* "dfs/Lineup.pyx":125
+ *         if sal_remain < 0:
+ *             return False
+ *         if not player.position:             # <<<<<<<<<<<<<<
+ *             return False
+ *         if not captain_mode and not self.remove_needed(player.position, player):
+ */
+  }
+
+  /* "dfs/Lineup.pyx":127
+ *         if not player.position:
+ *             return False
+ *         if not captain_mode and not self.remove_needed(player.position, player):             # <<<<<<<<<<<<<<
+ *             return False
+ * 
+ */
+  __Pyx_TraceLine(127,0,__PYX_ERR(0, 127, __pyx_L1_error))
+  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_10 = ((!__pyx_t_8) != 0);
+  if (__pyx_t_10) {
+  } else {
+    __pyx_t_9 = __pyx_t_10;
+    goto __pyx_L9_bool_binop_done;
+  }
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_6 = ((struct __pyx_vtabstruct_3dfs_6Lineup_Lineup *)__pyx_v_self->__pyx_vtab)->remove_needed(__pyx_v_self, __pyx_t_2, __pyx_v_player, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_10 < 0)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_8 = ((!__pyx_t_10) != 0);
+  __pyx_t_9 = __pyx_t_8;
+  __pyx_L9_bool_binop_done:;
+  if (__pyx_t_9) {
+
+    /* "dfs/Lineup.pyx":128
+ *             return False
+ *         if not captain_mode and not self.remove_needed(player.position, player):
+ *             return False             # <<<<<<<<<<<<<<
+ * 
+ *         if player.name in self.players_dict:
+ */
+    __Pyx_TraceLine(128,0,__PYX_ERR(0, 128, __pyx_L1_error))
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(Py_False);
+    __pyx_r = Py_False;
+    goto __pyx_L0;
+
+    /* "dfs/Lineup.pyx":127
+ *         if not player.position:
+ *             return False
+ *         if not captain_mode and not self.remove_needed(player.position, player):             # <<<<<<<<<<<<<<
+ *             return False
+ * 
+ */
+  }
+
+  /* "dfs/Lineup.pyx":130
+ *             return False
+ * 
+ *         if player.name in self.players_dict:             # <<<<<<<<<<<<<<
+ *             return False
+ *         #if player.position == "DST" and captain_mode:
+ */
+  __Pyx_TraceLine(130,0,__PYX_ERR(0, 130, __pyx_L1_error))
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  if (unlikely(__pyx_v_self->players_dict == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
+    __PYX_ERR(0, 130, __pyx_L1_error)
+  }
+  __pyx_t_9 = (__Pyx_PyDict_ContainsTF(__pyx_t_6, __pyx_v_self->players_dict, Py_EQ)); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_8 = (__pyx_t_9 != 0);
+  if (__pyx_t_8) {
+
+    /* "dfs/Lineup.pyx":131
+ * 
+ *         if player.name in self.players_dict:
+ *             return False             # <<<<<<<<<<<<<<
+ *         #if player.position == "DST" and captain_mode:
+ *         #    return False
+ */
+    __Pyx_TraceLine(131,0,__PYX_ERR(0, 131, __pyx_L1_error))
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(Py_False);
+    __pyx_r = Py_False;
+    goto __pyx_L0;
+
+    /* "dfs/Lineup.pyx":130
  *             return False
  * 
  *         if player.name in self.players_dict:             # <<<<<<<<<<<<<<
@@ -4717,34 +4596,73 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
  */
   }
 
-  /* "dfs/Lineup.pyx":132
+  /* "dfs/Lineup.pyx":139
  *         #if self.len_players == 8 and not self.check_required():
  *         #    return False
- *         if self.len_players == 0 and captain_mode:             # <<<<<<<<<<<<<<
- *             player_cpt = deepcopy(player)
- *             player_cpt.salary *= 1.5
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:             # <<<<<<<<<<<<<<
+ *             if player.name == "Deshaun Watson":
+ *                 print(player)
  */
-  __Pyx_TraceLine(132,0,__PYX_ERR(0, 132, __pyx_L1_error))
+  __Pyx_TraceLine(139,0,__PYX_ERR(0, 139, __pyx_L1_error))
   __pyx_t_9 = ((__pyx_v_self->len_players == 0) != 0);
   if (__pyx_t_9) {
   } else {
     __pyx_t_8 = __pyx_t_9;
     goto __pyx_L13_bool_binop_done;
   }
-  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 139, __pyx_L1_error)
+  if (__pyx_t_9) {
+  } else {
+    __pyx_t_8 = __pyx_t_9;
+    goto __pyx_L13_bool_binop_done;
+  }
+  __pyx_t_9 = ((!(__pyx_v_self->has_cpt != 0)) != 0);
   __pyx_t_8 = __pyx_t_9;
   __pyx_L13_bool_binop_done:;
   if (__pyx_t_8) {
 
-    /* "dfs/Lineup.pyx":133
+    /* "dfs/Lineup.pyx":140
  *         #    return False
- *         if self.len_players == 0 and captain_mode:
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:
+ *             if player.name == "Deshaun Watson":             # <<<<<<<<<<<<<<
+ *                 print(player)
+ *             player_cpt = deepcopy(player)
+ */
+    __Pyx_TraceLine(140,0,__PYX_ERR(0, 140, __pyx_L1_error))
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 140, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_6, __pyx_kp_s_Deshaun_Watson, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 140, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    if (__pyx_t_8) {
+
+      /* "dfs/Lineup.pyx":141
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:
+ *             if player.name == "Deshaun Watson":
+ *                 print(player)             # <<<<<<<<<<<<<<
+ *             player_cpt = deepcopy(player)
+ *             player_cpt.salary *= 1.5
+ */
+      __Pyx_TraceLine(141,0,__PYX_ERR(0, 141, __pyx_L1_error))
+      if (__Pyx_PrintOne(0, __pyx_v_player) < 0) __PYX_ERR(0, 141, __pyx_L1_error)
+
+      /* "dfs/Lineup.pyx":140
+ *         #    return False
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:
+ *             if player.name == "Deshaun Watson":             # <<<<<<<<<<<<<<
+ *                 print(player)
+ *             player_cpt = deepcopy(player)
+ */
+    }
+
+    /* "dfs/Lineup.pyx":142
+ *             if player.name == "Deshaun Watson":
+ *                 print(player)
  *             player_cpt = deepcopy(player)             # <<<<<<<<<<<<<<
  *             player_cpt.salary *= 1.5
  *             player_cpt.median *= 1.5
  */
-    __Pyx_TraceLine(133,0,__PYX_ERR(0, 133, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 133, __pyx_L1_error)
+    __Pyx_TraceLine(142,0,__PYX_ERR(0, 142, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_deepcopy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_1 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -4757,13 +4675,13 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
       }
     }
     if (!__pyx_t_1) {
-      __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_player); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 133, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_player); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 142, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
     } else {
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_2)) {
         PyObject *__pyx_temp[2] = {__pyx_t_1, __pyx_v_player};
-        __pyx_t_6 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 133, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 142, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
         __Pyx_GOTREF(__pyx_t_6);
       } else
@@ -4771,19 +4689,19 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
         PyObject *__pyx_temp[2] = {__pyx_t_1, __pyx_v_player};
-        __pyx_t_6 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 133, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 142, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
         __Pyx_GOTREF(__pyx_t_6);
       } else
       #endif
       {
-        __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 133, __pyx_L1_error)
+        __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 142, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_GIVEREF(__pyx_t_1); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1); __pyx_t_1 = NULL;
         __Pyx_INCREF(__pyx_v_player);
         __Pyx_GIVEREF(__pyx_v_player);
         PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_v_player);
-        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 133, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 142, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       }
@@ -4792,210 +4710,226 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
     __pyx_v_player_cpt = __pyx_t_6;
     __pyx_t_6 = 0;
 
-    /* "dfs/Lineup.pyx":134
- *         if self.len_players == 0 and captain_mode:
+    /* "dfs/Lineup.pyx":143
+ *                 print(player)
  *             player_cpt = deepcopy(player)
  *             player_cpt.salary *= 1.5             # <<<<<<<<<<<<<<
  *             player_cpt.median *= 1.5
  *             player_cpt.lower *= 1.5
  */
-    __Pyx_TraceLine(134,0,__PYX_ERR(0, 134, __pyx_L1_error))
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_salary); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 134, __pyx_L1_error)
+    __Pyx_TraceLine(143,0,__PYX_ERR(0, 143, __pyx_L1_error))
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_salary); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 143, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_2 = PyNumber_InPlaceMultiply(__pyx_t_6, __pyx_float_1_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 134, __pyx_L1_error)
+    __pyx_t_2 = PyNumber_InPlaceMultiply(__pyx_t_6, __pyx_float_1_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 143, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_player_cpt, __pyx_n_s_salary, __pyx_t_2) < 0) __PYX_ERR(0, 134, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_player_cpt, __pyx_n_s_salary, __pyx_t_2) < 0) __PYX_ERR(0, 143, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "dfs/Lineup.pyx":135
+    /* "dfs/Lineup.pyx":144
  *             player_cpt = deepcopy(player)
  *             player_cpt.salary *= 1.5
  *             player_cpt.median *= 1.5             # <<<<<<<<<<<<<<
  *             player_cpt.lower *= 1.5
  *             player_cpt.upper *= 1.5
  */
-    __Pyx_TraceLine(135,0,__PYX_ERR(0, 135, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_median); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __Pyx_TraceLine(144,0,__PYX_ERR(0, 144, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_median); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 144, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = PyNumber_InPlaceMultiply(__pyx_t_2, __pyx_float_1_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __pyx_t_6 = PyNumber_InPlaceMultiply(__pyx_t_2, __pyx_float_1_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 144, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_player_cpt, __pyx_n_s_median, __pyx_t_6) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_player_cpt, __pyx_n_s_median, __pyx_t_6) < 0) __PYX_ERR(0, 144, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "dfs/Lineup.pyx":136
+    /* "dfs/Lineup.pyx":145
  *             player_cpt.salary *= 1.5
  *             player_cpt.median *= 1.5
  *             player_cpt.lower *= 1.5             # <<<<<<<<<<<<<<
  *             player_cpt.upper *= 1.5
- * 
+ *             player_cpt.is_captain = True
  */
-    __Pyx_TraceLine(136,0,__PYX_ERR(0, 136, __pyx_L1_error))
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_lower); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 136, __pyx_L1_error)
+    __Pyx_TraceLine(145,0,__PYX_ERR(0, 145, __pyx_L1_error))
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_lower); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 145, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_2 = PyNumber_InPlaceMultiply(__pyx_t_6, __pyx_float_1_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
+    __pyx_t_2 = PyNumber_InPlaceMultiply(__pyx_t_6, __pyx_float_1_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 145, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_player_cpt, __pyx_n_s_lower, __pyx_t_2) < 0) __PYX_ERR(0, 136, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_player_cpt, __pyx_n_s_lower, __pyx_t_2) < 0) __PYX_ERR(0, 145, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "dfs/Lineup.pyx":137
+    /* "dfs/Lineup.pyx":146
  *             player_cpt.median *= 1.5
  *             player_cpt.lower *= 1.5
  *             player_cpt.upper *= 1.5             # <<<<<<<<<<<<<<
+ *             player_cpt.is_captain = True
+ * 
+ */
+    __Pyx_TraceLine(146,0,__PYX_ERR(0, 146, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_upper); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_6 = PyNumber_InPlaceMultiply(__pyx_t_2, __pyx_float_1_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_player_cpt, __pyx_n_s_upper, __pyx_t_6) < 0) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+
+    /* "dfs/Lineup.pyx":147
+ *             player_cpt.lower *= 1.5
+ *             player_cpt.upper *= 1.5
+ *             player_cpt.is_captain = True             # <<<<<<<<<<<<<<
  * 
  *         self.salary_remaining = sal_remain
  */
-    __Pyx_TraceLine(137,0,__PYX_ERR(0, 137, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_upper); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 137, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = PyNumber_InPlaceMultiply(__pyx_t_2, __pyx_float_1_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 137, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_player_cpt, __pyx_n_s_upper, __pyx_t_6) < 0) __PYX_ERR(0, 137, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __Pyx_TraceLine(147,0,__PYX_ERR(0, 147, __pyx_L1_error))
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_player_cpt, __pyx_n_s_is_captain, Py_True) < 0) __PYX_ERR(0, 147, __pyx_L1_error)
 
-    /* "dfs/Lineup.pyx":132
+    /* "dfs/Lineup.pyx":139
  *         #if self.len_players == 8 and not self.check_required():
  *         #    return False
- *         if self.len_players == 0 and captain_mode:             # <<<<<<<<<<<<<<
- *             player_cpt = deepcopy(player)
- *             player_cpt.salary *= 1.5
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:             # <<<<<<<<<<<<<<
+ *             if player.name == "Deshaun Watson":
+ *                 print(player)
  */
   }
 
-  /* "dfs/Lineup.pyx":139
- *             player_cpt.upper *= 1.5
+  /* "dfs/Lineup.pyx":149
+ *             player_cpt.is_captain = True
  * 
  *         self.salary_remaining = sal_remain             # <<<<<<<<<<<<<<
- *         if self.len_players == 0 and captain_mode:
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:
  *             self.players.append(player_cpt)
  */
-  __Pyx_TraceLine(139,0,__PYX_ERR(0, 139, __pyx_L1_error))
-  __pyx_t_7 = __pyx_PyFloat_AsDouble(__pyx_v_sal_remain); if (unlikely((__pyx_t_7 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 139, __pyx_L1_error)
+  __Pyx_TraceLine(149,0,__PYX_ERR(0, 149, __pyx_L1_error))
+  __pyx_t_7 = __pyx_PyFloat_AsDouble(__pyx_v_sal_remain); if (unlikely((__pyx_t_7 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 149, __pyx_L1_error)
   __pyx_v_self->salary_remaining = __pyx_t_7;
 
-  /* "dfs/Lineup.pyx":140
+  /* "dfs/Lineup.pyx":150
  * 
  *         self.salary_remaining = sal_remain
- *         if self.len_players == 0 and captain_mode:             # <<<<<<<<<<<<<<
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:             # <<<<<<<<<<<<<<
  *             self.players.append(player_cpt)
  *             self.players_dict[player_cpt.name] = True
  */
-  __Pyx_TraceLine(140,0,__PYX_ERR(0, 140, __pyx_L1_error))
+  __Pyx_TraceLine(150,0,__PYX_ERR(0, 150, __pyx_L1_error))
   __pyx_t_9 = ((__pyx_v_self->len_players == 0) != 0);
   if (__pyx_t_9) {
   } else {
     __pyx_t_8 = __pyx_t_9;
-    goto __pyx_L16_bool_binop_done;
+    goto __pyx_L18_bool_binop_done;
   }
-  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_v_captain_mode); if (unlikely(__pyx_t_9 < 0)) __PYX_ERR(0, 150, __pyx_L1_error)
+  if (__pyx_t_9) {
+  } else {
+    __pyx_t_8 = __pyx_t_9;
+    goto __pyx_L18_bool_binop_done;
+  }
+  __pyx_t_9 = ((!(__pyx_v_self->has_cpt != 0)) != 0);
   __pyx_t_8 = __pyx_t_9;
-  __pyx_L16_bool_binop_done:;
+  __pyx_L18_bool_binop_done:;
   if (__pyx_t_8) {
 
-    /* "dfs/Lineup.pyx":141
+    /* "dfs/Lineup.pyx":151
  *         self.salary_remaining = sal_remain
- *         if self.len_players == 0 and captain_mode:
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:
  *             self.players.append(player_cpt)             # <<<<<<<<<<<<<<
  *             self.players_dict[player_cpt.name] = True
  *         else:
  */
-    __Pyx_TraceLine(141,0,__PYX_ERR(0, 141, __pyx_L1_error))
+    __Pyx_TraceLine(151,0,__PYX_ERR(0, 151, __pyx_L1_error))
     if (unlikely(__pyx_v_self->players == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "append");
-      __PYX_ERR(0, 141, __pyx_L1_error)
+      __PYX_ERR(0, 151, __pyx_L1_error)
     }
-    if (unlikely(!__pyx_v_player_cpt)) { __Pyx_RaiseUnboundLocalError("player_cpt"); __PYX_ERR(0, 141, __pyx_L1_error) }
-    __pyx_t_11 = __Pyx_PyList_Append(__pyx_v_self->players, __pyx_v_player_cpt); if (unlikely(__pyx_t_11 == ((int)-1))) __PYX_ERR(0, 141, __pyx_L1_error)
+    if (unlikely(!__pyx_v_player_cpt)) { __Pyx_RaiseUnboundLocalError("player_cpt"); __PYX_ERR(0, 151, __pyx_L1_error) }
+    __pyx_t_11 = __Pyx_PyList_Append(__pyx_v_self->players, __pyx_v_player_cpt); if (unlikely(__pyx_t_11 == ((int)-1))) __PYX_ERR(0, 151, __pyx_L1_error)
 
-    /* "dfs/Lineup.pyx":142
- *         if self.len_players == 0 and captain_mode:
+    /* "dfs/Lineup.pyx":152
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:
  *             self.players.append(player_cpt)
  *             self.players_dict[player_cpt.name] = True             # <<<<<<<<<<<<<<
  *         else:
  *             self.players.append(player)
  */
-    __Pyx_TraceLine(142,0,__PYX_ERR(0, 142, __pyx_L1_error))
+    __Pyx_TraceLine(152,0,__PYX_ERR(0, 152, __pyx_L1_error))
     if (unlikely(__pyx_v_self->players_dict == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 142, __pyx_L1_error)
+      __PYX_ERR(0, 152, __pyx_L1_error)
     }
-    if (unlikely(!__pyx_v_player_cpt)) { __Pyx_RaiseUnboundLocalError("player_cpt"); __PYX_ERR(0, 142, __pyx_L1_error) }
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 142, __pyx_L1_error)
+    if (unlikely(!__pyx_v_player_cpt)) { __Pyx_RaiseUnboundLocalError("player_cpt"); __PYX_ERR(0, 152, __pyx_L1_error) }
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player_cpt, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 152, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    if (unlikely(PyDict_SetItem(__pyx_v_self->players_dict, __pyx_t_6, Py_True) < 0)) __PYX_ERR(0, 142, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_self->players_dict, __pyx_t_6, Py_True) < 0)) __PYX_ERR(0, 152, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "dfs/Lineup.pyx":140
+    /* "dfs/Lineup.pyx":150
  * 
  *         self.salary_remaining = sal_remain
- *         if self.len_players == 0 and captain_mode:             # <<<<<<<<<<<<<<
+ *         if self.len_players == 0 and captain_mode and not self.has_cpt:             # <<<<<<<<<<<<<<
  *             self.players.append(player_cpt)
  *             self.players_dict[player_cpt.name] = True
  */
-    goto __pyx_L15;
+    goto __pyx_L17;
   }
 
-  /* "dfs/Lineup.pyx":144
+  /* "dfs/Lineup.pyx":154
  *             self.players_dict[player_cpt.name] = True
  *         else:
  *             self.players.append(player)             # <<<<<<<<<<<<<<
  *             self.players_dict[player.name] = True
  *         self.len_players += 1
  */
-  __Pyx_TraceLine(144,0,__PYX_ERR(0, 144, __pyx_L1_error))
+  __Pyx_TraceLine(154,0,__PYX_ERR(0, 154, __pyx_L1_error))
   /*else*/ {
     if (unlikely(__pyx_v_self->players == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "append");
-      __PYX_ERR(0, 144, __pyx_L1_error)
+      __PYX_ERR(0, 154, __pyx_L1_error)
     }
-    __pyx_t_11 = __Pyx_PyList_Append(__pyx_v_self->players, __pyx_v_player); if (unlikely(__pyx_t_11 == ((int)-1))) __PYX_ERR(0, 144, __pyx_L1_error)
+    __pyx_t_11 = __Pyx_PyList_Append(__pyx_v_self->players, __pyx_v_player); if (unlikely(__pyx_t_11 == ((int)-1))) __PYX_ERR(0, 154, __pyx_L1_error)
 
-    /* "dfs/Lineup.pyx":145
+    /* "dfs/Lineup.pyx":155
  *         else:
  *             self.players.append(player)
  *             self.players_dict[player.name] = True             # <<<<<<<<<<<<<<
  *         self.len_players += 1
  *         return True
  */
-    __Pyx_TraceLine(145,0,__PYX_ERR(0, 145, __pyx_L1_error))
+    __Pyx_TraceLine(155,0,__PYX_ERR(0, 155, __pyx_L1_error))
     if (unlikely(__pyx_v_self->players_dict == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 145, __pyx_L1_error)
+      __PYX_ERR(0, 155, __pyx_L1_error)
     }
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 145, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 155, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    if (unlikely(PyDict_SetItem(__pyx_v_self->players_dict, __pyx_t_6, Py_True) < 0)) __PYX_ERR(0, 145, __pyx_L1_error)
+    if (unlikely(PyDict_SetItem(__pyx_v_self->players_dict, __pyx_t_6, Py_True) < 0)) __PYX_ERR(0, 155, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
-  __pyx_L15:;
+  __pyx_L17:;
 
-  /* "dfs/Lineup.pyx":146
+  /* "dfs/Lineup.pyx":156
  *             self.players.append(player)
  *             self.players_dict[player.name] = True
  *         self.len_players += 1             # <<<<<<<<<<<<<<
  *         return True
  * 
  */
-  __Pyx_TraceLine(146,0,__PYX_ERR(0, 146, __pyx_L1_error))
+  __Pyx_TraceLine(156,0,__PYX_ERR(0, 156, __pyx_L1_error))
   __pyx_v_self->len_players = (__pyx_v_self->len_players + 1);
 
-  /* "dfs/Lineup.pyx":147
+  /* "dfs/Lineup.pyx":157
  *             self.players_dict[player.name] = True
  *         self.len_players += 1
  *         return True             # <<<<<<<<<<<<<<
  * 
  *     #cdef check_required(self):
  */
-  __Pyx_TraceLine(147,0,__PYX_ERR(0, 147, __pyx_L1_error))
+  __Pyx_TraceLine(157,0,__PYX_ERR(0, 157, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(Py_True);
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "dfs/Lineup.pyx":102
+  /* "dfs/Lineup.pyx":110
  * 
  * 
  *     cpdef add_player(self, player, captain_mode):             # <<<<<<<<<<<<<<
@@ -5053,11 +4987,11 @@ static PyObject *__pyx_pw_3dfs_6Lineup_6Lineup_15add_player(PyObject *__pyx_v_se
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_captain_mode)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("add_player", 1, 2, 2, 1); __PYX_ERR(0, 102, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("add_player", 1, 2, 2, 1); __PYX_ERR(0, 110, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "add_player") < 0)) __PYX_ERR(0, 102, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "add_player") < 0)) __PYX_ERR(0, 110, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -5070,7 +5004,7 @@ static PyObject *__pyx_pw_3dfs_6Lineup_6Lineup_15add_player(PyObject *__pyx_v_se
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("add_player", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 102, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("add_player", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 110, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("dfs.Lineup.Lineup.add_player", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -5088,11 +5022,11 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_14add_player(struct __pyx_obj_3df
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__8)
+  __Pyx_TraceFrameInit(__pyx_codeobj__9)
   __Pyx_RefNannySetupContext("add_player", 0);
-  __Pyx_TraceCall("add_player (wrapper)", __pyx_f[0], 102, 0, __PYX_ERR(0, 102, __pyx_L1_error));
+  __Pyx_TraceCall("add_player (wrapper)", __pyx_f[0], 110, 0, __PYX_ERR(0, 110, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_add_player(__pyx_v_self, __pyx_v_player, __pyx_v_captain_mode, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 102, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_add_player(__pyx_v_self, __pyx_v_player, __pyx_v_captain_mode, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 110, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5110,7 +5044,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_14add_player(struct __pyx_obj_3df
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":155
+/* "dfs/Lineup.pyx":165
  *     #    return True
  * 
  *     cpdef decrease_salary_remaining(self):             # <<<<<<<<<<<<<<
@@ -5130,14 +5064,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_decrease_salary_remaining(struct _
   PyObject *__pyx_t_4 = NULL;
   Py_ssize_t __pyx_t_5;
   double __pyx_t_6;
-  __Pyx_TraceFrameInit(__pyx_codeobj__9)
+  __Pyx_TraceFrameInit(__pyx_codeobj__10)
   __Pyx_RefNannySetupContext("decrease_salary_remaining", 0);
-  __Pyx_TraceCall("decrease_salary_remaining", __pyx_f[0], 155, 0, __PYX_ERR(0, 155, __pyx_L1_error));
+  __Pyx_TraceCall("decrease_salary_remaining", __pyx_f[0], 165, 0, __PYX_ERR(0, 165, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_decrease_salary_remaining); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_decrease_salary_remaining); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 165, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_17decrease_salary_remaining)) {
       __Pyx_XDECREF(__pyx_r);
@@ -5153,10 +5087,10 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_decrease_salary_remaining(struct _
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -5168,56 +5102,56 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_decrease_salary_remaining(struct _
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Lineup.pyx":156
+  /* "dfs/Lineup.pyx":166
  * 
  *     cpdef decrease_salary_remaining(self):
  *         for player in self.players:             # <<<<<<<<<<<<<<
  *             self.salary_remaining = self.salary_remaining - float(player.salary)
  * 
  */
-  __Pyx_TraceLine(156,0,__PYX_ERR(0, 156, __pyx_L1_error))
+  __Pyx_TraceLine(166,0,__PYX_ERR(0, 166, __pyx_L1_error))
   if (unlikely(__pyx_v_self->players == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 156, __pyx_L1_error)
+    __PYX_ERR(0, 166, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_v_self->players; __Pyx_INCREF(__pyx_t_1); __pyx_t_5 = 0;
   for (;;) {
     if (__pyx_t_5 >= PyList_GET_SIZE(__pyx_t_1)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 166, __pyx_L1_error)
     #else
-    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 166, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     #endif
     __Pyx_XDECREF_SET(__pyx_v_player, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "dfs/Lineup.pyx":157
+    /* "dfs/Lineup.pyx":167
  *     cpdef decrease_salary_remaining(self):
  *         for player in self.players:
  *             self.salary_remaining = self.salary_remaining - float(player.salary)             # <<<<<<<<<<<<<<
  * 
  *     cpdef order_by_pos(self):
  */
-    __Pyx_TraceLine(157,0,__PYX_ERR(0, 157, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_salary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 157, __pyx_L1_error)
+    __Pyx_TraceLine(167,0,__PYX_ERR(0, 167, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_salary); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_2); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 157, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_AsDouble(__pyx_t_2); if (unlikely(__pyx_t_6 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_self->salary_remaining = (__pyx_v_self->salary_remaining - __pyx_t_6);
 
-    /* "dfs/Lineup.pyx":156
+    /* "dfs/Lineup.pyx":166
  * 
  *     cpdef decrease_salary_remaining(self):
  *         for player in self.players:             # <<<<<<<<<<<<<<
  *             self.salary_remaining = self.salary_remaining - float(player.salary)
  * 
  */
-    __Pyx_TraceLine(156,0,__PYX_ERR(0, 156, __pyx_L1_error))
+    __Pyx_TraceLine(166,0,__PYX_ERR(0, 166, __pyx_L1_error))
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":155
+  /* "dfs/Lineup.pyx":165
  *     #    return True
  * 
  *     cpdef decrease_salary_remaining(self):             # <<<<<<<<<<<<<<
@@ -5262,11 +5196,11 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_16decrease_salary_remaining(struc
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__9)
+  __Pyx_TraceFrameInit(__pyx_codeobj__10)
   __Pyx_RefNannySetupContext("decrease_salary_remaining", 0);
-  __Pyx_TraceCall("decrease_salary_remaining (wrapper)", __pyx_f[0], 155, 0, __PYX_ERR(0, 155, __pyx_L1_error));
+  __Pyx_TraceCall("decrease_salary_remaining (wrapper)", __pyx_f[0], 165, 0, __PYX_ERR(0, 165, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_decrease_salary_remaining(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_decrease_salary_remaining(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 165, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5284,7 +5218,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_16decrease_salary_remaining(struc
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":159
+/* "dfs/Lineup.pyx":169
  *             self.salary_remaining = self.salary_remaining - float(player.salary)
  * 
  *     cpdef order_by_pos(self):             # <<<<<<<<<<<<<<
@@ -5306,14 +5240,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
   Py_ssize_t __pyx_t_5;
   int __pyx_t_6;
   int __pyx_t_7;
-  __Pyx_TraceFrameInit(__pyx_codeobj__10)
+  __Pyx_TraceFrameInit(__pyx_codeobj__11)
   __Pyx_RefNannySetupContext("order_by_pos", 0);
-  __Pyx_TraceCall("order_by_pos", __pyx_f[0], 159, 0, __PYX_ERR(0, 159, __pyx_L1_error));
+  __Pyx_TraceCall("order_by_pos", __pyx_f[0], 169, 0, __PYX_ERR(0, 169, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order_by_pos); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 159, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_order_by_pos); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 169, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_19order_by_pos)) {
       __Pyx_XDECREF(__pyx_r);
@@ -5329,10 +5263,10 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 159, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 169, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 159, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 169, __pyx_L1_error)
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -5344,15 +5278,15 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Lineup.pyx":160
+  /* "dfs/Lineup.pyx":170
  * 
  *     cpdef order_by_pos(self):
  *         new_order = [None] * 9             # <<<<<<<<<<<<<<
  *         for player in self.players:
  *             if player.position == "QB":
  */
-  __Pyx_TraceLine(160,0,__PYX_ERR(0, 160, __pyx_L1_error))
-  __pyx_t_1 = PyList_New(1 * 9); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 160, __pyx_L1_error)
+  __Pyx_TraceLine(170,0,__PYX_ERR(0, 170, __pyx_L1_error))
+  __pyx_t_1 = PyList_New(1 * 9); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 170, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   { Py_ssize_t __pyx_temp;
     for (__pyx_temp=0; __pyx_temp < 9; __pyx_temp++) {
@@ -5364,55 +5298,55 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
   __pyx_v_new_order = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":161
+  /* "dfs/Lineup.pyx":171
  *     cpdef order_by_pos(self):
  *         new_order = [None] * 9
  *         for player in self.players:             # <<<<<<<<<<<<<<
  *             if player.position == "QB":
  *                 new_order[0] = player
  */
-  __Pyx_TraceLine(161,0,__PYX_ERR(0, 161, __pyx_L1_error))
+  __Pyx_TraceLine(171,0,__PYX_ERR(0, 171, __pyx_L1_error))
   if (unlikely(__pyx_v_self->players == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 161, __pyx_L1_error)
+    __PYX_ERR(0, 171, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_v_self->players; __Pyx_INCREF(__pyx_t_1); __pyx_t_5 = 0;
   for (;;) {
     if (__pyx_t_5 >= PyList_GET_SIZE(__pyx_t_1)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 171, __pyx_L1_error)
     #else
-    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 161, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 171, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     #endif
     __Pyx_XDECREF_SET(__pyx_v_player, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "dfs/Lineup.pyx":162
+    /* "dfs/Lineup.pyx":172
  *         new_order = [None] * 9
  *         for player in self.players:
  *             if player.position == "QB":             # <<<<<<<<<<<<<<
  *                 new_order[0] = player
  *             elif player.position == "WR":
  */
-    __Pyx_TraceLine(162,0,__PYX_ERR(0, 162, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 162, __pyx_L1_error)
+    __Pyx_TraceLine(172,0,__PYX_ERR(0, 172, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 172, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_QB, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 162, __pyx_L1_error)
+    __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_QB, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 172, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_6) {
 
-      /* "dfs/Lineup.pyx":163
+      /* "dfs/Lineup.pyx":173
  *         for player in self.players:
  *             if player.position == "QB":
  *                 new_order[0] = player             # <<<<<<<<<<<<<<
  *             elif player.position == "WR":
  *                 if not new_order[1]:
  */
-      __Pyx_TraceLine(163,0,__PYX_ERR(0, 163, __pyx_L1_error))
-      if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 0, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 163, __pyx_L1_error)
+      __Pyx_TraceLine(173,0,__PYX_ERR(0, 173, __pyx_L1_error))
+      if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 0, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 173, __pyx_L1_error)
 
-      /* "dfs/Lineup.pyx":162
+      /* "dfs/Lineup.pyx":172
  *         new_order = [None] * 9
  *         for player in self.players:
  *             if player.position == "QB":             # <<<<<<<<<<<<<<
@@ -5422,46 +5356,46 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
       goto __pyx_L5;
     }
 
-    /* "dfs/Lineup.pyx":164
+    /* "dfs/Lineup.pyx":174
  *             if player.position == "QB":
  *                 new_order[0] = player
  *             elif player.position == "WR":             # <<<<<<<<<<<<<<
  *                 if not new_order[1]:
  *                     new_order[1] = player
  */
-    __Pyx_TraceLine(164,0,__PYX_ERR(0, 164, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __Pyx_TraceLine(174,0,__PYX_ERR(0, 174, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 174, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_WR, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_WR, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 174, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_6) {
 
-      /* "dfs/Lineup.pyx":165
+      /* "dfs/Lineup.pyx":175
  *                 new_order[0] = player
  *             elif player.position == "WR":
  *                 if not new_order[1]:             # <<<<<<<<<<<<<<
  *                     new_order[1] = player
  *                 elif not new_order[2]:
  */
-      __Pyx_TraceLine(165,0,__PYX_ERR(0, 165, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 1, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __Pyx_TraceLine(175,0,__PYX_ERR(0, 175, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 1, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 175, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 175, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_7 = ((!__pyx_t_6) != 0);
       if (__pyx_t_7) {
 
-        /* "dfs/Lineup.pyx":166
+        /* "dfs/Lineup.pyx":176
  *             elif player.position == "WR":
  *                 if not new_order[1]:
  *                     new_order[1] = player             # <<<<<<<<<<<<<<
  *                 elif not new_order[2]:
  *                     new_order[2] = player
  */
-        __Pyx_TraceLine(166,0,__PYX_ERR(0, 166, __pyx_L1_error))
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 1, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 166, __pyx_L1_error)
+        __Pyx_TraceLine(176,0,__PYX_ERR(0, 176, __pyx_L1_error))
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 1, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 176, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":165
+        /* "dfs/Lineup.pyx":175
  *                 new_order[0] = player
  *             elif player.position == "WR":
  *                 if not new_order[1]:             # <<<<<<<<<<<<<<
@@ -5471,32 +5405,32 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
         goto __pyx_L6;
       }
 
-      /* "dfs/Lineup.pyx":167
+      /* "dfs/Lineup.pyx":177
  *                 if not new_order[1]:
  *                     new_order[1] = player
  *                 elif not new_order[2]:             # <<<<<<<<<<<<<<
  *                     new_order[2] = player
  *                 elif not new_order[3]:
  */
-      __Pyx_TraceLine(167,0,__PYX_ERR(0, 167, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 2, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
+      __Pyx_TraceLine(177,0,__PYX_ERR(0, 177, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 2, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 177, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 167, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 177, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_6 = ((!__pyx_t_7) != 0);
       if (__pyx_t_6) {
 
-        /* "dfs/Lineup.pyx":168
+        /* "dfs/Lineup.pyx":178
  *                     new_order[1] = player
  *                 elif not new_order[2]:
  *                     new_order[2] = player             # <<<<<<<<<<<<<<
  *                 elif not new_order[3]:
  *                     new_order[3] = player
  */
-        __Pyx_TraceLine(168,0,__PYX_ERR(0, 168, __pyx_L1_error))
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 2, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 168, __pyx_L1_error)
+        __Pyx_TraceLine(178,0,__PYX_ERR(0, 178, __pyx_L1_error))
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 2, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 178, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":167
+        /* "dfs/Lineup.pyx":177
  *                 if not new_order[1]:
  *                     new_order[1] = player
  *                 elif not new_order[2]:             # <<<<<<<<<<<<<<
@@ -5506,32 +5440,32 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
         goto __pyx_L6;
       }
 
-      /* "dfs/Lineup.pyx":169
+      /* "dfs/Lineup.pyx":179
  *                 elif not new_order[2]:
  *                     new_order[2] = player
  *                 elif not new_order[3]:             # <<<<<<<<<<<<<<
  *                     new_order[3] = player
  *                 elif not new_order[7]:
  */
-      __Pyx_TraceLine(169,0,__PYX_ERR(0, 169, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 3, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 169, __pyx_L1_error)
+      __Pyx_TraceLine(179,0,__PYX_ERR(0, 179, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 3, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 179, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 169, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 179, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_7 = ((!__pyx_t_6) != 0);
       if (__pyx_t_7) {
 
-        /* "dfs/Lineup.pyx":170
+        /* "dfs/Lineup.pyx":180
  *                     new_order[2] = player
  *                 elif not new_order[3]:
  *                     new_order[3] = player             # <<<<<<<<<<<<<<
  *                 elif not new_order[7]:
  *                     new_order[7] = player
  */
-        __Pyx_TraceLine(170,0,__PYX_ERR(0, 170, __pyx_L1_error))
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 3, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 170, __pyx_L1_error)
+        __Pyx_TraceLine(180,0,__PYX_ERR(0, 180, __pyx_L1_error))
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 3, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 180, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":169
+        /* "dfs/Lineup.pyx":179
  *                 elif not new_order[2]:
  *                     new_order[2] = player
  *                 elif not new_order[3]:             # <<<<<<<<<<<<<<
@@ -5541,32 +5475,32 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
         goto __pyx_L6;
       }
 
-      /* "dfs/Lineup.pyx":171
+      /* "dfs/Lineup.pyx":181
  *                 elif not new_order[3]:
  *                     new_order[3] = player
  *                 elif not new_order[7]:             # <<<<<<<<<<<<<<
  *                     new_order[7] = player
  *             elif player.position == "RB":
  */
-      __Pyx_TraceLine(171,0,__PYX_ERR(0, 171, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 7, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 171, __pyx_L1_error)
+      __Pyx_TraceLine(181,0,__PYX_ERR(0, 181, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 7, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 181, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 171, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 181, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_6 = ((!__pyx_t_7) != 0);
       if (__pyx_t_6) {
 
-        /* "dfs/Lineup.pyx":172
+        /* "dfs/Lineup.pyx":182
  *                     new_order[3] = player
  *                 elif not new_order[7]:
  *                     new_order[7] = player             # <<<<<<<<<<<<<<
  *             elif player.position == "RB":
  *                 if not new_order[4]:
  */
-        __Pyx_TraceLine(172,0,__PYX_ERR(0, 172, __pyx_L1_error))
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 7, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 172, __pyx_L1_error)
+        __Pyx_TraceLine(182,0,__PYX_ERR(0, 182, __pyx_L1_error))
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 7, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 182, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":171
+        /* "dfs/Lineup.pyx":181
  *                 elif not new_order[3]:
  *                     new_order[3] = player
  *                 elif not new_order[7]:             # <<<<<<<<<<<<<<
@@ -5576,7 +5510,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
       }
       __pyx_L6:;
 
-      /* "dfs/Lineup.pyx":164
+      /* "dfs/Lineup.pyx":174
  *             if player.position == "QB":
  *                 new_order[0] = player
  *             elif player.position == "WR":             # <<<<<<<<<<<<<<
@@ -5586,46 +5520,46 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
       goto __pyx_L5;
     }
 
-    /* "dfs/Lineup.pyx":173
+    /* "dfs/Lineup.pyx":183
  *                 elif not new_order[7]:
  *                     new_order[7] = player
  *             elif player.position == "RB":             # <<<<<<<<<<<<<<
  *                 if not new_order[4]:
  *                     new_order[4] = player
  */
-    __Pyx_TraceLine(173,0,__PYX_ERR(0, 173, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_TraceLine(183,0,__PYX_ERR(0, 183, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 183, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_RB, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_RB, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 183, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_6) {
 
-      /* "dfs/Lineup.pyx":174
+      /* "dfs/Lineup.pyx":184
  *                     new_order[7] = player
  *             elif player.position == "RB":
  *                 if not new_order[4]:             # <<<<<<<<<<<<<<
  *                     new_order[4] = player
  *                 elif not new_order[5]:
  */
-      __Pyx_TraceLine(174,0,__PYX_ERR(0, 174, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 4, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 174, __pyx_L1_error)
+      __Pyx_TraceLine(184,0,__PYX_ERR(0, 184, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 4, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 184, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 174, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 184, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_7 = ((!__pyx_t_6) != 0);
       if (__pyx_t_7) {
 
-        /* "dfs/Lineup.pyx":175
+        /* "dfs/Lineup.pyx":185
  *             elif player.position == "RB":
  *                 if not new_order[4]:
  *                     new_order[4] = player             # <<<<<<<<<<<<<<
  *                 elif not new_order[5]:
  *                     new_order[5] = player
  */
-        __Pyx_TraceLine(175,0,__PYX_ERR(0, 175, __pyx_L1_error))
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 4, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 175, __pyx_L1_error)
+        __Pyx_TraceLine(185,0,__PYX_ERR(0, 185, __pyx_L1_error))
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 4, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 185, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":174
+        /* "dfs/Lineup.pyx":184
  *                     new_order[7] = player
  *             elif player.position == "RB":
  *                 if not new_order[4]:             # <<<<<<<<<<<<<<
@@ -5635,32 +5569,32 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
         goto __pyx_L7;
       }
 
-      /* "dfs/Lineup.pyx":176
+      /* "dfs/Lineup.pyx":186
  *                 if not new_order[4]:
  *                     new_order[4] = player
  *                 elif not new_order[5]:             # <<<<<<<<<<<<<<
  *                     new_order[5] = player
  *                 elif not new_order[7]:
  */
-      __Pyx_TraceLine(176,0,__PYX_ERR(0, 176, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 5, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 176, __pyx_L1_error)
+      __Pyx_TraceLine(186,0,__PYX_ERR(0, 186, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 5, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 186, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 176, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 186, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_6 = ((!__pyx_t_7) != 0);
       if (__pyx_t_6) {
 
-        /* "dfs/Lineup.pyx":177
+        /* "dfs/Lineup.pyx":187
  *                     new_order[4] = player
  *                 elif not new_order[5]:
  *                     new_order[5] = player             # <<<<<<<<<<<<<<
  *                 elif not new_order[7]:
  *                     new_order[7] = player
  */
-        __Pyx_TraceLine(177,0,__PYX_ERR(0, 177, __pyx_L1_error))
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 5, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 177, __pyx_L1_error)
+        __Pyx_TraceLine(187,0,__PYX_ERR(0, 187, __pyx_L1_error))
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 5, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 187, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":176
+        /* "dfs/Lineup.pyx":186
  *                 if not new_order[4]:
  *                     new_order[4] = player
  *                 elif not new_order[5]:             # <<<<<<<<<<<<<<
@@ -5670,32 +5604,32 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
         goto __pyx_L7;
       }
 
-      /* "dfs/Lineup.pyx":178
+      /* "dfs/Lineup.pyx":188
  *                 elif not new_order[5]:
  *                     new_order[5] = player
  *                 elif not new_order[7]:             # <<<<<<<<<<<<<<
  *                     new_order[7] = player
  *             elif player.position == "TE":
  */
-      __Pyx_TraceLine(178,0,__PYX_ERR(0, 178, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 7, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
+      __Pyx_TraceLine(188,0,__PYX_ERR(0, 188, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 7, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 188, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 178, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 188, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_7 = ((!__pyx_t_6) != 0);
       if (__pyx_t_7) {
 
-        /* "dfs/Lineup.pyx":179
+        /* "dfs/Lineup.pyx":189
  *                     new_order[5] = player
  *                 elif not new_order[7]:
  *                     new_order[7] = player             # <<<<<<<<<<<<<<
  *             elif player.position == "TE":
  *                 if not new_order[6]:
  */
-        __Pyx_TraceLine(179,0,__PYX_ERR(0, 179, __pyx_L1_error))
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 7, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 179, __pyx_L1_error)
+        __Pyx_TraceLine(189,0,__PYX_ERR(0, 189, __pyx_L1_error))
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 7, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 189, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":178
+        /* "dfs/Lineup.pyx":188
  *                 elif not new_order[5]:
  *                     new_order[5] = player
  *                 elif not new_order[7]:             # <<<<<<<<<<<<<<
@@ -5705,7 +5639,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
       }
       __pyx_L7:;
 
-      /* "dfs/Lineup.pyx":173
+      /* "dfs/Lineup.pyx":183
  *                 elif not new_order[7]:
  *                     new_order[7] = player
  *             elif player.position == "RB":             # <<<<<<<<<<<<<<
@@ -5715,46 +5649,46 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
       goto __pyx_L5;
     }
 
-    /* "dfs/Lineup.pyx":180
+    /* "dfs/Lineup.pyx":190
  *                 elif not new_order[7]:
  *                     new_order[7] = player
  *             elif player.position == "TE":             # <<<<<<<<<<<<<<
  *                 if not new_order[6]:
  *                     new_order[6] = player
  */
-    __Pyx_TraceLine(180,0,__PYX_ERR(0, 180, __pyx_L1_error))
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 180, __pyx_L1_error)
+    __Pyx_TraceLine(190,0,__PYX_ERR(0, 190, __pyx_L1_error))
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_player, __pyx_n_s_position); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 190, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_TE, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 180, __pyx_L1_error)
+    __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_TE, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 190, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_7) {
 
-      /* "dfs/Lineup.pyx":181
+      /* "dfs/Lineup.pyx":191
  *                     new_order[7] = player
  *             elif player.position == "TE":
  *                 if not new_order[6]:             # <<<<<<<<<<<<<<
  *                     new_order[6] = player
  *                 elif not new_order[7]:
  */
-      __Pyx_TraceLine(181,0,__PYX_ERR(0, 181, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 6, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 181, __pyx_L1_error)
+      __Pyx_TraceLine(191,0,__PYX_ERR(0, 191, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 6, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 191, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 181, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 191, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_6 = ((!__pyx_t_7) != 0);
       if (__pyx_t_6) {
 
-        /* "dfs/Lineup.pyx":182
+        /* "dfs/Lineup.pyx":192
  *             elif player.position == "TE":
  *                 if not new_order[6]:
  *                     new_order[6] = player             # <<<<<<<<<<<<<<
  *                 elif not new_order[7]:
  *                     new_order[7] = player
  */
-        __Pyx_TraceLine(182,0,__PYX_ERR(0, 182, __pyx_L1_error))
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 6, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 182, __pyx_L1_error)
+        __Pyx_TraceLine(192,0,__PYX_ERR(0, 192, __pyx_L1_error))
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 6, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 192, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":181
+        /* "dfs/Lineup.pyx":191
  *                     new_order[7] = player
  *             elif player.position == "TE":
  *                 if not new_order[6]:             # <<<<<<<<<<<<<<
@@ -5764,32 +5698,32 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
         goto __pyx_L8;
       }
 
-      /* "dfs/Lineup.pyx":183
+      /* "dfs/Lineup.pyx":193
  *                 if not new_order[6]:
  *                     new_order[6] = player
  *                 elif not new_order[7]:             # <<<<<<<<<<<<<<
  *                     new_order[7] = player
  *             else:
  */
-      __Pyx_TraceLine(183,0,__PYX_ERR(0, 183, __pyx_L1_error))
-      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 7, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 183, __pyx_L1_error)
+      __Pyx_TraceLine(193,0,__PYX_ERR(0, 193, __pyx_L1_error))
+      __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_new_order, 7, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 193, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 183, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 193, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_t_7 = ((!__pyx_t_6) != 0);
       if (__pyx_t_7) {
 
-        /* "dfs/Lineup.pyx":184
+        /* "dfs/Lineup.pyx":194
  *                     new_order[6] = player
  *                 elif not new_order[7]:
  *                     new_order[7] = player             # <<<<<<<<<<<<<<
  *             else:
  *                 new_order[8] = player
  */
-        __Pyx_TraceLine(184,0,__PYX_ERR(0, 184, __pyx_L1_error))
-        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 7, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 184, __pyx_L1_error)
+        __Pyx_TraceLine(194,0,__PYX_ERR(0, 194, __pyx_L1_error))
+        if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 7, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 194, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":183
+        /* "dfs/Lineup.pyx":193
  *                 if not new_order[6]:
  *                     new_order[6] = player
  *                 elif not new_order[7]:             # <<<<<<<<<<<<<<
@@ -5799,7 +5733,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
       }
       __pyx_L8:;
 
-      /* "dfs/Lineup.pyx":180
+      /* "dfs/Lineup.pyx":190
  *                 elif not new_order[7]:
  *                     new_order[7] = player
  *             elif player.position == "TE":             # <<<<<<<<<<<<<<
@@ -5809,45 +5743,45 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(struct __pyx_obj_3dfs
       goto __pyx_L5;
     }
 
-    /* "dfs/Lineup.pyx":186
+    /* "dfs/Lineup.pyx":196
  *                     new_order[7] = player
  *             else:
  *                 new_order[8] = player             # <<<<<<<<<<<<<<
  *         self.players = new_order
  * 
  */
-    __Pyx_TraceLine(186,0,__PYX_ERR(0, 186, __pyx_L1_error))
+    __Pyx_TraceLine(196,0,__PYX_ERR(0, 196, __pyx_L1_error))
     /*else*/ {
-      if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 8, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 186, __pyx_L1_error)
+      if (unlikely(__Pyx_SetItemInt(__pyx_v_new_order, 8, __pyx_v_player, long, 1, __Pyx_PyInt_From_long, 1, 0, 1) < 0)) __PYX_ERR(0, 196, __pyx_L1_error)
     }
     __pyx_L5:;
 
-    /* "dfs/Lineup.pyx":161
+    /* "dfs/Lineup.pyx":171
  *     cpdef order_by_pos(self):
  *         new_order = [None] * 9
  *         for player in self.players:             # <<<<<<<<<<<<<<
  *             if player.position == "QB":
  *                 new_order[0] = player
  */
-    __Pyx_TraceLine(161,0,__PYX_ERR(0, 161, __pyx_L1_error))
+    __Pyx_TraceLine(171,0,__PYX_ERR(0, 171, __pyx_L1_error))
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "dfs/Lineup.pyx":187
+  /* "dfs/Lineup.pyx":197
  *             else:
  *                 new_order[8] = player
  *         self.players = new_order             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __Pyx_TraceLine(187,0,__PYX_ERR(0, 187, __pyx_L1_error))
+  __Pyx_TraceLine(197,0,__PYX_ERR(0, 197, __pyx_L1_error))
   __Pyx_INCREF(__pyx_v_new_order);
   __Pyx_GIVEREF(__pyx_v_new_order);
   __Pyx_GOTREF(__pyx_v_self->players);
   __Pyx_DECREF(__pyx_v_self->players);
   __pyx_v_self->players = __pyx_v_new_order;
 
-  /* "dfs/Lineup.pyx":159
+  /* "dfs/Lineup.pyx":169
  *             self.salary_remaining = self.salary_remaining - float(player.salary)
  * 
  *     cpdef order_by_pos(self):             # <<<<<<<<<<<<<<
@@ -5893,11 +5827,11 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_18order_by_pos(struct __pyx_obj_3
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__10)
+  __Pyx_TraceFrameInit(__pyx_codeobj__11)
   __Pyx_RefNannySetupContext("order_by_pos", 0);
-  __Pyx_TraceCall("order_by_pos (wrapper)", __pyx_f[0], 159, 0, __PYX_ERR(0, 159, __pyx_L1_error));
+  __Pyx_TraceCall("order_by_pos (wrapper)", __pyx_f[0], 169, 0, __PYX_ERR(0, 169, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 159, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_order_by_pos(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 169, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5915,7 +5849,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_18order_by_pos(struct __pyx_obj_3
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":190
+/* "dfs/Lineup.pyx":200
  * 
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -5949,17 +5883,17 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_20__str__(struct __pyx_obj_3dfs_6
   PyObject *__pyx_t_5 = NULL;
   Py_ssize_t __pyx_t_6;
   __Pyx_RefNannySetupContext("__str__", 0);
-  __Pyx_TraceCall("__str__", __pyx_f[0], 190, 0, __PYX_ERR(0, 190, __pyx_L1_error));
+  __Pyx_TraceCall("__str__", __pyx_f[0], 200, 0, __PYX_ERR(0, 200, __pyx_L1_error));
 
-  /* "dfs/Lineup.pyx":191
+  /* "dfs/Lineup.pyx":201
  * 
  *     def __str__(self):
  *         plays = f"Points_avg: {self.points_avg}\nSalary remaining: {self.salary_remaining}\nPlayers: {self.len_players}\n"             # <<<<<<<<<<<<<<
  *         for player in self.players:
  *             plays = f"{plays} {player}\n"
  */
-  __Pyx_TraceLine(191,0,__PYX_ERR(0, 191, __pyx_L1_error))
-  __pyx_t_1 = PyTuple_New(7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_TraceLine(201,0,__PYX_ERR(0, 201, __pyx_L1_error))
+  __pyx_t_1 = PyTuple_New(7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = 0;
   __pyx_t_3 = 127;
@@ -5967,9 +5901,9 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_20__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 12;
   __Pyx_GIVEREF(__pyx_kp_u_Points_avg);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_Points_avg);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->points_avg); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->points_avg); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) : __pyx_t_3;
@@ -5981,9 +5915,9 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_20__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 19;
   __Pyx_GIVEREF(__pyx_kp_u_Salary_remaining);
   PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_Salary_remaining);
-  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_t_5, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_t_5, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
@@ -5995,55 +5929,55 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_20__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 10;
   __Pyx_GIVEREF(__pyx_kp_u_Players);
   PyTuple_SET_ITEM(__pyx_t_1, 4, __pyx_kp_u_Players);
-  __pyx_t_4 = __Pyx_PyUnicode_From_int(__pyx_v_self->len_players, 0, ' ', 'd'); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyUnicode_From_int(__pyx_v_self->len_players, 0, ' ', 'd'); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_2 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_1, 5, __pyx_t_4);
   __pyx_t_4 = 0;
-  __Pyx_INCREF(__pyx_kp_u__11);
+  __Pyx_INCREF(__pyx_kp_u__12);
   __pyx_t_2 += 1;
-  __Pyx_GIVEREF(__pyx_kp_u__11);
-  PyTuple_SET_ITEM(__pyx_t_1, 6, __pyx_kp_u__11);
-  __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_1, 7, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __Pyx_GIVEREF(__pyx_kp_u__12);
+  PyTuple_SET_ITEM(__pyx_t_1, 6, __pyx_kp_u__12);
+  __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_1, 7, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_plays = ((PyObject*)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "dfs/Lineup.pyx":192
+  /* "dfs/Lineup.pyx":202
  *     def __str__(self):
  *         plays = f"Points_avg: {self.points_avg}\nSalary remaining: {self.salary_remaining}\nPlayers: {self.len_players}\n"
  *         for player in self.players:             # <<<<<<<<<<<<<<
  *             plays = f"{plays} {player}\n"
  *         return plays
  */
-  __Pyx_TraceLine(192,0,__PYX_ERR(0, 192, __pyx_L1_error))
+  __Pyx_TraceLine(202,0,__PYX_ERR(0, 202, __pyx_L1_error))
   if (unlikely(__pyx_v_self->players == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 192, __pyx_L1_error)
+    __PYX_ERR(0, 202, __pyx_L1_error)
   }
   __pyx_t_4 = __pyx_v_self->players; __Pyx_INCREF(__pyx_t_4); __pyx_t_2 = 0;
   for (;;) {
     if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_4)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_1 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_2); __Pyx_INCREF(__pyx_t_1); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 192, __pyx_L1_error)
+    __pyx_t_1 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_2); __Pyx_INCREF(__pyx_t_1); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 202, __pyx_L1_error)
     #else
-    __pyx_t_1 = PySequence_ITEM(__pyx_t_4, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 192, __pyx_L1_error)
+    __pyx_t_1 = PySequence_ITEM(__pyx_t_4, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 202, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     #endif
     __Pyx_XDECREF_SET(__pyx_v_player, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "dfs/Lineup.pyx":193
+    /* "dfs/Lineup.pyx":203
  *         plays = f"Points_avg: {self.points_avg}\nSalary remaining: {self.salary_remaining}\nPlayers: {self.len_players}\n"
  *         for player in self.players:
  *             plays = f"{plays} {player}\n"             # <<<<<<<<<<<<<<
  *         return plays
  * 
  */
-    __Pyx_TraceLine(193,0,__PYX_ERR(0, 193, __pyx_L1_error))
-    __pyx_t_1 = PyTuple_New(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 193, __pyx_L1_error)
+    __Pyx_TraceLine(203,0,__PYX_ERR(0, 203, __pyx_L1_error))
+    __pyx_t_1 = PyTuple_New(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_6 = 0;
     __pyx_t_3 = 127;
@@ -6052,52 +5986,52 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_20__str__(struct __pyx_obj_3dfs_6
     __pyx_t_6 += __Pyx_PyUnicode_GET_LENGTH(__pyx_v_plays);
     __Pyx_GIVEREF(__pyx_v_plays);
     PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_plays);
-    __Pyx_INCREF(__pyx_kp_u__12);
+    __Pyx_INCREF(__pyx_kp_u__13);
     __pyx_t_6 += 1;
-    __Pyx_GIVEREF(__pyx_kp_u__12);
-    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_kp_u__12);
-    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_v_player, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 193, __pyx_L1_error)
+    __Pyx_GIVEREF(__pyx_kp_u__13);
+    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_kp_u__13);
+    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_v_player, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 203, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) : __pyx_t_3;
     __pyx_t_6 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_t_5);
     __pyx_t_5 = 0;
-    __Pyx_INCREF(__pyx_kp_u__11);
+    __Pyx_INCREF(__pyx_kp_u__12);
     __pyx_t_6 += 1;
-    __Pyx_GIVEREF(__pyx_kp_u__11);
-    PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_kp_u__11);
-    __pyx_t_5 = __Pyx_PyUnicode_Join(__pyx_t_1, 4, __pyx_t_6, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 193, __pyx_L1_error)
+    __Pyx_GIVEREF(__pyx_kp_u__12);
+    PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_kp_u__12);
+    __pyx_t_5 = __Pyx_PyUnicode_Join(__pyx_t_1, 4, __pyx_t_6, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 203, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF_SET(__pyx_v_plays, ((PyObject*)__pyx_t_5));
     __pyx_t_5 = 0;
 
-    /* "dfs/Lineup.pyx":192
+    /* "dfs/Lineup.pyx":202
  *     def __str__(self):
  *         plays = f"Points_avg: {self.points_avg}\nSalary remaining: {self.salary_remaining}\nPlayers: {self.len_players}\n"
  *         for player in self.players:             # <<<<<<<<<<<<<<
  *             plays = f"{plays} {player}\n"
  *         return plays
  */
-    __Pyx_TraceLine(192,0,__PYX_ERR(0, 192, __pyx_L1_error))
+    __Pyx_TraceLine(202,0,__PYX_ERR(0, 202, __pyx_L1_error))
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "dfs/Lineup.pyx":194
+  /* "dfs/Lineup.pyx":204
  *         for player in self.players:
  *             plays = f"{plays} {player}\n"
  *         return plays             # <<<<<<<<<<<<<<
  * 
  *     cpdef remove_needed(self, pos, player):
  */
-  __Pyx_TraceLine(194,0,__PYX_ERR(0, 194, __pyx_L1_error))
+  __Pyx_TraceLine(204,0,__PYX_ERR(0, 204, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_plays);
   __pyx_r = __pyx_v_plays;
   goto __pyx_L0;
 
-  /* "dfs/Lineup.pyx":190
+  /* "dfs/Lineup.pyx":200
  * 
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -6121,7 +6055,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_20__str__(struct __pyx_obj_3dfs_6
   return __pyx_r;
 }
 
-/* "dfs/Lineup.pyx":196
+/* "dfs/Lineup.pyx":206
  *         return plays
  * 
  *     cpdef remove_needed(self, pos, player):             # <<<<<<<<<<<<<<
@@ -6144,14 +6078,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
   int __pyx_t_8;
   PyObject *__pyx_t_9 = NULL;
   PyObject *__pyx_t_10 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__13)
+  __Pyx_TraceFrameInit(__pyx_codeobj__14)
   __Pyx_RefNannySetupContext("remove_needed", 0);
-  __Pyx_TraceCall("remove_needed", __pyx_f[0], 196, 0, __PYX_ERR(0, 196, __pyx_L1_error));
+  __Pyx_TraceCall("remove_needed", __pyx_f[0], 206, 0, __PYX_ERR(0, 206, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_remove_needed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_remove_needed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_23remove_needed)) {
       __Pyx_XDECREF(__pyx_r);
@@ -6171,7 +6105,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_3)) {
         PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_pos, __pyx_v_player};
-        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 196, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 206, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
@@ -6179,13 +6113,13 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
         PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_pos, __pyx_v_player};
-        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 196, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 206, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_GOTREF(__pyx_t_2);
       } else
       #endif
       {
-        __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 196, __pyx_L1_error)
+        __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 206, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         if (__pyx_t_4) {
           __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -6196,7 +6130,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         __Pyx_INCREF(__pyx_v_player);
         __Pyx_GIVEREF(__pyx_v_player);
         PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_5, __pyx_v_player);
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 196, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 206, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       }
@@ -6209,64 +6143,64 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Lineup.pyx":197
+  /* "dfs/Lineup.pyx":207
  * 
  *     cpdef remove_needed(self, pos, player):
  *         if self.lineup_type =="normal":             # <<<<<<<<<<<<<<
  *             if pos == "QB":
  *                 if self.needed['QB'] == 0:
  */
-  __Pyx_TraceLine(197,0,__PYX_ERR(0, 197, __pyx_L1_error))
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_self->lineup_type, __pyx_n_s_normal, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 197, __pyx_L1_error)
+  __Pyx_TraceLine(207,0,__PYX_ERR(0, 207, __pyx_L1_error))
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_self->lineup_type, __pyx_n_s_normal, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 207, __pyx_L1_error)
   __pyx_t_8 = (__pyx_t_7 != 0);
   if (__pyx_t_8) {
 
-    /* "dfs/Lineup.pyx":198
+    /* "dfs/Lineup.pyx":208
  *     cpdef remove_needed(self, pos, player):
  *         if self.lineup_type =="normal":
  *             if pos == "QB":             # <<<<<<<<<<<<<<
  *                 if self.needed['QB'] == 0:
  *                     return False
  */
-    __Pyx_TraceLine(198,0,__PYX_ERR(0, 198, __pyx_L1_error))
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_QB, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 198, __pyx_L1_error)
+    __Pyx_TraceLine(208,0,__PYX_ERR(0, 208, __pyx_L1_error))
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_QB, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 208, __pyx_L1_error)
     if (__pyx_t_8) {
 
-      /* "dfs/Lineup.pyx":199
+      /* "dfs/Lineup.pyx":209
  *         if self.lineup_type =="normal":
  *             if pos == "QB":
  *                 if self.needed['QB'] == 0:             # <<<<<<<<<<<<<<
  *                     return False
  *                 self.needed['QB'] = self.needed['QB'] - 1
  */
-      __Pyx_TraceLine(199,0,__PYX_ERR(0, 199, __pyx_L1_error))
+      __Pyx_TraceLine(209,0,__PYX_ERR(0, 209, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 199, __pyx_L1_error)
+        __PYX_ERR(0, 209, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 199, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 209, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 199, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 209, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":200
+        /* "dfs/Lineup.pyx":210
  *             if pos == "QB":
  *                 if self.needed['QB'] == 0:
  *                     return False             # <<<<<<<<<<<<<<
  *                 self.needed['QB'] = self.needed['QB'] - 1
  *             elif pos == "RB":
  */
-        __Pyx_TraceLine(200,0,__PYX_ERR(0, 200, __pyx_L1_error))
+        __Pyx_TraceLine(210,0,__PYX_ERR(0, 210, __pyx_L1_error))
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(Py_False);
         __pyx_r = Py_False;
         goto __pyx_L0;
 
-        /* "dfs/Lineup.pyx":199
+        /* "dfs/Lineup.pyx":209
  *         if self.lineup_type =="normal":
  *             if pos == "QB":
  *                 if self.needed['QB'] == 0:             # <<<<<<<<<<<<<<
@@ -6275,31 +6209,31 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
  */
       }
 
-      /* "dfs/Lineup.pyx":201
+      /* "dfs/Lineup.pyx":211
  *                 if self.needed['QB'] == 0:
  *                     return False
  *                 self.needed['QB'] = self.needed['QB'] - 1             # <<<<<<<<<<<<<<
  *             elif pos == "RB":
  *                 if self.needed['RB'] == 0:
  */
-      __Pyx_TraceLine(201,0,__PYX_ERR(0, 201, __pyx_L1_error))
+      __Pyx_TraceLine(211,0,__PYX_ERR(0, 211, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 201, __pyx_L1_error)
+        __PYX_ERR(0, 211, __pyx_L1_error)
       }
-      __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 201, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 211, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 201, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 201, __pyx_L1_error)
+        __PYX_ERR(0, 211, __pyx_L1_error)
       }
-      if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_QB, __pyx_t_1) < 0)) __PYX_ERR(0, 201, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_QB, __pyx_t_1) < 0)) __PYX_ERR(0, 211, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "dfs/Lineup.pyx":198
+      /* "dfs/Lineup.pyx":208
  *     cpdef remove_needed(self, pos, player):
  *         if self.lineup_type =="normal":
  *             if pos == "QB":             # <<<<<<<<<<<<<<
@@ -6309,73 +6243,73 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       goto __pyx_L4;
     }
 
-    /* "dfs/Lineup.pyx":202
+    /* "dfs/Lineup.pyx":212
  *                     return False
  *                 self.needed['QB'] = self.needed['QB'] - 1
  *             elif pos == "RB":             # <<<<<<<<<<<<<<
  *                 if self.needed['RB'] == 0:
  *                     if self.needed['FLEX'] == 0:
  */
-    __Pyx_TraceLine(202,0,__PYX_ERR(0, 202, __pyx_L1_error))
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_RB, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 202, __pyx_L1_error)
+    __Pyx_TraceLine(212,0,__PYX_ERR(0, 212, __pyx_L1_error))
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_RB, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 212, __pyx_L1_error)
     if (__pyx_t_8) {
 
-      /* "dfs/Lineup.pyx":203
+      /* "dfs/Lineup.pyx":213
  *                 self.needed['QB'] = self.needed['QB'] - 1
  *             elif pos == "RB":
  *                 if self.needed['RB'] == 0:             # <<<<<<<<<<<<<<
  *                     if self.needed['FLEX'] == 0:
  *                         return False
  */
-      __Pyx_TraceLine(203,0,__PYX_ERR(0, 203, __pyx_L1_error))
+      __Pyx_TraceLine(213,0,__PYX_ERR(0, 213, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 203, __pyx_L1_error)
+        __PYX_ERR(0, 213, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 203, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 213, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 203, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 213, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":204
+        /* "dfs/Lineup.pyx":214
  *             elif pos == "RB":
  *                 if self.needed['RB'] == 0:
  *                     if self.needed['FLEX'] == 0:             # <<<<<<<<<<<<<<
  *                         return False
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  */
-        __Pyx_TraceLine(204,0,__PYX_ERR(0, 204, __pyx_L1_error))
+        __Pyx_TraceLine(214,0,__PYX_ERR(0, 214, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 204, __pyx_L1_error)
+          __PYX_ERR(0, 214, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 204, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 214, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 214, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 204, __pyx_L1_error)
+        __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 214, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (__pyx_t_8) {
 
-          /* "dfs/Lineup.pyx":205
+          /* "dfs/Lineup.pyx":215
  *                 if self.needed['RB'] == 0:
  *                     if self.needed['FLEX'] == 0:
  *                         return False             # <<<<<<<<<<<<<<
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                     player.flex = "True"
  */
-          __Pyx_TraceLine(205,0,__PYX_ERR(0, 205, __pyx_L1_error))
+          __Pyx_TraceLine(215,0,__PYX_ERR(0, 215, __pyx_L1_error))
           __Pyx_XDECREF(__pyx_r);
           __Pyx_INCREF(Py_False);
           __pyx_r = Py_False;
           goto __pyx_L0;
 
-          /* "dfs/Lineup.pyx":204
+          /* "dfs/Lineup.pyx":214
  *             elif pos == "RB":
  *                 if self.needed['RB'] == 0:
  *                     if self.needed['FLEX'] == 0:             # <<<<<<<<<<<<<<
@@ -6384,41 +6318,41 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
  */
         }
 
-        /* "dfs/Lineup.pyx":206
+        /* "dfs/Lineup.pyx":216
  *                     if self.needed['FLEX'] == 0:
  *                         return False
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1             # <<<<<<<<<<<<<<
  *                     player.flex = "True"
  *                 else:
  */
-        __Pyx_TraceLine(206,0,__PYX_ERR(0, 206, __pyx_L1_error))
+        __Pyx_TraceLine(216,0,__PYX_ERR(0, 216, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 206, __pyx_L1_error)
+          __PYX_ERR(0, 216, __pyx_L1_error)
         }
-        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 216, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 206, __pyx_L1_error)
+          __PYX_ERR(0, 216, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_2) < 0)) __PYX_ERR(0, 206, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_2) < 0)) __PYX_ERR(0, 216, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "dfs/Lineup.pyx":207
+        /* "dfs/Lineup.pyx":217
  *                         return False
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                     player.flex = "True"             # <<<<<<<<<<<<<<
  *                 else:
  *                     self.needed['RB'] = self.needed['RB'] - 1
  */
-        __Pyx_TraceLine(207,0,__PYX_ERR(0, 207, __pyx_L1_error))
-        if (__Pyx_PyObject_SetAttrStr(__pyx_v_player, __pyx_n_s_flex, __pyx_n_s_True) < 0) __PYX_ERR(0, 207, __pyx_L1_error)
+        __Pyx_TraceLine(217,0,__PYX_ERR(0, 217, __pyx_L1_error))
+        if (__Pyx_PyObject_SetAttrStr(__pyx_v_player, __pyx_n_s_flex, __pyx_n_s_True) < 0) __PYX_ERR(0, 217, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":203
+        /* "dfs/Lineup.pyx":213
  *                 self.needed['QB'] = self.needed['QB'] - 1
  *             elif pos == "RB":
  *                 if self.needed['RB'] == 0:             # <<<<<<<<<<<<<<
@@ -6428,34 +6362,34 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L6;
       }
 
-      /* "dfs/Lineup.pyx":209
+      /* "dfs/Lineup.pyx":219
  *                     player.flex = "True"
  *                 else:
  *                     self.needed['RB'] = self.needed['RB'] - 1             # <<<<<<<<<<<<<<
  *             elif pos == "WR":
  *                 if self.needed['WR'] == 0:
  */
-      __Pyx_TraceLine(209,0,__PYX_ERR(0, 209, __pyx_L1_error))
+      __Pyx_TraceLine(219,0,__PYX_ERR(0, 219, __pyx_L1_error))
       /*else*/ {
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 209, __pyx_L1_error)
+          __PYX_ERR(0, 219, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 209, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 219, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 219, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 209, __pyx_L1_error)
+          __PYX_ERR(0, 219, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_RB, __pyx_t_1) < 0)) __PYX_ERR(0, 209, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_RB, __pyx_t_1) < 0)) __PYX_ERR(0, 219, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       }
       __pyx_L6:;
 
-      /* "dfs/Lineup.pyx":202
+      /* "dfs/Lineup.pyx":212
  *                     return False
  *                 self.needed['QB'] = self.needed['QB'] - 1
  *             elif pos == "RB":             # <<<<<<<<<<<<<<
@@ -6465,73 +6399,73 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       goto __pyx_L4;
     }
 
-    /* "dfs/Lineup.pyx":210
+    /* "dfs/Lineup.pyx":220
  *                 else:
  *                     self.needed['RB'] = self.needed['RB'] - 1
  *             elif pos == "WR":             # <<<<<<<<<<<<<<
  *                 if self.needed['WR'] == 0:
  *                     if self.needed['FLEX'] == 0:
  */
-    __Pyx_TraceLine(210,0,__PYX_ERR(0, 210, __pyx_L1_error))
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_WR, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 210, __pyx_L1_error)
+    __Pyx_TraceLine(220,0,__PYX_ERR(0, 220, __pyx_L1_error))
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_WR, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 220, __pyx_L1_error)
     if (__pyx_t_8) {
 
-      /* "dfs/Lineup.pyx":211
+      /* "dfs/Lineup.pyx":221
  *                     self.needed['RB'] = self.needed['RB'] - 1
  *             elif pos == "WR":
  *                 if self.needed['WR'] == 0:             # <<<<<<<<<<<<<<
  *                     if self.needed['FLEX'] == 0:
  *                         return False
  */
-      __Pyx_TraceLine(211,0,__PYX_ERR(0, 211, __pyx_L1_error))
+      __Pyx_TraceLine(221,0,__PYX_ERR(0, 221, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 211, __pyx_L1_error)
+        __PYX_ERR(0, 221, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 221, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 211, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 221, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 211, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 221, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":212
+        /* "dfs/Lineup.pyx":222
  *             elif pos == "WR":
  *                 if self.needed['WR'] == 0:
  *                     if self.needed['FLEX'] == 0:             # <<<<<<<<<<<<<<
  *                         return False
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  */
-        __Pyx_TraceLine(212,0,__PYX_ERR(0, 212, __pyx_L1_error))
+        __Pyx_TraceLine(222,0,__PYX_ERR(0, 222, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 212, __pyx_L1_error)
+          __PYX_ERR(0, 222, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 212, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 212, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 222, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 212, __pyx_L1_error)
+        __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 222, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (__pyx_t_8) {
 
-          /* "dfs/Lineup.pyx":213
+          /* "dfs/Lineup.pyx":223
  *                 if self.needed['WR'] == 0:
  *                     if self.needed['FLEX'] == 0:
  *                         return False             # <<<<<<<<<<<<<<
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                     player.flex = "True"
  */
-          __Pyx_TraceLine(213,0,__PYX_ERR(0, 213, __pyx_L1_error))
+          __Pyx_TraceLine(223,0,__PYX_ERR(0, 223, __pyx_L1_error))
           __Pyx_XDECREF(__pyx_r);
           __Pyx_INCREF(Py_False);
           __pyx_r = Py_False;
           goto __pyx_L0;
 
-          /* "dfs/Lineup.pyx":212
+          /* "dfs/Lineup.pyx":222
  *             elif pos == "WR":
  *                 if self.needed['WR'] == 0:
  *                     if self.needed['FLEX'] == 0:             # <<<<<<<<<<<<<<
@@ -6540,41 +6474,41 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
  */
         }
 
-        /* "dfs/Lineup.pyx":214
+        /* "dfs/Lineup.pyx":224
  *                     if self.needed['FLEX'] == 0:
  *                         return False
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1             # <<<<<<<<<<<<<<
  *                     player.flex = "True"
  *                 else:
  */
-        __Pyx_TraceLine(214,0,__PYX_ERR(0, 214, __pyx_L1_error))
+        __Pyx_TraceLine(224,0,__PYX_ERR(0, 224, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 214, __pyx_L1_error)
+          __PYX_ERR(0, 224, __pyx_L1_error)
         }
-        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 214, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 224, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 214, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 224, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 214, __pyx_L1_error)
+          __PYX_ERR(0, 224, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_2) < 0)) __PYX_ERR(0, 214, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_2) < 0)) __PYX_ERR(0, 224, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "dfs/Lineup.pyx":215
+        /* "dfs/Lineup.pyx":225
  *                         return False
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                     player.flex = "True"             # <<<<<<<<<<<<<<
  *                 else:
  *                     self.needed['WR'] = self.needed['WR'] - 1
  */
-        __Pyx_TraceLine(215,0,__PYX_ERR(0, 215, __pyx_L1_error))
-        if (__Pyx_PyObject_SetAttrStr(__pyx_v_player, __pyx_n_s_flex, __pyx_n_s_True) < 0) __PYX_ERR(0, 215, __pyx_L1_error)
+        __Pyx_TraceLine(225,0,__PYX_ERR(0, 225, __pyx_L1_error))
+        if (__Pyx_PyObject_SetAttrStr(__pyx_v_player, __pyx_n_s_flex, __pyx_n_s_True) < 0) __PYX_ERR(0, 225, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":211
+        /* "dfs/Lineup.pyx":221
  *                     self.needed['RB'] = self.needed['RB'] - 1
  *             elif pos == "WR":
  *                 if self.needed['WR'] == 0:             # <<<<<<<<<<<<<<
@@ -6584,34 +6518,34 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L8;
       }
 
-      /* "dfs/Lineup.pyx":217
+      /* "dfs/Lineup.pyx":227
  *                     player.flex = "True"
  *                 else:
  *                     self.needed['WR'] = self.needed['WR'] - 1             # <<<<<<<<<<<<<<
  *             elif pos == "TE":
  *                 if self.needed['TE'] == 0:
  */
-      __Pyx_TraceLine(217,0,__PYX_ERR(0, 217, __pyx_L1_error))
+      __Pyx_TraceLine(227,0,__PYX_ERR(0, 227, __pyx_L1_error))
       /*else*/ {
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 217, __pyx_L1_error)
+          __PYX_ERR(0, 227, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 217, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 227, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 217, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 227, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 217, __pyx_L1_error)
+          __PYX_ERR(0, 227, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_WR, __pyx_t_1) < 0)) __PYX_ERR(0, 217, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_WR, __pyx_t_1) < 0)) __PYX_ERR(0, 227, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       }
       __pyx_L8:;
 
-      /* "dfs/Lineup.pyx":210
+      /* "dfs/Lineup.pyx":220
  *                 else:
  *                     self.needed['RB'] = self.needed['RB'] - 1
  *             elif pos == "WR":             # <<<<<<<<<<<<<<
@@ -6621,73 +6555,73 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       goto __pyx_L4;
     }
 
-    /* "dfs/Lineup.pyx":218
+    /* "dfs/Lineup.pyx":228
  *                 else:
  *                     self.needed['WR'] = self.needed['WR'] - 1
  *             elif pos == "TE":             # <<<<<<<<<<<<<<
  *                 if self.needed['TE'] == 0:
  *                     if self.needed['FLEX'] == 0:
  */
-    __Pyx_TraceLine(218,0,__PYX_ERR(0, 218, __pyx_L1_error))
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_TE, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 218, __pyx_L1_error)
+    __Pyx_TraceLine(228,0,__PYX_ERR(0, 228, __pyx_L1_error))
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_TE, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 228, __pyx_L1_error)
     if (__pyx_t_8) {
 
-      /* "dfs/Lineup.pyx":219
+      /* "dfs/Lineup.pyx":229
  *                     self.needed['WR'] = self.needed['WR'] - 1
  *             elif pos == "TE":
  *                 if self.needed['TE'] == 0:             # <<<<<<<<<<<<<<
  *                     if self.needed['FLEX'] == 0:
  *                         return False
  */
-      __Pyx_TraceLine(219,0,__PYX_ERR(0, 219, __pyx_L1_error))
+      __Pyx_TraceLine(229,0,__PYX_ERR(0, 229, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 219, __pyx_L1_error)
+        __PYX_ERR(0, 229, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_TE); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 219, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_TE); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 229, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 219, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 229, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 219, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 229, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":220
+        /* "dfs/Lineup.pyx":230
  *             elif pos == "TE":
  *                 if self.needed['TE'] == 0:
  *                     if self.needed['FLEX'] == 0:             # <<<<<<<<<<<<<<
  *                         return False
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  */
-        __Pyx_TraceLine(220,0,__PYX_ERR(0, 220, __pyx_L1_error))
+        __Pyx_TraceLine(230,0,__PYX_ERR(0, 230, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 220, __pyx_L1_error)
+          __PYX_ERR(0, 230, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 220, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 230, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 220, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 220, __pyx_L1_error)
+        __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 230, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (__pyx_t_8) {
 
-          /* "dfs/Lineup.pyx":221
+          /* "dfs/Lineup.pyx":231
  *                 if self.needed['TE'] == 0:
  *                     if self.needed['FLEX'] == 0:
  *                         return False             # <<<<<<<<<<<<<<
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                     player.flex = "True"
  */
-          __Pyx_TraceLine(221,0,__PYX_ERR(0, 221, __pyx_L1_error))
+          __Pyx_TraceLine(231,0,__PYX_ERR(0, 231, __pyx_L1_error))
           __Pyx_XDECREF(__pyx_r);
           __Pyx_INCREF(Py_False);
           __pyx_r = Py_False;
           goto __pyx_L0;
 
-          /* "dfs/Lineup.pyx":220
+          /* "dfs/Lineup.pyx":230
  *             elif pos == "TE":
  *                 if self.needed['TE'] == 0:
  *                     if self.needed['FLEX'] == 0:             # <<<<<<<<<<<<<<
@@ -6696,41 +6630,41 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
  */
         }
 
-        /* "dfs/Lineup.pyx":222
+        /* "dfs/Lineup.pyx":232
  *                     if self.needed['FLEX'] == 0:
  *                         return False
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1             # <<<<<<<<<<<<<<
  *                     player.flex = "True"
  *                 else:
  */
-        __Pyx_TraceLine(222,0,__PYX_ERR(0, 222, __pyx_L1_error))
+        __Pyx_TraceLine(232,0,__PYX_ERR(0, 232, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 222, __pyx_L1_error)
+          __PYX_ERR(0, 232, __pyx_L1_error)
         }
-        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 232, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_t_1, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 232, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 222, __pyx_L1_error)
+          __PYX_ERR(0, 232, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_2) < 0)) __PYX_ERR(0, 222, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_2) < 0)) __PYX_ERR(0, 232, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "dfs/Lineup.pyx":223
+        /* "dfs/Lineup.pyx":233
  *                         return False
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                     player.flex = "True"             # <<<<<<<<<<<<<<
  *                 else:
  *                     self.needed['TE'] = self.needed['TE'] - 1
  */
-        __Pyx_TraceLine(223,0,__PYX_ERR(0, 223, __pyx_L1_error))
-        if (__Pyx_PyObject_SetAttrStr(__pyx_v_player, __pyx_n_s_flex, __pyx_n_s_True) < 0) __PYX_ERR(0, 223, __pyx_L1_error)
+        __Pyx_TraceLine(233,0,__PYX_ERR(0, 233, __pyx_L1_error))
+        if (__Pyx_PyObject_SetAttrStr(__pyx_v_player, __pyx_n_s_flex, __pyx_n_s_True) < 0) __PYX_ERR(0, 233, __pyx_L1_error)
 
-        /* "dfs/Lineup.pyx":219
+        /* "dfs/Lineup.pyx":229
  *                     self.needed['WR'] = self.needed['WR'] - 1
  *             elif pos == "TE":
  *                 if self.needed['TE'] == 0:             # <<<<<<<<<<<<<<
@@ -6740,34 +6674,34 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L10;
       }
 
-      /* "dfs/Lineup.pyx":225
+      /* "dfs/Lineup.pyx":235
  *                     player.flex = "True"
  *                 else:
  *                     self.needed['TE'] = self.needed['TE'] - 1             # <<<<<<<<<<<<<<
  *             elif pos == "DST":
  *                 if self.needed['DST'] == 0:
  */
-      __Pyx_TraceLine(225,0,__PYX_ERR(0, 225, __pyx_L1_error))
+      __Pyx_TraceLine(235,0,__PYX_ERR(0, 235, __pyx_L1_error))
       /*else*/ {
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 225, __pyx_L1_error)
+          __PYX_ERR(0, 235, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_TE); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 225, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_TE); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 235, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 225, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 235, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 225, __pyx_L1_error)
+          __PYX_ERR(0, 235, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_TE, __pyx_t_1) < 0)) __PYX_ERR(0, 225, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_TE, __pyx_t_1) < 0)) __PYX_ERR(0, 235, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       }
       __pyx_L10:;
 
-      /* "dfs/Lineup.pyx":218
+      /* "dfs/Lineup.pyx":228
  *                 else:
  *                     self.needed['WR'] = self.needed['WR'] - 1
  *             elif pos == "TE":             # <<<<<<<<<<<<<<
@@ -6777,52 +6711,52 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       goto __pyx_L4;
     }
 
-    /* "dfs/Lineup.pyx":226
+    /* "dfs/Lineup.pyx":236
  *                 else:
  *                     self.needed['TE'] = self.needed['TE'] - 1
  *             elif pos == "DST":             # <<<<<<<<<<<<<<
  *                 if self.needed['DST'] == 0:
  *                     return False
  */
-    __Pyx_TraceLine(226,0,__PYX_ERR(0, 226, __pyx_L1_error))
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_DST, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 226, __pyx_L1_error)
+    __Pyx_TraceLine(236,0,__PYX_ERR(0, 236, __pyx_L1_error))
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_DST, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 236, __pyx_L1_error)
     if (__pyx_t_8) {
 
-      /* "dfs/Lineup.pyx":227
+      /* "dfs/Lineup.pyx":237
  *                     self.needed['TE'] = self.needed['TE'] - 1
  *             elif pos == "DST":
  *                 if self.needed['DST'] == 0:             # <<<<<<<<<<<<<<
  *                     return False
  *                 self.needed['DST'] = self.needed['DST'] - 1
  */
-      __Pyx_TraceLine(227,0,__PYX_ERR(0, 227, __pyx_L1_error))
+      __Pyx_TraceLine(237,0,__PYX_ERR(0, 237, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 227, __pyx_L1_error)
+        __PYX_ERR(0, 237, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_DST); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 227, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_DST); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 237, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 227, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_1, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 237, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 227, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 237, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":228
+        /* "dfs/Lineup.pyx":238
  *             elif pos == "DST":
  *                 if self.needed['DST'] == 0:
  *                     return False             # <<<<<<<<<<<<<<
  *                 self.needed['DST'] = self.needed['DST'] - 1
  *             return True
  */
-        __Pyx_TraceLine(228,0,__PYX_ERR(0, 228, __pyx_L1_error))
+        __Pyx_TraceLine(238,0,__PYX_ERR(0, 238, __pyx_L1_error))
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(Py_False);
         __pyx_r = Py_False;
         goto __pyx_L0;
 
-        /* "dfs/Lineup.pyx":227
+        /* "dfs/Lineup.pyx":237
  *                     self.needed['TE'] = self.needed['TE'] - 1
  *             elif pos == "DST":
  *                 if self.needed['DST'] == 0:             # <<<<<<<<<<<<<<
@@ -6831,31 +6765,31 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
  */
       }
 
-      /* "dfs/Lineup.pyx":229
+      /* "dfs/Lineup.pyx":239
  *                 if self.needed['DST'] == 0:
  *                     return False
  *                 self.needed['DST'] = self.needed['DST'] - 1             # <<<<<<<<<<<<<<
  *             return True
  *         else:
  */
-      __Pyx_TraceLine(229,0,__PYX_ERR(0, 229, __pyx_L1_error))
+      __Pyx_TraceLine(239,0,__PYX_ERR(0, 239, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 229, __pyx_L1_error)
+        __PYX_ERR(0, 239, __pyx_L1_error)
       }
-      __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_DST); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 229, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_DST); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 239, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 229, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 239, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 229, __pyx_L1_error)
+        __PYX_ERR(0, 239, __pyx_L1_error)
       }
-      if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_DST, __pyx_t_1) < 0)) __PYX_ERR(0, 229, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_DST, __pyx_t_1) < 0)) __PYX_ERR(0, 239, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "dfs/Lineup.pyx":226
+      /* "dfs/Lineup.pyx":236
  *                 else:
  *                     self.needed['TE'] = self.needed['TE'] - 1
  *             elif pos == "DST":             # <<<<<<<<<<<<<<
@@ -6865,20 +6799,20 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
     }
     __pyx_L4:;
 
-    /* "dfs/Lineup.pyx":230
+    /* "dfs/Lineup.pyx":240
  *                     return False
  *                 self.needed['DST'] = self.needed['DST'] - 1
  *             return True             # <<<<<<<<<<<<<<
  *         else:
  *             if pos == "QB":
  */
-    __Pyx_TraceLine(230,0,__PYX_ERR(0, 230, __pyx_L1_error))
+    __Pyx_TraceLine(240,0,__PYX_ERR(0, 240, __pyx_L1_error))
     __Pyx_XDECREF(__pyx_r);
     __Pyx_INCREF(Py_True);
     __pyx_r = Py_True;
     goto __pyx_L0;
 
-    /* "dfs/Lineup.pyx":197
+    /* "dfs/Lineup.pyx":207
  * 
  *     cpdef remove_needed(self, pos, player):
  *         if self.lineup_type =="normal":             # <<<<<<<<<<<<<<
@@ -6887,63 +6821,63 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
  */
   }
 
-  /* "dfs/Lineup.pyx":232
+  /* "dfs/Lineup.pyx":242
  *             return True
  *         else:
  *             if pos == "QB":             # <<<<<<<<<<<<<<
  *                 if self.needed['QB'] > 0:
  *                     self.needed['QB'] = self.needed['QB'] - 1
  */
-  __Pyx_TraceLine(232,0,__PYX_ERR(0, 232, __pyx_L1_error))
+  __Pyx_TraceLine(242,0,__PYX_ERR(0, 242, __pyx_L1_error))
   /*else*/ {
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_QB, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 232, __pyx_L1_error)
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_QB, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 242, __pyx_L1_error)
     if (__pyx_t_8) {
 
-      /* "dfs/Lineup.pyx":233
+      /* "dfs/Lineup.pyx":243
  *         else:
  *             if pos == "QB":
  *                 if self.needed['QB'] > 0:             # <<<<<<<<<<<<<<
  *                     self.needed['QB'] = self.needed['QB'] - 1
  *                 elif self.needed['S-FLEX'] > 0:
  */
-      __Pyx_TraceLine(233,0,__PYX_ERR(0, 233, __pyx_L1_error))
+      __Pyx_TraceLine(243,0,__PYX_ERR(0, 243, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 233, __pyx_L1_error)
+        __PYX_ERR(0, 243, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 243, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 243, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 233, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 243, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":234
+        /* "dfs/Lineup.pyx":244
  *             if pos == "QB":
  *                 if self.needed['QB'] > 0:
  *                     self.needed['QB'] = self.needed['QB'] - 1             # <<<<<<<<<<<<<<
  *                 elif self.needed['S-FLEX'] > 0:
  *                     self.needed['S-FLEX'] -= 1
  */
-        __Pyx_TraceLine(234,0,__PYX_ERR(0, 234, __pyx_L1_error))
+        __Pyx_TraceLine(244,0,__PYX_ERR(0, 244, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 234, __pyx_L1_error)
+          __PYX_ERR(0, 244, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 234, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_QB); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 244, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 234, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 244, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 234, __pyx_L1_error)
+          __PYX_ERR(0, 244, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_QB, __pyx_t_1) < 0)) __PYX_ERR(0, 234, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_QB, __pyx_t_1) < 0)) __PYX_ERR(0, 244, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "dfs/Lineup.pyx":233
+        /* "dfs/Lineup.pyx":243
  *         else:
  *             if pos == "QB":
  *                 if self.needed['QB'] > 0:             # <<<<<<<<<<<<<<
@@ -6953,37 +6887,37 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L14;
       }
 
-      /* "dfs/Lineup.pyx":235
+      /* "dfs/Lineup.pyx":245
  *                 if self.needed['QB'] > 0:
  *                     self.needed['QB'] = self.needed['QB'] - 1
  *                 elif self.needed['S-FLEX'] > 0:             # <<<<<<<<<<<<<<
  *                     self.needed['S-FLEX'] -= 1
  *                 else:
  */
-      __Pyx_TraceLine(235,0,__PYX_ERR(0, 235, __pyx_L1_error))
+      __Pyx_TraceLine(245,0,__PYX_ERR(0, 245, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 235, __pyx_L1_error)
+        __PYX_ERR(0, 245, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 235, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 245, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 235, __pyx_L1_error)
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 245, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 235, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 245, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":236
+        /* "dfs/Lineup.pyx":246
  *                     self.needed['QB'] = self.needed['QB'] - 1
  *                 elif self.needed['S-FLEX'] > 0:
  *                     self.needed['S-FLEX'] -= 1             # <<<<<<<<<<<<<<
  *                 else:
  *                     return False
  */
-        __Pyx_TraceLine(236,0,__PYX_ERR(0, 236, __pyx_L1_error))
+        __Pyx_TraceLine(246,0,__PYX_ERR(0, 246, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 236, __pyx_L1_error)
+          __PYX_ERR(0, 246, __pyx_L1_error)
         }
         __Pyx_INCREF(__pyx_v_self->needed);
         __pyx_t_9 = __pyx_v_self->needed;
@@ -6991,23 +6925,23 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         __pyx_t_10 = __pyx_kp_s_S_FLEX;
         if (unlikely(__pyx_t_9 == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 236, __pyx_L1_error)
+          __PYX_ERR(0, 246, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_t_9, __pyx_t_10); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 236, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_t_9, __pyx_t_10); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 246, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 236, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_t_9 == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 236, __pyx_L1_error)
+          __PYX_ERR(0, 246, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_t_9, __pyx_t_10, __pyx_t_1) < 0)) __PYX_ERR(0, 236, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_t_9, __pyx_t_10, __pyx_t_1) < 0)) __PYX_ERR(0, 246, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-        /* "dfs/Lineup.pyx":235
+        /* "dfs/Lineup.pyx":245
  *                 if self.needed['QB'] > 0:
  *                     self.needed['QB'] = self.needed['QB'] - 1
  *                 elif self.needed['S-FLEX'] > 0:             # <<<<<<<<<<<<<<
@@ -7017,14 +6951,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L14;
       }
 
-      /* "dfs/Lineup.pyx":238
+      /* "dfs/Lineup.pyx":248
  *                     self.needed['S-FLEX'] -= 1
  *                 else:
  *                     return False             # <<<<<<<<<<<<<<
  *             elif pos == "RB":
  *                 if self.needed['RB'] > 0:
  */
-      __Pyx_TraceLine(238,0,__PYX_ERR(0, 238, __pyx_L1_error))
+      __Pyx_TraceLine(248,0,__PYX_ERR(0, 248, __pyx_L1_error))
       /*else*/ {
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(Py_False);
@@ -7033,7 +6967,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       }
       __pyx_L14:;
 
-      /* "dfs/Lineup.pyx":232
+      /* "dfs/Lineup.pyx":242
  *             return True
  *         else:
  *             if pos == "QB":             # <<<<<<<<<<<<<<
@@ -7043,62 +6977,62 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       goto __pyx_L13;
     }
 
-    /* "dfs/Lineup.pyx":239
+    /* "dfs/Lineup.pyx":249
  *                 else:
  *                     return False
  *             elif pos == "RB":             # <<<<<<<<<<<<<<
  *                 if self.needed['RB'] > 0:
  *                     self.needed['RB'] = self.needed['RB'] - 1
  */
-    __Pyx_TraceLine(239,0,__PYX_ERR(0, 239, __pyx_L1_error))
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_RB, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 239, __pyx_L1_error)
+    __Pyx_TraceLine(249,0,__PYX_ERR(0, 249, __pyx_L1_error))
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_RB, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 249, __pyx_L1_error)
     if (__pyx_t_8) {
 
-      /* "dfs/Lineup.pyx":240
+      /* "dfs/Lineup.pyx":250
  *                     return False
  *             elif pos == "RB":
  *                 if self.needed['RB'] > 0:             # <<<<<<<<<<<<<<
  *                     self.needed['RB'] = self.needed['RB'] - 1
  *                 elif self.needed['FLEX'] > 0:
  */
-      __Pyx_TraceLine(240,0,__PYX_ERR(0, 240, __pyx_L1_error))
+      __Pyx_TraceLine(250,0,__PYX_ERR(0, 250, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 240, __pyx_L1_error)
+        __PYX_ERR(0, 250, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 240, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 240, __pyx_L1_error)
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 250, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 240, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 250, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":241
+        /* "dfs/Lineup.pyx":251
  *             elif pos == "RB":
  *                 if self.needed['RB'] > 0:
  *                     self.needed['RB'] = self.needed['RB'] - 1             # <<<<<<<<<<<<<<
  *                 elif self.needed['FLEX'] > 0:
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  */
-        __Pyx_TraceLine(241,0,__PYX_ERR(0, 241, __pyx_L1_error))
+        __Pyx_TraceLine(251,0,__PYX_ERR(0, 251, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 241, __pyx_L1_error)
+          __PYX_ERR(0, 251, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 241, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_RB); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 251, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 241, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 241, __pyx_L1_error)
+          __PYX_ERR(0, 251, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_RB, __pyx_t_1) < 0)) __PYX_ERR(0, 241, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_RB, __pyx_t_1) < 0)) __PYX_ERR(0, 251, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "dfs/Lineup.pyx":240
+        /* "dfs/Lineup.pyx":250
  *                     return False
  *             elif pos == "RB":
  *                 if self.needed['RB'] > 0:             # <<<<<<<<<<<<<<
@@ -7108,51 +7042,51 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L15;
       }
 
-      /* "dfs/Lineup.pyx":242
+      /* "dfs/Lineup.pyx":252
  *                 if self.needed['RB'] > 0:
  *                     self.needed['RB'] = self.needed['RB'] - 1
  *                 elif self.needed['FLEX'] > 0:             # <<<<<<<<<<<<<<
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                 elif self.needed['S-FLEX'] > 0:
  */
-      __Pyx_TraceLine(242,0,__PYX_ERR(0, 242, __pyx_L1_error))
+      __Pyx_TraceLine(252,0,__PYX_ERR(0, 252, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 242, __pyx_L1_error)
+        __PYX_ERR(0, 252, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 242, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 242, __pyx_L1_error)
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 252, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 242, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 252, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":243
+        /* "dfs/Lineup.pyx":253
  *                     self.needed['RB'] = self.needed['RB'] - 1
  *                 elif self.needed['FLEX'] > 0:
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1             # <<<<<<<<<<<<<<
  *                 elif self.needed['S-FLEX'] > 0:
  *                     self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1
  */
-        __Pyx_TraceLine(243,0,__PYX_ERR(0, 243, __pyx_L1_error))
+        __Pyx_TraceLine(253,0,__PYX_ERR(0, 253, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 243, __pyx_L1_error)
+          __PYX_ERR(0, 253, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 243, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 253, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 243, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 243, __pyx_L1_error)
+          __PYX_ERR(0, 253, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 243, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 253, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "dfs/Lineup.pyx":242
+        /* "dfs/Lineup.pyx":252
  *                 if self.needed['RB'] > 0:
  *                     self.needed['RB'] = self.needed['RB'] - 1
  *                 elif self.needed['FLEX'] > 0:             # <<<<<<<<<<<<<<
@@ -7162,51 +7096,51 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L15;
       }
 
-      /* "dfs/Lineup.pyx":244
+      /* "dfs/Lineup.pyx":254
  *                 elif self.needed['FLEX'] > 0:
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                 elif self.needed['S-FLEX'] > 0:             # <<<<<<<<<<<<<<
  *                     self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1
  *                 else:
  */
-      __Pyx_TraceLine(244,0,__PYX_ERR(0, 244, __pyx_L1_error))
+      __Pyx_TraceLine(254,0,__PYX_ERR(0, 254, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 244, __pyx_L1_error)
+        __PYX_ERR(0, 254, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 244, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 254, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 244, __pyx_L1_error)
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 254, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 244, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 254, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":245
+        /* "dfs/Lineup.pyx":255
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                 elif self.needed['S-FLEX'] > 0:
  *                     self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1             # <<<<<<<<<<<<<<
  *                 else:
  *                     return False
  */
-        __Pyx_TraceLine(245,0,__PYX_ERR(0, 245, __pyx_L1_error))
+        __Pyx_TraceLine(255,0,__PYX_ERR(0, 255, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 245, __pyx_L1_error)
+          __PYX_ERR(0, 255, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 245, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 255, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 245, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 255, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 245, __pyx_L1_error)
+          __PYX_ERR(0, 255, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 245, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 255, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "dfs/Lineup.pyx":244
+        /* "dfs/Lineup.pyx":254
  *                 elif self.needed['FLEX'] > 0:
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                 elif self.needed['S-FLEX'] > 0:             # <<<<<<<<<<<<<<
@@ -7216,14 +7150,14 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L15;
       }
 
-      /* "dfs/Lineup.pyx":247
+      /* "dfs/Lineup.pyx":257
  *                     self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1
  *                 else:
  *                     return False             # <<<<<<<<<<<<<<
  *             elif pos == "WR":
  *                 if self.needed['WR'] > 0:
  */
-      __Pyx_TraceLine(247,0,__PYX_ERR(0, 247, __pyx_L1_error))
+      __Pyx_TraceLine(257,0,__PYX_ERR(0, 257, __pyx_L1_error))
       /*else*/ {
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(Py_False);
@@ -7232,7 +7166,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       }
       __pyx_L15:;
 
-      /* "dfs/Lineup.pyx":239
+      /* "dfs/Lineup.pyx":249
  *                 else:
  *                     return False
  *             elif pos == "RB":             # <<<<<<<<<<<<<<
@@ -7242,62 +7176,62 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       goto __pyx_L13;
     }
 
-    /* "dfs/Lineup.pyx":248
+    /* "dfs/Lineup.pyx":258
  *                 else:
  *                     return False
  *             elif pos == "WR":             # <<<<<<<<<<<<<<
  *                 if self.needed['WR'] > 0:
  *                     self.needed['WR'] = self.needed['WR'] - 1
  */
-    __Pyx_TraceLine(248,0,__PYX_ERR(0, 248, __pyx_L1_error))
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_WR, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 248, __pyx_L1_error)
+    __Pyx_TraceLine(258,0,__PYX_ERR(0, 258, __pyx_L1_error))
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_pos, __pyx_n_s_WR, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 258, __pyx_L1_error)
     if (__pyx_t_8) {
 
-      /* "dfs/Lineup.pyx":249
+      /* "dfs/Lineup.pyx":259
  *                     return False
  *             elif pos == "WR":
  *                 if self.needed['WR'] > 0:             # <<<<<<<<<<<<<<
  *                     self.needed['WR'] = self.needed['WR'] - 1
  *                 elif self.needed['FLEX'] > 0:
  */
-      __Pyx_TraceLine(249,0,__PYX_ERR(0, 249, __pyx_L1_error))
+      __Pyx_TraceLine(259,0,__PYX_ERR(0, 259, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 249, __pyx_L1_error)
+        __PYX_ERR(0, 259, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 249, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 249, __pyx_L1_error)
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 249, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 259, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":250
+        /* "dfs/Lineup.pyx":260
  *             elif pos == "WR":
  *                 if self.needed['WR'] > 0:
  *                     self.needed['WR'] = self.needed['WR'] - 1             # <<<<<<<<<<<<<<
  *                 elif self.needed['FLEX'] > 0:
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  */
-        __Pyx_TraceLine(250,0,__PYX_ERR(0, 250, __pyx_L1_error))
+        __Pyx_TraceLine(260,0,__PYX_ERR(0, 260, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 250, __pyx_L1_error)
+          __PYX_ERR(0, 260, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 250, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_WR); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 260, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 250, __pyx_L1_error)
+          __PYX_ERR(0, 260, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_WR, __pyx_t_1) < 0)) __PYX_ERR(0, 250, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_WR, __pyx_t_1) < 0)) __PYX_ERR(0, 260, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "dfs/Lineup.pyx":249
+        /* "dfs/Lineup.pyx":259
  *                     return False
  *             elif pos == "WR":
  *                 if self.needed['WR'] > 0:             # <<<<<<<<<<<<<<
@@ -7307,51 +7241,51 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L16;
       }
 
-      /* "dfs/Lineup.pyx":251
+      /* "dfs/Lineup.pyx":261
  *                 if self.needed['WR'] > 0:
  *                     self.needed['WR'] = self.needed['WR'] - 1
  *                 elif self.needed['FLEX'] > 0:             # <<<<<<<<<<<<<<
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                 elif self.needed['S-FLEX'] > 0:
  */
-      __Pyx_TraceLine(251,0,__PYX_ERR(0, 251, __pyx_L1_error))
+      __Pyx_TraceLine(261,0,__PYX_ERR(0, 261, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 251, __pyx_L1_error)
+        __PYX_ERR(0, 261, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 251, __pyx_L1_error)
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 251, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 261, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":252
+        /* "dfs/Lineup.pyx":262
  *                     self.needed['WR'] = self.needed['WR'] - 1
  *                 elif self.needed['FLEX'] > 0:
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1             # <<<<<<<<<<<<<<
  *                 elif self.needed['S-FLEX'] > 0:
  *                     self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1
  */
-        __Pyx_TraceLine(252,0,__PYX_ERR(0, 252, __pyx_L1_error))
+        __Pyx_TraceLine(262,0,__PYX_ERR(0, 262, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 252, __pyx_L1_error)
+          __PYX_ERR(0, 262, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 252, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_n_s_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 262, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 262, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 252, __pyx_L1_error)
+          __PYX_ERR(0, 262, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 252, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_n_s_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 262, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "dfs/Lineup.pyx":251
+        /* "dfs/Lineup.pyx":261
  *                 if self.needed['WR'] > 0:
  *                     self.needed['WR'] = self.needed['WR'] - 1
  *                 elif self.needed['FLEX'] > 0:             # <<<<<<<<<<<<<<
@@ -7361,51 +7295,51 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L16;
       }
 
-      /* "dfs/Lineup.pyx":253
+      /* "dfs/Lineup.pyx":263
  *                 elif self.needed['FLEX'] > 0:
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                 elif self.needed['S-FLEX'] > 0:             # <<<<<<<<<<<<<<
  *                     self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1
  *                 else:
  */
-      __Pyx_TraceLine(253,0,__PYX_ERR(0, 253, __pyx_L1_error))
+      __Pyx_TraceLine(263,0,__PYX_ERR(0, 263, __pyx_L1_error))
       if (unlikely(__pyx_v_self->needed == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 253, __pyx_L1_error)
+        __PYX_ERR(0, 263, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 263, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 253, __pyx_L1_error)
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 263, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 253, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 263, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_8) {
 
-        /* "dfs/Lineup.pyx":254
+        /* "dfs/Lineup.pyx":264
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                 elif self.needed['S-FLEX'] > 0:
  *                     self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1             # <<<<<<<<<<<<<<
  *                 else:
  *                     return False
  */
-        __Pyx_TraceLine(254,0,__PYX_ERR(0, 254, __pyx_L1_error))
+        __Pyx_TraceLine(264,0,__PYX_ERR(0, 264, __pyx_L1_error))
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 254, __pyx_L1_error)
+          __PYX_ERR(0, 264, __pyx_L1_error)
         }
-        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 254, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 264, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 254, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 264, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (unlikely(__pyx_v_self->needed == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 254, __pyx_L1_error)
+          __PYX_ERR(0, 264, __pyx_L1_error)
         }
-        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 254, __pyx_L1_error)
+        if (unlikely(PyDict_SetItem(__pyx_v_self->needed, __pyx_kp_s_S_FLEX, __pyx_t_1) < 0)) __PYX_ERR(0, 264, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "dfs/Lineup.pyx":253
+        /* "dfs/Lineup.pyx":263
  *                 elif self.needed['FLEX'] > 0:
  *                     self.needed['FLEX'] = self.needed['FLEX'] - 1
  *                 elif self.needed['S-FLEX'] > 0:             # <<<<<<<<<<<<<<
@@ -7415,13 +7349,13 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
         goto __pyx_L16;
       }
 
-      /* "dfs/Lineup.pyx":256
+      /* "dfs/Lineup.pyx":266
  *                     self.needed['S-FLEX'] = self.needed['S-FLEX'] - 1
  *                 else:
  *                     return False             # <<<<<<<<<<<<<<
  *             return True
  */
-      __Pyx_TraceLine(256,0,__PYX_ERR(0, 256, __pyx_L1_error))
+      __Pyx_TraceLine(266,0,__PYX_ERR(0, 266, __pyx_L1_error))
       /*else*/ {
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(Py_False);
@@ -7430,7 +7364,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
       }
       __pyx_L16:;
 
-      /* "dfs/Lineup.pyx":248
+      /* "dfs/Lineup.pyx":258
  *                 else:
  *                     return False
  *             elif pos == "WR":             # <<<<<<<<<<<<<<
@@ -7440,19 +7374,19 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_remove_needed(struct __pyx_obj_3df
     }
     __pyx_L13:;
 
-    /* "dfs/Lineup.pyx":257
+    /* "dfs/Lineup.pyx":267
  *                 else:
  *                     return False
  *             return True             # <<<<<<<<<<<<<<
  */
-    __Pyx_TraceLine(257,0,__PYX_ERR(0, 257, __pyx_L1_error))
+    __Pyx_TraceLine(267,0,__PYX_ERR(0, 267, __pyx_L1_error))
     __Pyx_XDECREF(__pyx_r);
     __Pyx_INCREF(Py_True);
     __pyx_r = Py_True;
     goto __pyx_L0;
   }
 
-  /* "dfs/Lineup.pyx":196
+  /* "dfs/Lineup.pyx":206
  *         return plays
  * 
  *     cpdef remove_needed(self, pos, player):             # <<<<<<<<<<<<<<
@@ -7510,11 +7444,11 @@ static PyObject *__pyx_pw_3dfs_6Lineup_6Lineup_23remove_needed(PyObject *__pyx_v
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_player)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("remove_needed", 1, 2, 2, 1); __PYX_ERR(0, 196, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("remove_needed", 1, 2, 2, 1); __PYX_ERR(0, 206, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "remove_needed") < 0)) __PYX_ERR(0, 196, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "remove_needed") < 0)) __PYX_ERR(0, 206, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -7527,7 +7461,7 @@ static PyObject *__pyx_pw_3dfs_6Lineup_6Lineup_23remove_needed(PyObject *__pyx_v
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("remove_needed", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 196, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("remove_needed", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 206, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("dfs.Lineup.Lineup.remove_needed", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -7545,11 +7479,11 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_22remove_needed(struct __pyx_obj_
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__13)
+  __Pyx_TraceFrameInit(__pyx_codeobj__14)
   __Pyx_RefNannySetupContext("remove_needed", 0);
-  __Pyx_TraceCall("remove_needed (wrapper)", __pyx_f[0], 196, 0, __PYX_ERR(0, 196, __pyx_L1_error));
+  __Pyx_TraceCall("remove_needed (wrapper)", __pyx_f[0], 206, 0, __PYX_ERR(0, 206, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_remove_needed(__pyx_v_self, __pyx_v_pos, __pyx_v_player, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Lineup_6Lineup_remove_needed(__pyx_v_self, __pyx_v_pos, __pyx_v_player, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -7939,7 +7873,7 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup_12points_floor_2__set__(struct __pyx_ob
  *     cdef public double points_floor
  *     cdef public double points_ceil             # <<<<<<<<<<<<<<
  *     cdef public double points_avg
- *     cdef dict players_dict
+ *     cdef public str stack
  */
 
 /* Python wrapper */
@@ -8020,8 +7954,8 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup_11points_ceil_2__set__(struct __pyx_obj
  *     cdef public double points_floor
  *     cdef public double points_ceil
  *     cdef public double points_avg             # <<<<<<<<<<<<<<
+ *     cdef public str stack
  *     cdef dict players_dict
- *     cdef dict required_players
  */
 
 /* Python wrapper */
@@ -8098,10 +8032,132 @@ static int __pyx_pf_3dfs_6Lineup_6Lineup_10points_avg_2__set__(struct __pyx_obj_
   return __pyx_r;
 }
 
+/* "dfs/Lineup.pxd":10
+ *     cdef public double points_ceil
+ *     cdef public double points_avg
+ *     cdef public str stack             # <<<<<<<<<<<<<<
+ *     cdef dict players_dict
+ *     cdef dict required_players
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_3dfs_6Lineup_6Lineup_5stack_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_3dfs_6Lineup_6Lineup_5stack_1__get__(PyObject *__pyx_v_self) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_3dfs_6Lineup_6Lineup_5stack___get__(((struct __pyx_obj_3dfs_6Lineup_Lineup *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_5stack___get__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_TraceCall("__get__", __pyx_f[1], 10, 0, __PYX_ERR(1, 10, __pyx_L1_error));
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_self->stack);
+  __pyx_r = __pyx_v_self->stack;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("dfs.Lineup.Lineup.stack.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_TraceReturn(__pyx_r, 0);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static int __pyx_pw_3dfs_6Lineup_6Lineup_5stack_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_3dfs_6Lineup_6Lineup_5stack_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_3dfs_6Lineup_6Lineup_5stack_2__set__(((struct __pyx_obj_3dfs_6Lineup_Lineup *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_3dfs_6Lineup_6Lineup_5stack_2__set__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("__set__", 0);
+  __Pyx_TraceCall("__set__", __pyx_f[1], 10, 0, __PYX_ERR(1, 10, __pyx_L1_error));
+  if (!(likely(PyString_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(1, 10, __pyx_L1_error)
+  __pyx_t_1 = __pyx_v_value;
+  __Pyx_INCREF(__pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __Pyx_GOTREF(__pyx_v_self->stack);
+  __Pyx_DECREF(__pyx_v_self->stack);
+  __pyx_v_self->stack = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("dfs.Lineup.Lineup.stack.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static int __pyx_pw_3dfs_6Lineup_6Lineup_5stack_5__del__(PyObject *__pyx_v_self); /*proto*/
+static int __pyx_pw_3dfs_6Lineup_6Lineup_5stack_5__del__(PyObject *__pyx_v_self) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__del__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_3dfs_6Lineup_6Lineup_5stack_4__del__(((struct __pyx_obj_3dfs_6Lineup_Lineup *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_3dfs_6Lineup_6Lineup_5stack_4__del__(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v_self) {
+  int __pyx_r;
+  __Pyx_TraceDeclarations
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__del__", 0);
+  __Pyx_TraceCall("__del__", __pyx_f[1], 10, 0, __PYX_ERR(1, 10, __pyx_L1_error));
+  __Pyx_INCREF(Py_None);
+  __Pyx_GIVEREF(Py_None);
+  __Pyx_GOTREF(__pyx_v_self->stack);
+  __Pyx_DECREF(__pyx_v_self->stack);
+  __pyx_v_self->stack = ((PyObject*)Py_None);
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("dfs.Lineup.Lineup.stack.__del__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  __Pyx_TraceReturn(Py_None, 0);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
 /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     cdef bint use_setstate
- *     state = (self.cap, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining)
+ *     state = (self.cap, self.has_cpt, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining, self.stack)
  */
 
 /* Python wrapper */
@@ -8132,95 +8188,104 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_24__reduce_cython__(struct __pyx_
   PyObject *__pyx_t_5 = NULL;
   PyObject *__pyx_t_6 = NULL;
   PyObject *__pyx_t_7 = NULL;
-  int __pyx_t_8;
+  PyObject *__pyx_t_8 = NULL;
   int __pyx_t_9;
   int __pyx_t_10;
-  __Pyx_TraceFrameInit(__pyx_codeobj__14)
+  int __pyx_t_11;
+  __Pyx_TraceFrameInit(__pyx_codeobj__15)
   __Pyx_RefNannySetupContext("__reduce_cython__", 0);
   __Pyx_TraceCall("__reduce_cython__", __pyx_f[2], 1, 0, __PYX_ERR(2, 1, __pyx_L1_error));
 
   /* "(tree fragment)":3
  * def __reduce_cython__(self):
  *     cdef bint use_setstate
- *     state = (self.cap, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining)             # <<<<<<<<<<<<<<
+ *     state = (self.cap, self.has_cpt, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining, self.stack)             # <<<<<<<<<<<<<<
  *     _dict = getattr(self, '__dict__', None)
  *     if _dict is not None:
  */
   __Pyx_TraceLine(3,0,__PYX_ERR(2, 3, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->cap); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->len_players); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 3, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_self->has_cpt); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyFloat_FromDouble(__pyx_v_self->points_avg); if (unlikely(!__pyx_t_3)) __PYX_ERR(2, 3, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->len_players); if (unlikely(!__pyx_t_3)) __PYX_ERR(2, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->points_ceil); if (unlikely(!__pyx_t_4)) __PYX_ERR(2, 3, __pyx_L1_error)
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->points_avg); if (unlikely(!__pyx_t_4)) __PYX_ERR(2, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_self->points_floor); if (unlikely(!__pyx_t_5)) __PYX_ERR(2, 3, __pyx_L1_error)
+  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_self->points_ceil); if (unlikely(!__pyx_t_5)) __PYX_ERR(2, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 3, __pyx_L1_error)
+  __pyx_t_6 = PyFloat_FromDouble(__pyx_v_self->points_floor); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = PyTuple_New(11); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 3, __pyx_L1_error)
+  __pyx_t_7 = PyFloat_FromDouble(__pyx_v_self->salary_remaining); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_8 = PyTuple_New(13); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_8);
   __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_2);
-  PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_8, 2, __pyx_t_3);
   __Pyx_INCREF(__pyx_v_self->lineup_type);
   __Pyx_GIVEREF(__pyx_v_self->lineup_type);
-  PyTuple_SET_ITEM(__pyx_t_7, 2, __pyx_v_self->lineup_type);
+  PyTuple_SET_ITEM(__pyx_t_8, 3, __pyx_v_self->lineup_type);
   __Pyx_INCREF(__pyx_v_self->needed);
   __Pyx_GIVEREF(__pyx_v_self->needed);
-  PyTuple_SET_ITEM(__pyx_t_7, 3, __pyx_v_self->needed);
+  PyTuple_SET_ITEM(__pyx_t_8, 4, __pyx_v_self->needed);
   __Pyx_INCREF(__pyx_v_self->players);
   __Pyx_GIVEREF(__pyx_v_self->players);
-  PyTuple_SET_ITEM(__pyx_t_7, 4, __pyx_v_self->players);
+  PyTuple_SET_ITEM(__pyx_t_8, 5, __pyx_v_self->players);
   __Pyx_INCREF(__pyx_v_self->players_dict);
   __Pyx_GIVEREF(__pyx_v_self->players_dict);
-  PyTuple_SET_ITEM(__pyx_t_7, 5, __pyx_v_self->players_dict);
-  __Pyx_GIVEREF(__pyx_t_3);
-  PyTuple_SET_ITEM(__pyx_t_7, 6, __pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_8, 6, __pyx_v_self->players_dict);
   __Pyx_GIVEREF(__pyx_t_4);
-  PyTuple_SET_ITEM(__pyx_t_7, 7, __pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_8, 7, __pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_5);
-  PyTuple_SET_ITEM(__pyx_t_7, 8, __pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_8, 8, __pyx_t_5);
+  __Pyx_GIVEREF(__pyx_t_6);
+  PyTuple_SET_ITEM(__pyx_t_8, 9, __pyx_t_6);
   __Pyx_INCREF(__pyx_v_self->required_players);
   __Pyx_GIVEREF(__pyx_v_self->required_players);
-  PyTuple_SET_ITEM(__pyx_t_7, 9, __pyx_v_self->required_players);
-  __Pyx_GIVEREF(__pyx_t_6);
-  PyTuple_SET_ITEM(__pyx_t_7, 10, __pyx_t_6);
+  PyTuple_SET_ITEM(__pyx_t_8, 10, __pyx_v_self->required_players);
+  __Pyx_GIVEREF(__pyx_t_7);
+  PyTuple_SET_ITEM(__pyx_t_8, 11, __pyx_t_7);
+  __Pyx_INCREF(__pyx_v_self->stack);
+  __Pyx_GIVEREF(__pyx_v_self->stack);
+  PyTuple_SET_ITEM(__pyx_t_8, 12, __pyx_v_self->stack);
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
   __pyx_t_4 = 0;
   __pyx_t_5 = 0;
   __pyx_t_6 = 0;
-  __pyx_v_state = ((PyObject*)__pyx_t_7);
   __pyx_t_7 = 0;
+  __pyx_v_state = ((PyObject*)__pyx_t_8);
+  __pyx_t_8 = 0;
 
   /* "(tree fragment)":4
  *     cdef bint use_setstate
- *     state = (self.cap, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining)
+ *     state = (self.cap, self.has_cpt, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining, self.stack)
  *     _dict = getattr(self, '__dict__', None)             # <<<<<<<<<<<<<<
  *     if _dict is not None:
  *         state += (_dict,)
  */
   __Pyx_TraceLine(4,0,__PYX_ERR(2, 4, __pyx_L1_error))
-  __pyx_t_7 = __Pyx_GetAttr3(((PyObject *)__pyx_v_self), __pyx_n_s_dict, Py_None); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_v__dict = __pyx_t_7;
-  __pyx_t_7 = 0;
+  __pyx_t_8 = __Pyx_GetAttr3(((PyObject *)__pyx_v_self), __pyx_n_s_dict, Py_None); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_8);
+  __pyx_v__dict = __pyx_t_8;
+  __pyx_t_8 = 0;
 
   /* "(tree fragment)":5
- *     state = (self.cap, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining)
+ *     state = (self.cap, self.has_cpt, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining, self.stack)
  *     _dict = getattr(self, '__dict__', None)
  *     if _dict is not None:             # <<<<<<<<<<<<<<
  *         state += (_dict,)
  *         use_setstate = True
  */
   __Pyx_TraceLine(5,0,__PYX_ERR(2, 5, __pyx_L1_error))
-  __pyx_t_8 = (__pyx_v__dict != Py_None);
-  __pyx_t_9 = (__pyx_t_8 != 0);
-  if (__pyx_t_9) {
+  __pyx_t_9 = (__pyx_v__dict != Py_None);
+  __pyx_t_10 = (__pyx_t_9 != 0);
+  if (__pyx_t_10) {
 
     /* "(tree fragment)":6
  *     _dict = getattr(self, '__dict__', None)
@@ -8230,29 +8295,29 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_24__reduce_cython__(struct __pyx_
  *     else:
  */
     __Pyx_TraceLine(6,0,__PYX_ERR(2, 6, __pyx_L1_error))
-    __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 6, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 6, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
     __Pyx_INCREF(__pyx_v__dict);
     __Pyx_GIVEREF(__pyx_v__dict);
-    PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_v__dict);
-    __pyx_t_6 = PyNumber_InPlaceAdd(__pyx_v_state, __pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 6, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_DECREF_SET(__pyx_v_state, ((PyObject*)__pyx_t_6));
-    __pyx_t_6 = 0;
+    PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_v__dict);
+    __pyx_t_7 = PyNumber_InPlaceAdd(__pyx_v_state, __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 6, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_DECREF_SET(__pyx_v_state, ((PyObject*)__pyx_t_7));
+    __pyx_t_7 = 0;
 
     /* "(tree fragment)":7
  *     if _dict is not None:
  *         state += (_dict,)
  *         use_setstate = True             # <<<<<<<<<<<<<<
  *     else:
- *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None
+ *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None or self.stack is not None
  */
     __Pyx_TraceLine(7,0,__PYX_ERR(2, 7, __pyx_L1_error))
     __pyx_v_use_setstate = 1;
 
     /* "(tree fragment)":5
- *     state = (self.cap, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining)
+ *     state = (self.cap, self.has_cpt, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining, self.stack)
  *     _dict = getattr(self, '__dict__', None)
  *     if _dict is not None:             # <<<<<<<<<<<<<<
  *         state += (_dict,)
@@ -8264,145 +8329,152 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_24__reduce_cython__(struct __pyx_
   /* "(tree fragment)":9
  *         use_setstate = True
  *     else:
- *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None             # <<<<<<<<<<<<<<
+ *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None or self.stack is not None             # <<<<<<<<<<<<<<
  *     if use_setstate:
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, None), state
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, None), state
  */
   __Pyx_TraceLine(9,0,__PYX_ERR(2, 9, __pyx_L1_error))
   /*else*/ {
-    __pyx_t_8 = (__pyx_v_self->lineup_type != ((PyObject*)Py_None));
-    __pyx_t_10 = (__pyx_t_8 != 0);
-    if (!__pyx_t_10) {
+    __pyx_t_9 = (__pyx_v_self->lineup_type != ((PyObject*)Py_None));
+    __pyx_t_11 = (__pyx_t_9 != 0);
+    if (!__pyx_t_11) {
     } else {
-      __pyx_t_9 = __pyx_t_10;
+      __pyx_t_10 = __pyx_t_11;
       goto __pyx_L4_bool_binop_done;
     }
-    __pyx_t_10 = (__pyx_v_self->needed != ((PyObject*)Py_None));
-    __pyx_t_8 = (__pyx_t_10 != 0);
-    if (!__pyx_t_8) {
+    __pyx_t_11 = (__pyx_v_self->needed != ((PyObject*)Py_None));
+    __pyx_t_9 = (__pyx_t_11 != 0);
+    if (!__pyx_t_9) {
     } else {
-      __pyx_t_9 = __pyx_t_8;
+      __pyx_t_10 = __pyx_t_9;
       goto __pyx_L4_bool_binop_done;
     }
-    __pyx_t_8 = (__pyx_v_self->players != ((PyObject*)Py_None));
-    __pyx_t_10 = (__pyx_t_8 != 0);
-    if (!__pyx_t_10) {
+    __pyx_t_9 = (__pyx_v_self->players != ((PyObject*)Py_None));
+    __pyx_t_11 = (__pyx_t_9 != 0);
+    if (!__pyx_t_11) {
     } else {
-      __pyx_t_9 = __pyx_t_10;
+      __pyx_t_10 = __pyx_t_11;
       goto __pyx_L4_bool_binop_done;
     }
-    __pyx_t_10 = (__pyx_v_self->players_dict != ((PyObject*)Py_None));
-    __pyx_t_8 = (__pyx_t_10 != 0);
-    if (!__pyx_t_8) {
+    __pyx_t_11 = (__pyx_v_self->players_dict != ((PyObject*)Py_None));
+    __pyx_t_9 = (__pyx_t_11 != 0);
+    if (!__pyx_t_9) {
     } else {
-      __pyx_t_9 = __pyx_t_8;
+      __pyx_t_10 = __pyx_t_9;
       goto __pyx_L4_bool_binop_done;
     }
-    __pyx_t_8 = (__pyx_v_self->required_players != ((PyObject*)Py_None));
-    __pyx_t_10 = (__pyx_t_8 != 0);
-    __pyx_t_9 = __pyx_t_10;
+    __pyx_t_9 = (__pyx_v_self->required_players != ((PyObject*)Py_None));
+    __pyx_t_11 = (__pyx_t_9 != 0);
+    if (!__pyx_t_11) {
+    } else {
+      __pyx_t_10 = __pyx_t_11;
+      goto __pyx_L4_bool_binop_done;
+    }
+    __pyx_t_11 = (__pyx_v_self->stack != ((PyObject*)Py_None));
+    __pyx_t_9 = (__pyx_t_11 != 0);
+    __pyx_t_10 = __pyx_t_9;
     __pyx_L4_bool_binop_done:;
-    __pyx_v_use_setstate = __pyx_t_9;
+    __pyx_v_use_setstate = __pyx_t_10;
   }
   __pyx_L3:;
 
   /* "(tree fragment)":10
  *     else:
- *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None
+ *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None or self.stack is not None
  *     if use_setstate:             # <<<<<<<<<<<<<<
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, None), state
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, None), state
  *     else:
  */
   __Pyx_TraceLine(10,0,__PYX_ERR(2, 10, __pyx_L1_error))
-  __pyx_t_9 = (__pyx_v_use_setstate != 0);
-  if (__pyx_t_9) {
+  __pyx_t_10 = (__pyx_v_use_setstate != 0);
+  if (__pyx_t_10) {
 
     /* "(tree fragment)":11
- *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None
+ *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None or self.stack is not None
  *     if use_setstate:
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, None), state             # <<<<<<<<<<<<<<
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, None), state             # <<<<<<<<<<<<<<
  *     else:
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, state)
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, state)
  */
     __Pyx_TraceLine(11,0,__PYX_ERR(2, 11, __pyx_L1_error))
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_pyx_unpickle_Lineup); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 11, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = PyTuple_New(3); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 11, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_GetModuleGlobalName(__pyx_n_s_pyx_unpickle_Lineup); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 11, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_8 = PyTuple_New(3); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 11, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
     __Pyx_INCREF(((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
     __Pyx_GIVEREF(((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
-    PyTuple_SET_ITEM(__pyx_t_7, 0, ((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
-    __Pyx_INCREF(__pyx_int_42359005);
-    __Pyx_GIVEREF(__pyx_int_42359005);
-    PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_int_42359005);
+    PyTuple_SET_ITEM(__pyx_t_8, 0, ((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
+    __Pyx_INCREF(__pyx_int_190226473);
+    __Pyx_GIVEREF(__pyx_int_190226473);
+    PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_int_190226473);
     __Pyx_INCREF(Py_None);
     __Pyx_GIVEREF(Py_None);
-    PyTuple_SET_ITEM(__pyx_t_7, 2, Py_None);
-    __pyx_t_5 = PyTuple_New(3); if (unlikely(!__pyx_t_5)) __PYX_ERR(2, 11, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_GIVEREF(__pyx_t_6);
-    PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_6);
+    PyTuple_SET_ITEM(__pyx_t_8, 2, Py_None);
+    __pyx_t_6 = PyTuple_New(3); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 11, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_7);
+    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
+    __Pyx_GIVEREF(__pyx_t_8);
+    PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_8);
     __Pyx_INCREF(__pyx_v_state);
     __Pyx_GIVEREF(__pyx_v_state);
-    PyTuple_SET_ITEM(__pyx_t_5, 2, __pyx_v_state);
-    __pyx_t_6 = 0;
+    PyTuple_SET_ITEM(__pyx_t_6, 2, __pyx_v_state);
     __pyx_t_7 = 0;
-    __pyx_r = __pyx_t_5;
-    __pyx_t_5 = 0;
+    __pyx_t_8 = 0;
+    __pyx_r = __pyx_t_6;
+    __pyx_t_6 = 0;
     goto __pyx_L0;
 
     /* "(tree fragment)":10
  *     else:
- *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None
+ *         use_setstate = self.lineup_type is not None or self.needed is not None or self.players is not None or self.players_dict is not None or self.required_players is not None or self.stack is not None
  *     if use_setstate:             # <<<<<<<<<<<<<<
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, None), state
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, None), state
  *     else:
  */
   }
 
   /* "(tree fragment)":13
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, None), state
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, None), state
  *     else:
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, state)             # <<<<<<<<<<<<<<
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, state)             # <<<<<<<<<<<<<<
  * def __setstate_cython__(self, __pyx_state):
  *     __pyx_unpickle_Lineup__set_state(self, __pyx_state)
  */
   __Pyx_TraceLine(13,0,__PYX_ERR(2, 13, __pyx_L1_error))
   /*else*/ {
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_pyx_unpickle_Lineup); if (unlikely(!__pyx_t_5)) __PYX_ERR(2, 13, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = PyTuple_New(3); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 13, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_pyx_unpickle_Lineup); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 13, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_8 = PyTuple_New(3); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 13, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
     __Pyx_INCREF(((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
     __Pyx_GIVEREF(((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
-    PyTuple_SET_ITEM(__pyx_t_7, 0, ((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
-    __Pyx_INCREF(__pyx_int_42359005);
-    __Pyx_GIVEREF(__pyx_int_42359005);
-    PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_int_42359005);
+    PyTuple_SET_ITEM(__pyx_t_8, 0, ((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
+    __Pyx_INCREF(__pyx_int_190226473);
+    __Pyx_GIVEREF(__pyx_int_190226473);
+    PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_int_190226473);
     __Pyx_INCREF(__pyx_v_state);
     __Pyx_GIVEREF(__pyx_v_state);
-    PyTuple_SET_ITEM(__pyx_t_7, 2, __pyx_v_state);
-    __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 13, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_GIVEREF(__pyx_t_5);
-    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_5);
-    __Pyx_GIVEREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_7);
-    __pyx_t_5 = 0;
-    __pyx_t_7 = 0;
-    __pyx_r = __pyx_t_6;
+    PyTuple_SET_ITEM(__pyx_t_8, 2, __pyx_v_state);
+    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(2, 13, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_GIVEREF(__pyx_t_6);
+    PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_6);
+    __Pyx_GIVEREF(__pyx_t_8);
+    PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_8);
     __pyx_t_6 = 0;
+    __pyx_t_8 = 0;
+    __pyx_r = __pyx_t_7;
+    __pyx_t_7 = 0;
     goto __pyx_L0;
   }
 
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     cdef bint use_setstate
- *     state = (self.cap, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining)
+ *     state = (self.cap, self.has_cpt, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining, self.stack)
  */
 
   /* function exit code */
@@ -8414,6 +8486,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_24__reduce_cython__(struct __pyx_
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8);
   __Pyx_AddTraceback("dfs.Lineup.Lineup.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -8427,7 +8500,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_24__reduce_cython__(struct __pyx_
 
 /* "(tree fragment)":14
  *     else:
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, state)
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, state)
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     __pyx_unpickle_Lineup__set_state(self, __pyx_state)
  */
@@ -8451,12 +8524,12 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_26__setstate_cython__(struct __py
   __Pyx_TraceDeclarations
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  __Pyx_TraceFrameInit(__pyx_codeobj__15)
+  __Pyx_TraceFrameInit(__pyx_codeobj__16)
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
   __Pyx_TraceCall("__setstate_cython__", __pyx_f[2], 14, 0, __PYX_ERR(2, 14, __pyx_L1_error));
 
   /* "(tree fragment)":15
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, state)
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, state)
  * def __setstate_cython__(self, __pyx_state):
  *     __pyx_unpickle_Lineup__set_state(self, __pyx_state)             # <<<<<<<<<<<<<<
  */
@@ -8468,7 +8541,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_26__setstate_cython__(struct __py
 
   /* "(tree fragment)":14
  *     else:
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, state)
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, state)
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     __pyx_unpickle_Lineup__set_state(self, __pyx_state)
  */
@@ -8489,7 +8562,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup_6Lineup_26__setstate_cython__(struct __py
 
 /* "(tree fragment)":1
  * def __pyx_unpickle_Lineup(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
- *     if __pyx_checksum != 0x28658dd:
+ *     if __pyx_checksum != 0xb56a029:
  *         from pickle import PickleError as __pyx_PickleError
  */
 
@@ -8579,25 +8652,25 @@ static PyObject *__pyx_pf_3dfs_6Lineup___pyx_unpickle_Lineup(CYTHON_UNUSED PyObj
   PyObject *__pyx_t_5 = NULL;
   PyObject *__pyx_t_6 = NULL;
   int __pyx_t_7;
-  __Pyx_TraceFrameInit(__pyx_codeobj__16)
+  __Pyx_TraceFrameInit(__pyx_codeobj__17)
   __Pyx_RefNannySetupContext("__pyx_unpickle_Lineup", 0);
   __Pyx_TraceCall("__pyx_unpickle_Lineup", __pyx_f[2], 1, 0, __PYX_ERR(2, 1, __pyx_L1_error));
 
   /* "(tree fragment)":2
  * def __pyx_unpickle_Lineup(__pyx_type, long __pyx_checksum, __pyx_state):
- *     if __pyx_checksum != 0x28658dd:             # <<<<<<<<<<<<<<
+ *     if __pyx_checksum != 0xb56a029:             # <<<<<<<<<<<<<<
  *         from pickle import PickleError as __pyx_PickleError
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x28658dd = (cap, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0xb56a029 = (cap, has_cpt, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining, stack))" % __pyx_checksum)
  */
   __Pyx_TraceLine(2,0,__PYX_ERR(2, 2, __pyx_L1_error))
-  __pyx_t_1 = ((__pyx_v___pyx_checksum != 0x28658dd) != 0);
+  __pyx_t_1 = ((__pyx_v___pyx_checksum != 0xb56a029) != 0);
   if (__pyx_t_1) {
 
     /* "(tree fragment)":3
  * def __pyx_unpickle_Lineup(__pyx_type, long __pyx_checksum, __pyx_state):
- *     if __pyx_checksum != 0x28658dd:
+ *     if __pyx_checksum != 0xb56a029:
  *         from pickle import PickleError as __pyx_PickleError             # <<<<<<<<<<<<<<
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x28658dd = (cap, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0xb56a029 = (cap, has_cpt, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining, stack))" % __pyx_checksum)
  *     __pyx_result = Lineup.__new__(__pyx_type)
  */
     __Pyx_TraceLine(3,0,__PYX_ERR(2, 3, __pyx_L1_error))
@@ -8617,16 +8690,16 @@ static PyObject *__pyx_pf_3dfs_6Lineup___pyx_unpickle_Lineup(CYTHON_UNUSED PyObj
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
     /* "(tree fragment)":4
- *     if __pyx_checksum != 0x28658dd:
+ *     if __pyx_checksum != 0xb56a029:
  *         from pickle import PickleError as __pyx_PickleError
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x28658dd = (cap, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining))" % __pyx_checksum)             # <<<<<<<<<<<<<<
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0xb56a029 = (cap, has_cpt, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining, stack))" % __pyx_checksum)             # <<<<<<<<<<<<<<
  *     __pyx_result = Lineup.__new__(__pyx_type)
  *     if __pyx_state is not None:
  */
     __Pyx_TraceLine(4,0,__PYX_ERR(2, 4, __pyx_L1_error))
     __pyx_t_2 = __Pyx_PyInt_From_long(__pyx_v___pyx_checksum); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 4, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Incompatible_checksums_s_vs_0x28, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(2, 4, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Incompatible_checksums_s_vs_0xb5, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(2, 4, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_INCREF(__pyx_v___pyx_PickleError);
@@ -8682,15 +8755,15 @@ static PyObject *__pyx_pf_3dfs_6Lineup___pyx_unpickle_Lineup(CYTHON_UNUSED PyObj
 
     /* "(tree fragment)":2
  * def __pyx_unpickle_Lineup(__pyx_type, long __pyx_checksum, __pyx_state):
- *     if __pyx_checksum != 0x28658dd:             # <<<<<<<<<<<<<<
+ *     if __pyx_checksum != 0xb56a029:             # <<<<<<<<<<<<<<
  *         from pickle import PickleError as __pyx_PickleError
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x28658dd = (cap, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0xb56a029 = (cap, has_cpt, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining, stack))" % __pyx_checksum)
  */
   }
 
   /* "(tree fragment)":5
  *         from pickle import PickleError as __pyx_PickleError
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x28658dd = (cap, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0xb56a029 = (cap, has_cpt, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining, stack))" % __pyx_checksum)
  *     __pyx_result = Lineup.__new__(__pyx_type)             # <<<<<<<<<<<<<<
  *     if __pyx_state is not None:
  *         __pyx_unpickle_Lineup__set_state(<Lineup> __pyx_result, __pyx_state)
@@ -8745,7 +8818,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup___pyx_unpickle_Lineup(CYTHON_UNUSED PyObj
   __pyx_t_3 = 0;
 
   /* "(tree fragment)":6
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x28658dd = (cap, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0xb56a029 = (cap, has_cpt, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining, stack))" % __pyx_checksum)
  *     __pyx_result = Lineup.__new__(__pyx_type)
  *     if __pyx_state is not None:             # <<<<<<<<<<<<<<
  *         __pyx_unpickle_Lineup__set_state(<Lineup> __pyx_result, __pyx_state)
@@ -8770,7 +8843,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup___pyx_unpickle_Lineup(CYTHON_UNUSED PyObj
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
     /* "(tree fragment)":6
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x28658dd = (cap, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0xb56a029 = (cap, has_cpt, len_players, lineup_type, needed, players, players_dict, points_avg, points_ceil, points_floor, required_players, salary_remaining, stack))" % __pyx_checksum)
  *     __pyx_result = Lineup.__new__(__pyx_type)
  *     if __pyx_state is not None:             # <<<<<<<<<<<<<<
  *         __pyx_unpickle_Lineup__set_state(<Lineup> __pyx_result, __pyx_state)
@@ -8783,7 +8856,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup___pyx_unpickle_Lineup(CYTHON_UNUSED PyObj
  *         __pyx_unpickle_Lineup__set_state(<Lineup> __pyx_result, __pyx_state)
  *     return __pyx_result             # <<<<<<<<<<<<<<
  * cdef __pyx_unpickle_Lineup__set_state(Lineup __pyx_result, tuple __pyx_state):
- *     __pyx_result.cap = __pyx_state[0]; __pyx_result.len_players = __pyx_state[1]; __pyx_result.lineup_type = __pyx_state[2]; __pyx_result.needed = __pyx_state[3]; __pyx_result.players = __pyx_state[4]; __pyx_result.players_dict = __pyx_state[5]; __pyx_result.points_avg = __pyx_state[6]; __pyx_result.points_ceil = __pyx_state[7]; __pyx_result.points_floor = __pyx_state[8]; __pyx_result.required_players = __pyx_state[9]; __pyx_result.salary_remaining = __pyx_state[10]
+ *     __pyx_result.cap = __pyx_state[0]; __pyx_result.has_cpt = __pyx_state[1]; __pyx_result.len_players = __pyx_state[2]; __pyx_result.lineup_type = __pyx_state[3]; __pyx_result.needed = __pyx_state[4]; __pyx_result.players = __pyx_state[5]; __pyx_result.players_dict = __pyx_state[6]; __pyx_result.points_avg = __pyx_state[7]; __pyx_result.points_ceil = __pyx_state[8]; __pyx_result.points_floor = __pyx_state[9]; __pyx_result.required_players = __pyx_state[10]; __pyx_result.salary_remaining = __pyx_state[11]; __pyx_result.stack = __pyx_state[12]
  */
   __Pyx_TraceLine(8,0,__PYX_ERR(2, 8, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
@@ -8793,7 +8866,7 @@ static PyObject *__pyx_pf_3dfs_6Lineup___pyx_unpickle_Lineup(CYTHON_UNUSED PyObj
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_Lineup(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
- *     if __pyx_checksum != 0x28658dd:
+ *     if __pyx_checksum != 0xb56a029:
  *         from pickle import PickleError as __pyx_PickleError
  */
 
@@ -8819,8 +8892,8 @@ static PyObject *__pyx_pf_3dfs_6Lineup___pyx_unpickle_Lineup(CYTHON_UNUSED PyObj
  *         __pyx_unpickle_Lineup__set_state(<Lineup> __pyx_result, __pyx_state)
  *     return __pyx_result
  * cdef __pyx_unpickle_Lineup__set_state(Lineup __pyx_result, tuple __pyx_state):             # <<<<<<<<<<<<<<
- *     __pyx_result.cap = __pyx_state[0]; __pyx_result.len_players = __pyx_state[1]; __pyx_result.lineup_type = __pyx_state[2]; __pyx_result.needed = __pyx_state[3]; __pyx_result.players = __pyx_state[4]; __pyx_result.players_dict = __pyx_state[5]; __pyx_result.points_avg = __pyx_state[6]; __pyx_result.points_ceil = __pyx_state[7]; __pyx_result.points_floor = __pyx_state[8]; __pyx_result.required_players = __pyx_state[9]; __pyx_result.salary_remaining = __pyx_state[10]
- *     if len(__pyx_state) > 11 and hasattr(__pyx_result, '__dict__'):
+ *     __pyx_result.cap = __pyx_state[0]; __pyx_result.has_cpt = __pyx_state[1]; __pyx_result.len_players = __pyx_state[2]; __pyx_result.lineup_type = __pyx_state[3]; __pyx_result.needed = __pyx_state[4]; __pyx_result.players = __pyx_state[5]; __pyx_result.players_dict = __pyx_state[6]; __pyx_result.points_avg = __pyx_state[7]; __pyx_result.points_ceil = __pyx_state[8]; __pyx_result.points_floor = __pyx_state[9]; __pyx_result.required_players = __pyx_state[10]; __pyx_result.salary_remaining = __pyx_state[11]; __pyx_result.stack = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):
  */
 
 static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __pyx_obj_3dfs_6Lineup_Lineup *__pyx_v___pyx_result, PyObject *__pyx_v___pyx_state) {
@@ -8829,8 +8902,8 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   int __pyx_t_2;
-  double __pyx_t_3;
-  int __pyx_t_4;
+  int __pyx_t_3;
+  double __pyx_t_4;
   Py_ssize_t __pyx_t_5;
   int __pyx_t_6;
   int __pyx_t_7;
@@ -8844,9 +8917,9 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
   /* "(tree fragment)":10
  *     return __pyx_result
  * cdef __pyx_unpickle_Lineup__set_state(Lineup __pyx_result, tuple __pyx_state):
- *     __pyx_result.cap = __pyx_state[0]; __pyx_result.len_players = __pyx_state[1]; __pyx_result.lineup_type = __pyx_state[2]; __pyx_result.needed = __pyx_state[3]; __pyx_result.players = __pyx_state[4]; __pyx_result.players_dict = __pyx_state[5]; __pyx_result.points_avg = __pyx_state[6]; __pyx_result.points_ceil = __pyx_state[7]; __pyx_result.points_floor = __pyx_state[8]; __pyx_result.required_players = __pyx_state[9]; __pyx_result.salary_remaining = __pyx_state[10]             # <<<<<<<<<<<<<<
- *     if len(__pyx_state) > 11 and hasattr(__pyx_result, '__dict__'):
- *         __pyx_result.__dict__.update(__pyx_state[11])
+ *     __pyx_result.cap = __pyx_state[0]; __pyx_result.has_cpt = __pyx_state[1]; __pyx_result.len_players = __pyx_state[2]; __pyx_result.lineup_type = __pyx_state[3]; __pyx_result.needed = __pyx_state[4]; __pyx_result.players = __pyx_state[5]; __pyx_result.players_dict = __pyx_state[6]; __pyx_result.points_avg = __pyx_state[7]; __pyx_result.points_ceil = __pyx_state[8]; __pyx_result.points_floor = __pyx_state[9]; __pyx_result.required_players = __pyx_state[10]; __pyx_result.salary_remaining = __pyx_state[11]; __pyx_result.stack = __pyx_state[12]             # <<<<<<<<<<<<<<
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):
+ *         __pyx_result.__dict__.update(__pyx_state[13])
  */
   __Pyx_TraceLine(10,0,__PYX_ERR(2, 10, __pyx_L1_error))
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
@@ -8864,6 +8937,15 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
   }
   __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v___pyx_result->has_cpt = __pyx_t_3;
+  if (unlikely(__pyx_v___pyx_state == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(2, 10, __pyx_L1_error)
+  }
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v___pyx_result->len_players = __pyx_t_2;
@@ -8871,7 +8953,7 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 10, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 3, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GIVEREF(__pyx_t_1);
@@ -8883,7 +8965,7 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 10, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 3, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 4, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyDict_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GIVEREF(__pyx_t_1);
@@ -8895,7 +8977,7 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 10, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 4, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 5, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyList_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GIVEREF(__pyx_t_1);
@@ -8907,7 +8989,7 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 10, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 5, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 6, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyDict_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GIVEREF(__pyx_t_1);
@@ -8919,34 +9001,34 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 10, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 6, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v___pyx_result->points_avg = __pyx_t_3;
-  if (unlikely(__pyx_v___pyx_state == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(2, 10, __pyx_L1_error)
-  }
   __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 7, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
+  __pyx_t_4 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_4 == (double)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v___pyx_result->points_ceil = __pyx_t_3;
+  __pyx_v___pyx_result->points_avg = __pyx_t_4;
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 10, __pyx_L1_error)
   }
   __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 8, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
+  __pyx_t_4 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_4 == (double)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v___pyx_result->points_floor = __pyx_t_3;
+  __pyx_v___pyx_result->points_ceil = __pyx_t_4;
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 10, __pyx_L1_error)
   }
   __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 9, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_4 == (double)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v___pyx_result->points_floor = __pyx_t_4;
+  if (unlikely(__pyx_v___pyx_state == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(2, 10, __pyx_L1_error)
+  }
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 10, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyDict_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GIVEREF(__pyx_t_1);
@@ -8958,17 +9040,29 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 10, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 10, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 11, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
+  __pyx_t_4 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_4 == (double)-1) && PyErr_Occurred())) __PYX_ERR(2, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v___pyx_result->salary_remaining = __pyx_t_3;
+  __pyx_v___pyx_result->salary_remaining = __pyx_t_4;
+  if (unlikely(__pyx_v___pyx_state == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(2, 10, __pyx_L1_error)
+  }
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 12, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 10, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(2, 10, __pyx_L1_error)
+  __Pyx_GIVEREF(__pyx_t_1);
+  __Pyx_GOTREF(__pyx_v___pyx_result->stack);
+  __Pyx_DECREF(__pyx_v___pyx_result->stack);
+  __pyx_v___pyx_result->stack = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
 
   /* "(tree fragment)":11
  * cdef __pyx_unpickle_Lineup__set_state(Lineup __pyx_result, tuple __pyx_state):
- *     __pyx_result.cap = __pyx_state[0]; __pyx_result.len_players = __pyx_state[1]; __pyx_result.lineup_type = __pyx_state[2]; __pyx_result.needed = __pyx_state[3]; __pyx_result.players = __pyx_state[4]; __pyx_result.players_dict = __pyx_state[5]; __pyx_result.points_avg = __pyx_state[6]; __pyx_result.points_ceil = __pyx_state[7]; __pyx_result.points_floor = __pyx_state[8]; __pyx_result.required_players = __pyx_state[9]; __pyx_result.salary_remaining = __pyx_state[10]
- *     if len(__pyx_state) > 11 and hasattr(__pyx_result, '__dict__'):             # <<<<<<<<<<<<<<
- *         __pyx_result.__dict__.update(__pyx_state[11])
+ *     __pyx_result.cap = __pyx_state[0]; __pyx_result.has_cpt = __pyx_state[1]; __pyx_result.len_players = __pyx_state[2]; __pyx_result.lineup_type = __pyx_state[3]; __pyx_result.needed = __pyx_state[4]; __pyx_result.players = __pyx_state[5]; __pyx_result.players_dict = __pyx_state[6]; __pyx_result.points_avg = __pyx_state[7]; __pyx_result.points_ceil = __pyx_state[8]; __pyx_result.points_floor = __pyx_state[9]; __pyx_result.required_players = __pyx_state[10]; __pyx_result.salary_remaining = __pyx_state[11]; __pyx_result.stack = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):             # <<<<<<<<<<<<<<
+ *         __pyx_result.__dict__.update(__pyx_state[13])
  */
   __Pyx_TraceLine(11,0,__PYX_ERR(2, 11, __pyx_L1_error))
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
@@ -8976,22 +9070,22 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
     __PYX_ERR(2, 11, __pyx_L1_error)
   }
   __pyx_t_5 = PyTuple_GET_SIZE(__pyx_v___pyx_state); if (unlikely(__pyx_t_5 == ((Py_ssize_t)-1))) __PYX_ERR(2, 11, __pyx_L1_error)
-  __pyx_t_6 = ((__pyx_t_5 > 11) != 0);
+  __pyx_t_6 = ((__pyx_t_5 > 13) != 0);
   if (__pyx_t_6) {
   } else {
-    __pyx_t_4 = __pyx_t_6;
+    __pyx_t_3 = __pyx_t_6;
     goto __pyx_L4_bool_binop_done;
   }
   __pyx_t_6 = __Pyx_HasAttr(((PyObject *)__pyx_v___pyx_result), __pyx_n_s_dict); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(2, 11, __pyx_L1_error)
   __pyx_t_7 = (__pyx_t_6 != 0);
-  __pyx_t_4 = __pyx_t_7;
+  __pyx_t_3 = __pyx_t_7;
   __pyx_L4_bool_binop_done:;
-  if (__pyx_t_4) {
+  if (__pyx_t_3) {
 
     /* "(tree fragment)":12
- *     __pyx_result.cap = __pyx_state[0]; __pyx_result.len_players = __pyx_state[1]; __pyx_result.lineup_type = __pyx_state[2]; __pyx_result.needed = __pyx_state[3]; __pyx_result.players = __pyx_state[4]; __pyx_result.players_dict = __pyx_state[5]; __pyx_result.points_avg = __pyx_state[6]; __pyx_result.points_ceil = __pyx_state[7]; __pyx_result.points_floor = __pyx_state[8]; __pyx_result.required_players = __pyx_state[9]; __pyx_result.salary_remaining = __pyx_state[10]
- *     if len(__pyx_state) > 11 and hasattr(__pyx_result, '__dict__'):
- *         __pyx_result.__dict__.update(__pyx_state[11])             # <<<<<<<<<<<<<<
+ *     __pyx_result.cap = __pyx_state[0]; __pyx_result.has_cpt = __pyx_state[1]; __pyx_result.len_players = __pyx_state[2]; __pyx_result.lineup_type = __pyx_state[3]; __pyx_result.needed = __pyx_state[4]; __pyx_result.players = __pyx_state[5]; __pyx_result.players_dict = __pyx_state[6]; __pyx_result.points_avg = __pyx_state[7]; __pyx_result.points_ceil = __pyx_state[8]; __pyx_result.points_floor = __pyx_state[9]; __pyx_result.required_players = __pyx_state[10]; __pyx_result.salary_remaining = __pyx_state[11]; __pyx_result.stack = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):
+ *         __pyx_result.__dict__.update(__pyx_state[13])             # <<<<<<<<<<<<<<
  */
     __Pyx_TraceLine(12,0,__PYX_ERR(2, 12, __pyx_L1_error))
     __pyx_t_8 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v___pyx_result), __pyx_n_s_dict); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 12, __pyx_L1_error)
@@ -9003,7 +9097,7 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(2, 12, __pyx_L1_error)
     }
-    __pyx_t_8 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 11, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 12, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 13, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_8)) __PYX_ERR(2, 12, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_10 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_9))) {
@@ -9055,9 +9149,9 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
 
     /* "(tree fragment)":11
  * cdef __pyx_unpickle_Lineup__set_state(Lineup __pyx_result, tuple __pyx_state):
- *     __pyx_result.cap = __pyx_state[0]; __pyx_result.len_players = __pyx_state[1]; __pyx_result.lineup_type = __pyx_state[2]; __pyx_result.needed = __pyx_state[3]; __pyx_result.players = __pyx_state[4]; __pyx_result.players_dict = __pyx_state[5]; __pyx_result.points_avg = __pyx_state[6]; __pyx_result.points_ceil = __pyx_state[7]; __pyx_result.points_floor = __pyx_state[8]; __pyx_result.required_players = __pyx_state[9]; __pyx_result.salary_remaining = __pyx_state[10]
- *     if len(__pyx_state) > 11 and hasattr(__pyx_result, '__dict__'):             # <<<<<<<<<<<<<<
- *         __pyx_result.__dict__.update(__pyx_state[11])
+ *     __pyx_result.cap = __pyx_state[0]; __pyx_result.has_cpt = __pyx_state[1]; __pyx_result.len_players = __pyx_state[2]; __pyx_result.lineup_type = __pyx_state[3]; __pyx_result.needed = __pyx_state[4]; __pyx_result.players = __pyx_state[5]; __pyx_result.players_dict = __pyx_state[6]; __pyx_result.points_avg = __pyx_state[7]; __pyx_result.points_ceil = __pyx_state[8]; __pyx_result.points_floor = __pyx_state[9]; __pyx_result.required_players = __pyx_state[10]; __pyx_result.salary_remaining = __pyx_state[11]; __pyx_result.stack = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):             # <<<<<<<<<<<<<<
+ *         __pyx_result.__dict__.update(__pyx_state[13])
  */
   }
 
@@ -9065,8 +9159,8 @@ static PyObject *__pyx_f_3dfs_6Lineup___pyx_unpickle_Lineup__set_state(struct __
  *         __pyx_unpickle_Lineup__set_state(<Lineup> __pyx_result, __pyx_state)
  *     return __pyx_result
  * cdef __pyx_unpickle_Lineup__set_state(Lineup __pyx_result, tuple __pyx_state):             # <<<<<<<<<<<<<<
- *     __pyx_result.cap = __pyx_state[0]; __pyx_result.len_players = __pyx_state[1]; __pyx_result.lineup_type = __pyx_state[2]; __pyx_result.needed = __pyx_state[3]; __pyx_result.players = __pyx_state[4]; __pyx_result.players_dict = __pyx_state[5]; __pyx_result.points_avg = __pyx_state[6]; __pyx_result.points_ceil = __pyx_state[7]; __pyx_result.points_floor = __pyx_state[8]; __pyx_result.required_players = __pyx_state[9]; __pyx_result.salary_remaining = __pyx_state[10]
- *     if len(__pyx_state) > 11 and hasattr(__pyx_result, '__dict__'):
+ *     __pyx_result.cap = __pyx_state[0]; __pyx_result.has_cpt = __pyx_state[1]; __pyx_result.len_players = __pyx_state[2]; __pyx_result.lineup_type = __pyx_state[3]; __pyx_result.needed = __pyx_state[4]; __pyx_result.players = __pyx_state[5]; __pyx_result.players_dict = __pyx_state[6]; __pyx_result.points_avg = __pyx_state[7]; __pyx_result.points_ceil = __pyx_state[8]; __pyx_result.points_floor = __pyx_state[9]; __pyx_result.required_players = __pyx_state[10]; __pyx_result.salary_remaining = __pyx_state[11]; __pyx_result.stack = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):
  */
 
   /* function exit code */
@@ -9101,6 +9195,7 @@ static PyObject *__pyx_tp_new_3dfs_6Lineup_Lineup(PyTypeObject *t, CYTHON_UNUSED
   p->__pyx_vtab = __pyx_vtabptr_3dfs_6Lineup_Lineup;
   p->players = ((PyObject*)Py_None); Py_INCREF(Py_None);
   p->needed = ((PyObject*)Py_None); Py_INCREF(Py_None);
+  p->stack = ((PyObject*)Py_None); Py_INCREF(Py_None);
   p->players_dict = ((PyObject*)Py_None); Py_INCREF(Py_None);
   p->required_players = ((PyObject*)Py_None); Py_INCREF(Py_None);
   p->lineup_type = ((PyObject*)Py_None); Py_INCREF(Py_None);
@@ -9117,6 +9212,7 @@ static void __pyx_tp_dealloc_3dfs_6Lineup_Lineup(PyObject *o) {
   PyObject_GC_UnTrack(o);
   Py_CLEAR(p->players);
   Py_CLEAR(p->needed);
+  Py_CLEAR(p->stack);
   Py_CLEAR(p->players_dict);
   Py_CLEAR(p->required_players);
   Py_CLEAR(p->lineup_type);
@@ -9242,6 +9338,19 @@ static int __pyx_setprop_3dfs_6Lineup_6Lineup_points_avg(PyObject *o, PyObject *
   }
 }
 
+static PyObject *__pyx_getprop_3dfs_6Lineup_6Lineup_stack(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_3dfs_6Lineup_6Lineup_5stack_1__get__(o);
+}
+
+static int __pyx_setprop_3dfs_6Lineup_6Lineup_stack(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_3dfs_6Lineup_6Lineup_5stack_3__set__(o, v);
+  }
+  else {
+    return __pyx_pw_3dfs_6Lineup_6Lineup_5stack_5__del__(o);
+  }
+}
+
 static PyMethodDef __pyx_methods_3dfs_6Lineup_Lineup[] = {
   {"__deepcopy__", (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_11__deepcopy__, METH_O, 0},
   {"__reduce_cython__", (PyCFunction)__pyx_pw_3dfs_6Lineup_6Lineup_25__reduce_cython__, METH_NOARGS, 0},
@@ -9256,6 +9365,7 @@ static struct PyGetSetDef __pyx_getsets_3dfs_6Lineup_Lineup[] = {
   {(char *)"points_floor", __pyx_getprop_3dfs_6Lineup_6Lineup_points_floor, __pyx_setprop_3dfs_6Lineup_6Lineup_points_floor, (char *)0, 0},
   {(char *)"points_ceil", __pyx_getprop_3dfs_6Lineup_6Lineup_points_ceil, __pyx_setprop_3dfs_6Lineup_6Lineup_points_ceil, (char *)0, 0},
   {(char *)"points_avg", __pyx_getprop_3dfs_6Lineup_6Lineup_points_avg, __pyx_setprop_3dfs_6Lineup_6Lineup_points_avg, (char *)0, 0},
+  {(char *)"stack", __pyx_getprop_3dfs_6Lineup_6Lineup_stack, __pyx_setprop_3dfs_6Lineup_6Lineup_stack, (char *)0, 0},
   {0, 0, 0, 0, 0}
 };
 
@@ -9355,9 +9465,9 @@ static struct PyModuleDef __pyx_moduledef = {
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_DST, __pyx_k_DST, sizeof(__pyx_k_DST), 0, 0, 1, 1},
+  {&__pyx_kp_s_Deshaun_Watson, __pyx_k_Deshaun_Watson, sizeof(__pyx_k_Deshaun_Watson), 0, 0, 1, 0},
   {&__pyx_n_s_FLEX, __pyx_k_FLEX, sizeof(__pyx_k_FLEX), 0, 0, 1, 1},
-  {&__pyx_kp_s_Incompatible_checksums_s_vs_0x28, __pyx_k_Incompatible_checksums_s_vs_0x28, sizeof(__pyx_k_Incompatible_checksums_s_vs_0x28), 0, 0, 1, 0},
-  {&__pyx_kp_s_Jay_Ajayi, __pyx_k_Jay_Ajayi, sizeof(__pyx_k_Jay_Ajayi), 0, 0, 1, 0},
+  {&__pyx_kp_s_Incompatible_checksums_s_vs_0xb5, __pyx_k_Incompatible_checksums_s_vs_0xb5, sizeof(__pyx_k_Incompatible_checksums_s_vs_0xb5), 0, 0, 1, 0},
   {&__pyx_n_s_Lineup___deepcopy, __pyx_k_Lineup___deepcopy, sizeof(__pyx_k_Lineup___deepcopy), 0, 0, 1, 1},
   {&__pyx_n_s_Lineup___reduce_cython, __pyx_k_Lineup___reduce_cython, sizeof(__pyx_k_Lineup___reduce_cython), 0, 0, 1, 1},
   {&__pyx_n_s_Lineup___setstate_cython, __pyx_k_Lineup___setstate_cython, sizeof(__pyx_k_Lineup___setstate_cython), 0, 0, 1, 1},
@@ -9381,8 +9491,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_TE, __pyx_k_TE, sizeof(__pyx_k_TE), 0, 0, 1, 1},
   {&__pyx_n_s_True, __pyx_k_True, sizeof(__pyx_k_True), 0, 0, 1, 1},
   {&__pyx_n_s_WR, __pyx_k_WR, sizeof(__pyx_k_WR), 0, 0, 1, 1},
-  {&__pyx_kp_u__11, __pyx_k__11, sizeof(__pyx_k__11), 0, 1, 0, 0},
   {&__pyx_kp_u__12, __pyx_k__12, sizeof(__pyx_k__12), 0, 1, 0, 0},
+  {&__pyx_kp_u__13, __pyx_k__13, sizeof(__pyx_k__13), 0, 1, 0, 0},
+  {&__pyx_kp_s__2, __pyx_k__2, sizeof(__pyx_k__2), 0, 0, 1, 0},
   {&__pyx_n_s_add_player, __pyx_k_add_player, sizeof(__pyx_k_add_player), 0, 0, 1, 1},
   {&__pyx_n_s_add_points, __pyx_k_add_points, sizeof(__pyx_k_add_points), 0, 0, 1, 1},
   {&__pyx_n_s_cap, __pyx_k_cap, sizeof(__pyx_k_cap), 0, 0, 1, 1},
@@ -9398,15 +9509,19 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_dict, __pyx_k_dict, sizeof(__pyx_k_dict), 0, 0, 1, 1},
   {&__pyx_n_s_dict_2, __pyx_k_dict_2, sizeof(__pyx_k_dict_2), 0, 0, 1, 1},
   {&__pyx_n_s_diff, __pyx_k_diff, sizeof(__pyx_k_diff), 0, 0, 1, 1},
+  {&__pyx_n_s_end, __pyx_k_end, sizeof(__pyx_k_end), 0, 0, 1, 1},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
+  {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
   {&__pyx_n_s_flex, __pyx_k_flex, sizeof(__pyx_k_flex), 0, 0, 1, 1},
   {&__pyx_n_s_get, __pyx_k_get, sizeof(__pyx_k_get), 0, 0, 1, 1},
   {&__pyx_n_s_get_needed_back, __pyx_k_get_needed_back, sizeof(__pyx_k_get_needed_back), 0, 0, 1, 1},
   {&__pyx_n_s_get_new_salary, __pyx_k_get_new_salary, sizeof(__pyx_k_get_new_salary), 0, 0, 1, 1},
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
+  {&__pyx_n_s_has_cpt, __pyx_k_has_cpt, sizeof(__pyx_k_has_cpt), 0, 0, 1, 1},
   {&__pyx_n_s_id, __pyx_k_id, sizeof(__pyx_k_id), 0, 0, 1, 1},
   {&__pyx_n_s_id_self, __pyx_k_id_self, sizeof(__pyx_k_id_self), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
+  {&__pyx_n_s_is_captain, __pyx_k_is_captain, sizeof(__pyx_k_is_captain), 0, 0, 1, 1},
   {&__pyx_n_s_lineup_type, __pyx_k_lineup_type, sizeof(__pyx_k_lineup_type), 0, 0, 1, 1},
   {&__pyx_n_s_lower, __pyx_k_lower, sizeof(__pyx_k_lower), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
@@ -9423,6 +9538,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_players, __pyx_k_players, sizeof(__pyx_k_players), 0, 0, 1, 1},
   {&__pyx_n_s_pos, __pyx_k_pos, sizeof(__pyx_k_pos), 0, 0, 1, 1},
   {&__pyx_n_s_position, __pyx_k_position, sizeof(__pyx_k_position), 0, 0, 1, 1},
+  {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_PickleError, __pyx_k_pyx_PickleError, sizeof(__pyx_k_pyx_PickleError), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_checksum, __pyx_k_pyx_checksum, sizeof(__pyx_k_pyx_checksum), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_result, __pyx_k_pyx_result, sizeof(__pyx_k_pyx_result), 0, 0, 1, 1},
@@ -9449,8 +9565,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(0, 58, __pyx_L1_error)
-  __pyx_builtin_id = __Pyx_GetBuiltinName(__pyx_n_s_id); if (!__pyx_builtin_id) __PYX_ERR(0, 66, __pyx_L1_error)
+  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(0, 66, __pyx_L1_error)
+  __pyx_builtin_id = __Pyx_GetBuiltinName(__pyx_n_s_id); if (!__pyx_builtin_id) __PYX_ERR(0, 74, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -9460,156 +9576,156 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "dfs/Lineup.pyx":30
- *         #    self.len_players += 1
+  /* "dfs/Lineup.pyx":38
+ *         #print(self)
  * 
  *     cpdef set_needed(self):             # <<<<<<<<<<<<<<
  *         if self.lineup_type == "normal":
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}
  */
-  __pyx_tuple__17 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(0, 30, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__17);
-  __Pyx_GIVEREF(__pyx_tuple__17);
-  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_set_needed, 30, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__18);
+  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_set_needed, 38, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(0, 38, __pyx_L1_error)
 
-  /* "dfs/Lineup.pyx":36
+  /* "dfs/Lineup.pyx":44
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "S-FLEX": 1}
  * 
  *     cpdef create_new(self, player, captain_mode):             # <<<<<<<<<<<<<<
  *         sal_remain = self.salary_remaining - int(player.salary)
  * 
  */
-  __pyx_tuple__18 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_player, __pyx_n_s_captain_mode); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 36, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__18);
-  __Pyx_GIVEREF(__pyx_tuple__18);
-  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_create_new, 36, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_tuple__19 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_player, __pyx_n_s_captain_mode); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__19);
+  __Pyx_GIVEREF(__pyx_tuple__19);
+  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_create_new, 44, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) __PYX_ERR(0, 44, __pyx_L1_error)
 
-  /* "dfs/Lineup.pyx":47
+  /* "dfs/Lineup.pyx":55
  *         return True
  * 
  *     cpdef add_points(self):             # <<<<<<<<<<<<<<
  *         self.points_floor = 0
  *         self.points_ceil = 0
  */
-  __pyx_tuple__19 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 47, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__19);
-  __Pyx_GIVEREF(__pyx_tuple__19);
-  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_add_points, 47, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 55, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__20);
+  __Pyx_GIVEREF(__pyx_tuple__20);
+  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__20, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_add_points, 55, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 55, __pyx_L1_error)
 
-  /* "dfs/Lineup.pyx":56
+  /* "dfs/Lineup.pyx":64
  *             self.points_avg = self.points_avg + float(player.median)
  * 
  *     cpdef get_new_salary(self, diff):             # <<<<<<<<<<<<<<
  *         new_salary = deepcopy(self.salary_remaining)
  *         for i, player in enumerate(self.players.reverse()):
  */
-  __pyx_tuple__20 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_diff); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(0, 56, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__20);
-  __Pyx_GIVEREF(__pyx_tuple__20);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__20, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_get_new_salary, 56, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_tuple__21 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_diff); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__21);
+  __Pyx_GIVEREF(__pyx_tuple__21);
+  __pyx_codeobj__6 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_get_new_salary, 64, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__6)) __PYX_ERR(0, 64, __pyx_L1_error)
 
-  /* "dfs/Lineup.pyx":65
+  /* "dfs/Lineup.pyx":73
  * 
  *     # REMOVES LAST PLAYER
  *     def __deepcopy__(self, memo): # memo is a dict of id's to copies             # <<<<<<<<<<<<<<
  *         id_self = id(self)        # memoization avoids unnecesary recursion
  *         _copy = memo.get(id_self)
  */
-  __pyx_tuple__21 = PyTuple_Pack(4, __pyx_n_s_self, __pyx_n_s_memo, __pyx_n_s_id_self, __pyx_n_s_copy_2); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 65, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__21);
-  __Pyx_GIVEREF(__pyx_tuple__21);
-  __pyx_codeobj__6 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_deepcopy_2, 65, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__6)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_tuple__22 = PyTuple_Pack(4, __pyx_n_s_self, __pyx_n_s_memo, __pyx_n_s_id_self, __pyx_n_s_copy_2); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__22);
+  __Pyx_GIVEREF(__pyx_tuple__22);
+  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_deepcopy_2, 73, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(0, 73, __pyx_L1_error)
 
-  /* "dfs/Lineup.pyx":77
+  /* "dfs/Lineup.pyx":85
  *         return _copy
  * 
  *     cpdef get_needed_back(self):             # <<<<<<<<<<<<<<
  *         needed = deepcopy(self.needed)
  *         last_player = self.players[-1]
  */
-  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 77, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__22);
-  __Pyx_GIVEREF(__pyx_tuple__22);
-  __pyx_codeobj__7 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_get_needed_back, 77, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__7)) __PYX_ERR(0, 77, __pyx_L1_error)
+  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__23);
+  __Pyx_GIVEREF(__pyx_tuple__23);
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_get_needed_back, 85, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 85, __pyx_L1_error)
 
-  /* "dfs/Lineup.pyx":102
+  /* "dfs/Lineup.pyx":110
  * 
  * 
  *     cpdef add_player(self, player, captain_mode):             # <<<<<<<<<<<<<<
  *         #if player.position == "QB" and player.name != "Ben Roethlisberger":
  *         #    return False
  */
-  __pyx_tuple__23 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_player, __pyx_n_s_captain_mode); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(0, 102, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__23);
-  __Pyx_GIVEREF(__pyx_tuple__23);
-  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_add_player, 102, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 102, __pyx_L1_error)
+  __pyx_tuple__24 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_player, __pyx_n_s_captain_mode); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(0, 110, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__24);
+  __Pyx_GIVEREF(__pyx_tuple__24);
+  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__24, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_add_player, 110, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 110, __pyx_L1_error)
 
-  /* "dfs/Lineup.pyx":155
+  /* "dfs/Lineup.pyx":165
  *     #    return True
  * 
  *     cpdef decrease_salary_remaining(self):             # <<<<<<<<<<<<<<
  *         for player in self.players:
  *             self.salary_remaining = self.salary_remaining - float(player.salary)
  */
-  __pyx_tuple__24 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(0, 155, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__24);
-  __Pyx_GIVEREF(__pyx_tuple__24);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__24, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_decrease_salary_remaining, 155, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_tuple__25 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 165, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__25);
+  __Pyx_GIVEREF(__pyx_tuple__25);
+  __pyx_codeobj__10 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_decrease_salary_remaining, 165, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__10)) __PYX_ERR(0, 165, __pyx_L1_error)
 
-  /* "dfs/Lineup.pyx":159
+  /* "dfs/Lineup.pyx":169
  *             self.salary_remaining = self.salary_remaining - float(player.salary)
  * 
  *     cpdef order_by_pos(self):             # <<<<<<<<<<<<<<
  *         new_order = [None] * 9
  *         for player in self.players:
  */
-  __pyx_tuple__25 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 159, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__25);
-  __Pyx_GIVEREF(__pyx_tuple__25);
-  __pyx_codeobj__10 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_order_by_pos, 159, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__10)) __PYX_ERR(0, 159, __pyx_L1_error)
+  __pyx_tuple__26 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(0, 169, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__26);
+  __Pyx_GIVEREF(__pyx_tuple__26);
+  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_order_by_pos, 169, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) __PYX_ERR(0, 169, __pyx_L1_error)
 
-  /* "dfs/Lineup.pyx":196
+  /* "dfs/Lineup.pyx":206
  *         return plays
  * 
  *     cpdef remove_needed(self, pos, player):             # <<<<<<<<<<<<<<
  *         if self.lineup_type =="normal":
  *             if pos == "QB":
  */
-  __pyx_tuple__26 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_pos, __pyx_n_s_player); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(0, 196, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__26);
-  __Pyx_GIVEREF(__pyx_tuple__26);
-  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_remove_needed, 196, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) __PYX_ERR(0, 196, __pyx_L1_error)
+  __pyx_tuple__27 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_pos, __pyx_n_s_player); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(0, 206, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__27);
+  __Pyx_GIVEREF(__pyx_tuple__27);
+  __pyx_codeobj__14 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Lineup_pyx, __pyx_n_s_remove_needed, 206, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__14)) __PYX_ERR(0, 206, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     cdef bint use_setstate
- *     state = (self.cap, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining)
+ *     state = (self.cap, self.has_cpt, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining, self.stack)
  */
-  __pyx_tuple__27 = PyTuple_Pack(4, __pyx_n_s_self, __pyx_n_s_use_setstate, __pyx_n_s_state, __pyx_n_s_dict_2); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(2, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__27);
-  __Pyx_GIVEREF(__pyx_tuple__27);
-  __pyx_codeobj__14 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__14)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_tuple__28 = PyTuple_Pack(4, __pyx_n_s_self, __pyx_n_s_use_setstate, __pyx_n_s_state, __pyx_n_s_dict_2); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__28);
+  __Pyx_GIVEREF(__pyx_tuple__28);
+  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(2, 1, __pyx_L1_error)
 
   /* "(tree fragment)":14
  *     else:
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, state)
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, state)
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     __pyx_unpickle_Lineup__set_state(self, __pyx_state)
  */
-  __pyx_tuple__28 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_pyx_state); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(2, 14, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__28);
-  __Pyx_GIVEREF(__pyx_tuple__28);
-  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 14, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(2, 14, __pyx_L1_error)
+  __pyx_tuple__29 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_pyx_state); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(2, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__29);
+  __Pyx_GIVEREF(__pyx_tuple__29);
+  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 14, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) __PYX_ERR(2, 14, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_Lineup(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
- *     if __pyx_checksum != 0x28658dd:
+ *     if __pyx_checksum != 0xb56a029:
  *         from pickle import PickleError as __pyx_PickleError
  */
-  __pyx_tuple__29 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(2, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__29);
-  __Pyx_GIVEREF(__pyx_tuple__29);
-  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Lineup, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_tuple__30 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__30);
+  __Pyx_GIVEREF(__pyx_tuple__30);
+  __pyx_codeobj__17 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__30, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Lineup, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__17)) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -9624,7 +9740,7 @@ static int __Pyx_InitGlobals(void) {
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_2 = PyInt_FromLong(2); if (unlikely(!__pyx_int_2)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_3 = PyInt_FromLong(3); if (unlikely(!__pyx_int_3)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_42359005 = PyInt_FromLong(42359005L); if (unlikely(!__pyx_int_42359005)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_190226473 = PyInt_FromLong(190226473L); if (unlikely(!__pyx_int_190226473)) __PYX_ERR(0, 1, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -9929,7 +10045,7 @@ if (!__Pyx_RefNanny) {
   /* "dfs/Lineup.pyx":8
  * 
  * cdef class Lineup:
- *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal"):             # <<<<<<<<<<<<<<
+ *     def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal", has_cpt=False):             # <<<<<<<<<<<<<<
  *         self.players = []
  *         self.cap = cap
  */
@@ -9940,176 +10056,176 @@ if (!__Pyx_RefNanny) {
   __Pyx_GIVEREF(__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "dfs/Lineup.pyx":30
- *         #    self.len_players += 1
+  /* "dfs/Lineup.pyx":38
+ *         #print(self)
  * 
  *     cpdef set_needed(self):             # <<<<<<<<<<<<<<
  *         if self.lineup_type == "normal":
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "TE": 1, "DST": 1}
  */
-  __Pyx_TraceLine(30,0,__PYX_ERR(0, 30, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_3set_needed, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_set_needed, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __Pyx_TraceLine(38,0,__PYX_ERR(0, 38, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_3set_needed, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_set_needed, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__3)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_set_needed, __pyx_t_2) < 0) __PYX_ERR(0, 30, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_set_needed, __pyx_t_2) < 0) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
-  /* "dfs/Lineup.pyx":36
+  /* "dfs/Lineup.pyx":44
  *             self.needed = {"QB": 1, "RB": 2, "WR": 3, "FLEX": 1, "S-FLEX": 1}
  * 
  *     cpdef create_new(self, player, captain_mode):             # <<<<<<<<<<<<<<
  *         sal_remain = self.salary_remaining - int(player.salary)
  * 
  */
-  __Pyx_TraceLine(36,0,__PYX_ERR(0, 36, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_5create_new, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_create_new, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__3)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_TraceLine(44,0,__PYX_ERR(0, 44, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_5create_new, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_create_new, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__4)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_create_new, __pyx_t_2) < 0) __PYX_ERR(0, 36, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_create_new, __pyx_t_2) < 0) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
-  /* "dfs/Lineup.pyx":47
+  /* "dfs/Lineup.pyx":55
  *         return True
  * 
  *     cpdef add_points(self):             # <<<<<<<<<<<<<<
  *         self.points_floor = 0
  *         self.points_ceil = 0
  */
-  __Pyx_TraceLine(47,0,__PYX_ERR(0, 47, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_7add_points, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_add_points, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__4)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 47, __pyx_L1_error)
+  __Pyx_TraceLine(55,0,__PYX_ERR(0, 55, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_7add_points, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_add_points, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__5)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_add_points, __pyx_t_2) < 0) __PYX_ERR(0, 47, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_add_points, __pyx_t_2) < 0) __PYX_ERR(0, 55, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
-  /* "dfs/Lineup.pyx":56
+  /* "dfs/Lineup.pyx":64
  *             self.points_avg = self.points_avg + float(player.median)
  * 
  *     cpdef get_new_salary(self, diff):             # <<<<<<<<<<<<<<
  *         new_salary = deepcopy(self.salary_remaining)
  *         for i, player in enumerate(self.players.reverse()):
  */
-  __Pyx_TraceLine(56,0,__PYX_ERR(0, 56, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_9get_new_salary, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_get_new_salary, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__5)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __Pyx_TraceLine(64,0,__PYX_ERR(0, 64, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_9get_new_salary, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_get_new_salary, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__6)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_get_new_salary, __pyx_t_2) < 0) __PYX_ERR(0, 56, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_get_new_salary, __pyx_t_2) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
-  /* "dfs/Lineup.pyx":65
+  /* "dfs/Lineup.pyx":73
  * 
  *     # REMOVES LAST PLAYER
  *     def __deepcopy__(self, memo): # memo is a dict of id's to copies             # <<<<<<<<<<<<<<
  *         id_self = id(self)        # memoization avoids unnecesary recursion
  *         _copy = memo.get(id_self)
  */
-  __Pyx_TraceLine(65,0,__PYX_ERR(0, 65, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_11__deepcopy__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup___deepcopy, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__6)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __Pyx_TraceLine(73,0,__PYX_ERR(0, 73, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_11__deepcopy__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup___deepcopy, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__7)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_deepcopy_2, __pyx_t_2) < 0) __PYX_ERR(0, 65, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_deepcopy_2, __pyx_t_2) < 0) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
-  /* "dfs/Lineup.pyx":77
+  /* "dfs/Lineup.pyx":85
  *         return _copy
  * 
  *     cpdef get_needed_back(self):             # <<<<<<<<<<<<<<
  *         needed = deepcopy(self.needed)
  *         last_player = self.players[-1]
  */
-  __Pyx_TraceLine(77,0,__PYX_ERR(0, 77, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_13get_needed_back, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_get_needed_back, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__7)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
+  __Pyx_TraceLine(85,0,__PYX_ERR(0, 85, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_13get_needed_back, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_get_needed_back, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__8)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 85, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_get_needed_back, __pyx_t_2) < 0) __PYX_ERR(0, 77, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_get_needed_back, __pyx_t_2) < 0) __PYX_ERR(0, 85, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
-  /* "dfs/Lineup.pyx":102
+  /* "dfs/Lineup.pyx":110
  * 
  * 
  *     cpdef add_player(self, player, captain_mode):             # <<<<<<<<<<<<<<
  *         #if player.position == "QB" and player.name != "Ben Roethlisberger":
  *         #    return False
  */
-  __Pyx_TraceLine(102,0,__PYX_ERR(0, 102, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_15add_player, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_add_player, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__8)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 102, __pyx_L1_error)
+  __Pyx_TraceLine(110,0,__PYX_ERR(0, 110, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_15add_player, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_add_player, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_add_player, __pyx_t_2) < 0) __PYX_ERR(0, 102, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_add_player, __pyx_t_2) < 0) __PYX_ERR(0, 110, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
-  /* "dfs/Lineup.pyx":155
+  /* "dfs/Lineup.pyx":165
  *     #    return True
  * 
  *     cpdef decrease_salary_remaining(self):             # <<<<<<<<<<<<<<
  *         for player in self.players:
  *             self.salary_remaining = self.salary_remaining - float(player.salary)
  */
-  __Pyx_TraceLine(155,0,__PYX_ERR(0, 155, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_17decrease_salary_remaining, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_decrease_salary_remaining, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __Pyx_TraceLine(165,0,__PYX_ERR(0, 165, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_17decrease_salary_remaining, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_decrease_salary_remaining, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__10)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_decrease_salary_remaining, __pyx_t_2) < 0) __PYX_ERR(0, 155, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_decrease_salary_remaining, __pyx_t_2) < 0) __PYX_ERR(0, 165, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
-  /* "dfs/Lineup.pyx":159
+  /* "dfs/Lineup.pyx":169
  *             self.salary_remaining = self.salary_remaining - float(player.salary)
  * 
  *     cpdef order_by_pos(self):             # <<<<<<<<<<<<<<
  *         new_order = [None] * 9
  *         for player in self.players:
  */
-  __Pyx_TraceLine(159,0,__PYX_ERR(0, 159, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_19order_by_pos, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_order_by_pos, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__10)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 159, __pyx_L1_error)
+  __Pyx_TraceLine(169,0,__PYX_ERR(0, 169, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_19order_by_pos, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_order_by_pos, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__11)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 169, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_order_by_pos, __pyx_t_2) < 0) __PYX_ERR(0, 159, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_order_by_pos, __pyx_t_2) < 0) __PYX_ERR(0, 169, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
-  /* "dfs/Lineup.pyx":196
+  /* "dfs/Lineup.pyx":206
  *         return plays
  * 
  *     cpdef remove_needed(self, pos, player):             # <<<<<<<<<<<<<<
  *         if self.lineup_type =="normal":
  *             if pos == "QB":
  */
-  __Pyx_TraceLine(196,0,__PYX_ERR(0, 196, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_23remove_needed, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_remove_needed, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__13)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 196, __pyx_L1_error)
+  __Pyx_TraceLine(206,0,__PYX_ERR(0, 206, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_23remove_needed, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup_remove_needed, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__14)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 206, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_remove_needed, __pyx_t_2) < 0) __PYX_ERR(0, 196, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Lineup_Lineup->tp_dict, __pyx_n_s_remove_needed, __pyx_t_2) < 0) __PYX_ERR(0, 206, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Lineup_Lineup);
 
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     cdef bint use_setstate
- *     state = (self.cap, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining)
+ *     state = (self.cap, self.has_cpt, self.len_players, self.lineup_type, self.needed, self.players, self.players_dict, self.points_avg, self.points_ceil, self.points_floor, self.required_players, self.salary_remaining, self.stack)
  */
   __Pyx_TraceLine(1,0,__PYX_ERR(2, 1, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_25__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup___reduce_cython, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__14)); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_25__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup___reduce_cython, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__15)); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_reduce_cython, __pyx_t_2) < 0) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "(tree fragment)":14
  *     else:
- *         return __pyx_unpickle_Lineup, (type(self), 0x28658dd, state)
+ *         return __pyx_unpickle_Lineup, (type(self), 0xb56a029, state)
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     __pyx_unpickle_Lineup__set_state(self, __pyx_state)
  */
   __Pyx_TraceLine(14,0,__PYX_ERR(2, 14, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_27__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup___setstate_cython, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__15)); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 14, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_6Lineup_27__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Lineup___setstate_cython, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__16)); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_setstate_cython, __pyx_t_2) < 0) __PYX_ERR(2, 14, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_Lineup(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
- *     if __pyx_checksum != 0x28658dd:
+ *     if __pyx_checksum != 0xb56a029:
  *         from pickle import PickleError as __pyx_PickleError
  */
   __Pyx_TraceLine(1,0,__PYX_ERR(2, 1, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_1__pyx_unpickle_Lineup, 0, __pyx_n_s_pyx_unpickle_Lineup, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__16)); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Lineup_1__pyx_unpickle_Lineup, 0, __pyx_n_s_pyx_unpickle_Lineup, NULL, __pyx_n_s_dfs_Lineup, __pyx_d, ((PyObject *)__pyx_codeobj__17)); if (unlikely(!__pyx_t_2)) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyx_unpickle_Lineup, __pyx_t_2) < 0) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -13091,6 +13207,112 @@ bad:
     }
 }
 
+/* Print */
+            #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
+static PyObject *__Pyx_GetStdout(void) {
+    PyObject *f = PySys_GetObject((char *)"stdout");
+    if (!f) {
+        PyErr_SetString(PyExc_RuntimeError, "lost sys.stdout");
+    }
+    return f;
+}
+static int __Pyx_Print(PyObject* f, PyObject *arg_tuple, int newline) {
+    int i;
+    if (!f) {
+        if (!(f = __Pyx_GetStdout()))
+            return -1;
+    }
+    Py_INCREF(f);
+    for (i=0; i < PyTuple_GET_SIZE(arg_tuple); i++) {
+        PyObject* v;
+        if (PyFile_SoftSpace(f, 1)) {
+            if (PyFile_WriteString(" ", f) < 0)
+                goto error;
+        }
+        v = PyTuple_GET_ITEM(arg_tuple, i);
+        if (PyFile_WriteObject(v, f, Py_PRINT_RAW) < 0)
+            goto error;
+        if (PyString_Check(v)) {
+            char *s = PyString_AsString(v);
+            Py_ssize_t len = PyString_Size(v);
+            if (len > 0) {
+                switch (s[len-1]) {
+                    case ' ': break;
+                    case '\f': case '\r': case '\n': case '\t': case '\v':
+                        PyFile_SoftSpace(f, 0);
+                        break;
+                    default:  break;
+                }
+            }
+        }
+    }
+    if (newline) {
+        if (PyFile_WriteString("\n", f) < 0)
+            goto error;
+        PyFile_SoftSpace(f, 0);
+    }
+    Py_DECREF(f);
+    return 0;
+error:
+    Py_DECREF(f);
+    return -1;
+}
+#else
+static int __Pyx_Print(PyObject* stream, PyObject *arg_tuple, int newline) {
+    PyObject* kwargs = 0;
+    PyObject* result = 0;
+    PyObject* end_string;
+    if (unlikely(!__pyx_print)) {
+        __pyx_print = PyObject_GetAttr(__pyx_b, __pyx_n_s_print);
+        if (!__pyx_print)
+            return -1;
+    }
+    if (stream) {
+        kwargs = PyDict_New();
+        if (unlikely(!kwargs))
+            return -1;
+        if (unlikely(PyDict_SetItem(kwargs, __pyx_n_s_file, stream) < 0))
+            goto bad;
+        if (!newline) {
+            end_string = PyUnicode_FromStringAndSize(" ", 1);
+            if (unlikely(!end_string))
+                goto bad;
+            if (PyDict_SetItem(kwargs, __pyx_n_s_end, end_string) < 0) {
+                Py_DECREF(end_string);
+                goto bad;
+            }
+            Py_DECREF(end_string);
+        }
+    } else if (!newline) {
+        if (unlikely(!__pyx_print_kwargs)) {
+            __pyx_print_kwargs = PyDict_New();
+            if (unlikely(!__pyx_print_kwargs))
+                return -1;
+            end_string = PyUnicode_FromStringAndSize(" ", 1);
+            if (unlikely(!end_string))
+                return -1;
+            if (PyDict_SetItem(__pyx_print_kwargs, __pyx_n_s_end, end_string) < 0) {
+                Py_DECREF(end_string);
+                return -1;
+            }
+            Py_DECREF(end_string);
+        }
+        kwargs = __pyx_print_kwargs;
+    }
+    result = PyObject_Call(__pyx_print, arg_tuple, kwargs);
+    if (unlikely(kwargs) && (kwargs != __pyx_print_kwargs))
+        Py_DECREF(kwargs);
+    if (!result)
+        return -1;
+    Py_DECREF(result);
+    return 0;
+bad:
+    if (kwargs != __pyx_print_kwargs)
+        Py_XDECREF(kwargs);
+    return -1;
+}
+#endif
+
 /* CIntFromPy */
             static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
     const int neg_one = (int) -1, const_zero = (int) 0;
@@ -13468,6 +13690,43 @@ raise_neg_overflow:
         "can't convert negative value to long");
     return (long) -1;
 }
+
+/* PrintOne */
+            #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
+static int __Pyx_PrintOne(PyObject* f, PyObject *o) {
+    if (!f) {
+        if (!(f = __Pyx_GetStdout()))
+            return -1;
+    }
+    Py_INCREF(f);
+    if (PyFile_SoftSpace(f, 0)) {
+        if (PyFile_WriteString(" ", f) < 0)
+            goto error;
+    }
+    if (PyFile_WriteObject(o, f, Py_PRINT_RAW) < 0)
+        goto error;
+    if (PyFile_WriteString("\n", f) < 0)
+        goto error;
+    Py_DECREF(f);
+    return 0;
+error:
+    Py_DECREF(f);
+    return -1;
+    /* the line below is just to avoid C compiler
+     * warnings about unused functions */
+    return __Pyx_Print(f, NULL, 0);
+}
+#else
+static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
+    int res;
+    PyObject* arg_tuple = PyTuple_Pack(1, o);
+    if (unlikely(!arg_tuple))
+        return -1;
+    res = __Pyx_Print(stream, arg_tuple, 1);
+    Py_DECREF(arg_tuple);
+    return res;
+}
+#endif
 
 /* FastTypeChecks */
             #if CYTHON_COMPILING_IN_CPYTHON

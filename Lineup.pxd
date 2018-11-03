@@ -7,9 +7,11 @@ cdef class Lineup:
     cdef public double points_floor
     cdef public double points_ceil
     cdef public double points_avg
+    cdef public str stack
     cdef dict players_dict
     cdef dict required_players
     cpdef str lineup_type
+    cdef bint has_cpt
     cpdef create_new(self, player, captain_mode)
     cpdef add_points(self)
     #cdef check_required(self)

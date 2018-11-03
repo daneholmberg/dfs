@@ -1514,7 +1514,7 @@ static const char __pyx_k__10[] = ", ";
 static const char __pyx_k__11[] = "";
 static const char __pyx_k_get[] = "get";
 static const char __pyx_k_new[] = "__new__";
-static const char __pyx_k_w_w[] = "(\\w+)@(\\w+)";
+static const char __pyx_k_w_w[] = "([\\w\\&]+)@([\\w\\&]+)";
 static const char __pyx_k_True[] = "True";
 static const char __pyx_k_copy[] = "copy";
 static const char __pyx_k_data[] = "data";
@@ -3023,7 +3023,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
  *         # self.isFlex = "FLEX" in data['Roster Position']
  *         self.salary = float(data['Salary'])             # <<<<<<<<<<<<<<
  *         if site == "DK":
- *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+ *             match = re.match(r'([\w\&]+)@([\w\&]+)', data['Game Info'])
  */
   __Pyx_TraceLine(47,0,__PYX_ERR(0, 47, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_Salary); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
@@ -3036,8 +3036,8 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
  *         # self.isFlex = "FLEX" in data['Roster Position']
  *         self.salary = float(data['Salary'])
  *         if site == "DK":             # <<<<<<<<<<<<<<
- *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
- *             if data['TeamAbbrev'] == match.group(1):
+ *             match = re.match(r'([\w\&]+)@([\w\&]+)', data['Game Info'])
+ * 
  */
   __Pyx_TraceLine(48,0,__PYX_ERR(0, 48, __pyx_L1_error))
   __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_site, __pyx_n_s_DK, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 48, __pyx_L1_error)
@@ -3046,9 +3046,9 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
     /* "dfs/Player.pyx":49
  *         self.salary = float(data['Salary'])
  *         if site == "DK":
- *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])             # <<<<<<<<<<<<<<
+ *             match = re.match(r'([\w\&]+)@([\w\&]+)', data['Game Info'])             # <<<<<<<<<<<<<<
+ * 
  *             if data['TeamAbbrev'] == match.group(1):
- *                 self.opposing_team = match.group(2)
  */
     __Pyx_TraceLine(49,0,__PYX_ERR(0, 49, __pyx_L1_error))
     __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_re); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 49, __pyx_L1_error)
@@ -3108,51 +3108,51 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
     __pyx_v_match = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "dfs/Player.pyx":50
- *         if site == "DK":
- *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+    /* "dfs/Player.pyx":51
+ *             match = re.match(r'([\w\&]+)@([\w\&]+)', data['Game Info'])
+ * 
  *             if data['TeamAbbrev'] == match.group(1):             # <<<<<<<<<<<<<<
  *                 self.opposing_team = match.group(2)
  *             elif data['TeamAbbrev'] == match.group(2):
  */
-    __Pyx_TraceLine(50,0,__PYX_ERR(0, 50, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_TeamAbbrev); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
+    __Pyx_TraceLine(51,0,__PYX_ERR(0, 51, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_TeamAbbrev); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 51, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 51, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 50, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 51, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 51, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 50, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 51, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_8) {
 
-      /* "dfs/Player.pyx":51
- *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+      /* "dfs/Player.pyx":52
+ * 
  *             if data['TeamAbbrev'] == match.group(1):
  *                 self.opposing_team = match.group(2)             # <<<<<<<<<<<<<<
  *             elif data['TeamAbbrev'] == match.group(2):
  *                 self.opposing_team = match.group(1)
  */
-      __Pyx_TraceLine(51,0,__PYX_ERR(0, 51, __pyx_L1_error))
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 51, __pyx_L1_error)
+      __Pyx_TraceLine(52,0,__PYX_ERR(0, 52, __pyx_L1_error))
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 52, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 51, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 52, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (!(likely(PyString_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_4)->tp_name), 0))) __PYX_ERR(0, 51, __pyx_L1_error)
+      if (!(likely(PyString_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_4)->tp_name), 0))) __PYX_ERR(0, 52, __pyx_L1_error)
       __Pyx_GIVEREF(__pyx_t_4);
       __Pyx_GOTREF(__pyx_v_self->opposing_team);
       __Pyx_DECREF(__pyx_v_self->opposing_team);
       __pyx_v_self->opposing_team = ((PyObject*)__pyx_t_4);
       __pyx_t_4 = 0;
 
-      /* "dfs/Player.pyx":50
- *         if site == "DK":
- *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+      /* "dfs/Player.pyx":51
+ *             match = re.match(r'([\w\&]+)@([\w\&]+)', data['Game Info'])
+ * 
  *             if data['TeamAbbrev'] == match.group(1):             # <<<<<<<<<<<<<<
  *                 self.opposing_team = match.group(2)
  *             elif data['TeamAbbrev'] == match.group(2):
@@ -3160,49 +3160,49 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
       goto __pyx_L4;
     }
 
-    /* "dfs/Player.pyx":52
+    /* "dfs/Player.pyx":53
  *             if data['TeamAbbrev'] == match.group(1):
  *                 self.opposing_team = match.group(2)
  *             elif data['TeamAbbrev'] == match.group(2):             # <<<<<<<<<<<<<<
  *                 self.opposing_team = match.group(1)
  *         elif site == "yahoo":
  */
-    __Pyx_TraceLine(52,0,__PYX_ERR(0, 52, __pyx_L1_error))
-    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_TeamAbbrev); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 52, __pyx_L1_error)
+    __Pyx_TraceLine(53,0,__PYX_ERR(0, 53, __pyx_L1_error))
+    __pyx_t_4 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_TeamAbbrev); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 53, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 52, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 53, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 52, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = PyObject_RichCompare(__pyx_t_4, __pyx_t_1, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 52, __pyx_L1_error)
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_4, __pyx_t_1, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 53, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 52, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 53, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_8) {
 
-      /* "dfs/Player.pyx":53
+      /* "dfs/Player.pyx":54
  *                 self.opposing_team = match.group(2)
  *             elif data['TeamAbbrev'] == match.group(2):
  *                 self.opposing_team = match.group(1)             # <<<<<<<<<<<<<<
  *         elif site == "yahoo":
  *             self.opposing_team = data['Opponent']
  */
-      __Pyx_TraceLine(53,0,__PYX_ERR(0, 53, __pyx_L1_error))
-      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 53, __pyx_L1_error)
+      __Pyx_TraceLine(54,0,__PYX_ERR(0, 54, __pyx_L1_error))
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_match, __pyx_n_s_group); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 54, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 54, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 53, __pyx_L1_error)
+      if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 54, __pyx_L1_error)
       __Pyx_GIVEREF(__pyx_t_1);
       __Pyx_GOTREF(__pyx_v_self->opposing_team);
       __Pyx_DECREF(__pyx_v_self->opposing_team);
       __pyx_v_self->opposing_team = ((PyObject*)__pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "dfs/Player.pyx":52
+      /* "dfs/Player.pyx":53
  *             if data['TeamAbbrev'] == match.group(1):
  *                 self.opposing_team = match.group(2)
  *             elif data['TeamAbbrev'] == match.group(2):             # <<<<<<<<<<<<<<
@@ -3216,41 +3216,41 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_update_player_dfs(struct __pyx_obj
  *         # self.isFlex = "FLEX" in data['Roster Position']
  *         self.salary = float(data['Salary'])
  *         if site == "DK":             # <<<<<<<<<<<<<<
- *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
- *             if data['TeamAbbrev'] == match.group(1):
+ *             match = re.match(r'([\w\&]+)@([\w\&]+)', data['Game Info'])
+ * 
  */
     goto __pyx_L3;
   }
 
-  /* "dfs/Player.pyx":54
+  /* "dfs/Player.pyx":55
  *             elif data['TeamAbbrev'] == match.group(2):
  *                 self.opposing_team = match.group(1)
  *         elif site == "yahoo":             # <<<<<<<<<<<<<<
  *             self.opposing_team = data['Opponent']
  * 
  */
-  __Pyx_TraceLine(54,0,__PYX_ERR(0, 54, __pyx_L1_error))
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_site, __pyx_n_s_yahoo, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 54, __pyx_L1_error)
+  __Pyx_TraceLine(55,0,__PYX_ERR(0, 55, __pyx_L1_error))
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_v_site, __pyx_n_s_yahoo, Py_EQ)); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 55, __pyx_L1_error)
   if (__pyx_t_8) {
 
-    /* "dfs/Player.pyx":55
+    /* "dfs/Player.pyx":56
  *                 self.opposing_team = match.group(1)
  *         elif site == "yahoo":
  *             self.opposing_team = data['Opponent']             # <<<<<<<<<<<<<<
  * 
  *     cpdef make_cpt(self):
  */
-    __Pyx_TraceLine(55,0,__PYX_ERR(0, 55, __pyx_L1_error))
-    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_Opponent); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __Pyx_TraceLine(56,0,__PYX_ERR(0, 56, __pyx_L1_error))
+    __pyx_t_1 = __Pyx_PyObject_Dict_GetItem(__pyx_v_data, __pyx_n_s_Opponent); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 55, __pyx_L1_error)
+    if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 56, __pyx_L1_error)
     __Pyx_GIVEREF(__pyx_t_1);
     __Pyx_GOTREF(__pyx_v_self->opposing_team);
     __Pyx_DECREF(__pyx_v_self->opposing_team);
     __pyx_v_self->opposing_team = ((PyObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "dfs/Player.pyx":54
+    /* "dfs/Player.pyx":55
  *             elif data['TeamAbbrev'] == match.group(2):
  *                 self.opposing_team = match.group(1)
  *         elif site == "yahoo":             # <<<<<<<<<<<<<<
@@ -3383,7 +3383,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_6update_player_dfs(struct __pyx_o
   return __pyx_r;
 }
 
-/* "dfs/Player.pyx":57
+/* "dfs/Player.pyx":58
  *             self.opposing_team = data['Opponent']
  * 
  *     cpdef make_cpt(self):             # <<<<<<<<<<<<<<
@@ -3402,12 +3402,12 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_make_cpt(struct __pyx_obj_3dfs_6Pl
   PyObject *__pyx_t_4 = NULL;
   __Pyx_TraceFrameInit(__pyx_codeobj__8)
   __Pyx_RefNannySetupContext("make_cpt", 0);
-  __Pyx_TraceCall("make_cpt", __pyx_f[0], 57, 0, __PYX_ERR(0, 57, __pyx_L1_error));
+  __Pyx_TraceCall("make_cpt", __pyx_f[0], 58, 0, __PYX_ERR(0, 58, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_make_cpt); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_make_cpt); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Player_6Player_9make_cpt)) {
       __Pyx_XDECREF(__pyx_r);
@@ -3423,10 +3423,10 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_make_cpt(struct __pyx_obj_3dfs_6Pl
         }
       }
       if (__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       } else {
-        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
       }
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3438,57 +3438,57 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_make_cpt(struct __pyx_obj_3dfs_6Pl
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Player.pyx":58
+  /* "dfs/Player.pyx":59
  * 
  *     cpdef make_cpt(self):
  *         self.salary *= 1.5             # <<<<<<<<<<<<<<
  *         self.upper *= 1.5
  *         self.median *= 1.5
  */
-  __Pyx_TraceLine(58,0,__PYX_ERR(0, 58, __pyx_L1_error))
+  __Pyx_TraceLine(59,0,__PYX_ERR(0, 59, __pyx_L1_error))
   __pyx_v_self->salary = (__pyx_v_self->salary * 1.5);
 
-  /* "dfs/Player.pyx":59
+  /* "dfs/Player.pyx":60
  *     cpdef make_cpt(self):
  *         self.salary *= 1.5
  *         self.upper *= 1.5             # <<<<<<<<<<<<<<
  *         self.median *= 1.5
  *         self.lower *= 1.5
  */
-  __Pyx_TraceLine(59,0,__PYX_ERR(0, 59, __pyx_L1_error))
+  __Pyx_TraceLine(60,0,__PYX_ERR(0, 60, __pyx_L1_error))
   __pyx_v_self->upper = (__pyx_v_self->upper * 1.5);
 
-  /* "dfs/Player.pyx":60
+  /* "dfs/Player.pyx":61
  *         self.salary *= 1.5
  *         self.upper *= 1.5
  *         self.median *= 1.5             # <<<<<<<<<<<<<<
  *         self.lower *= 1.5
  *         self.is_captain = True
  */
-  __Pyx_TraceLine(60,0,__PYX_ERR(0, 60, __pyx_L1_error))
+  __Pyx_TraceLine(61,0,__PYX_ERR(0, 61, __pyx_L1_error))
   __pyx_v_self->median = (__pyx_v_self->median * 1.5);
 
-  /* "dfs/Player.pyx":61
+  /* "dfs/Player.pyx":62
  *         self.upper *= 1.5
  *         self.median *= 1.5
  *         self.lower *= 1.5             # <<<<<<<<<<<<<<
  *         self.is_captain = True
  * 
  */
-  __Pyx_TraceLine(61,0,__PYX_ERR(0, 61, __pyx_L1_error))
+  __Pyx_TraceLine(62,0,__PYX_ERR(0, 62, __pyx_L1_error))
   __pyx_v_self->lower = (__pyx_v_self->lower * 1.5);
 
-  /* "dfs/Player.pyx":62
+  /* "dfs/Player.pyx":63
  *         self.median *= 1.5
  *         self.lower *= 1.5
  *         self.is_captain = True             # <<<<<<<<<<<<<<
  * 
  *     cpdef get_value(self, site):
  */
-  __Pyx_TraceLine(62,0,__PYX_ERR(0, 62, __pyx_L1_error))
+  __Pyx_TraceLine(63,0,__PYX_ERR(0, 63, __pyx_L1_error))
   __pyx_v_self->is_captain = 1;
 
-  /* "dfs/Player.pyx":57
+  /* "dfs/Player.pyx":58
  *             self.opposing_team = data['Opponent']
  * 
  *     cpdef make_cpt(self):             # <<<<<<<<<<<<<<
@@ -3534,9 +3534,9 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_8make_cpt(struct __pyx_obj_3dfs_6
   PyObject *__pyx_t_1 = NULL;
   __Pyx_TraceFrameInit(__pyx_codeobj__8)
   __Pyx_RefNannySetupContext("make_cpt", 0);
-  __Pyx_TraceCall("make_cpt (wrapper)", __pyx_f[0], 57, 0, __PYX_ERR(0, 57, __pyx_L1_error));
+  __Pyx_TraceCall("make_cpt (wrapper)", __pyx_f[0], 58, 0, __PYX_ERR(0, 58, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Player_6Player_make_cpt(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Player_6Player_make_cpt(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3554,7 +3554,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_8make_cpt(struct __pyx_obj_3dfs_6
   return __pyx_r;
 }
 
-/* "dfs/Player.pyx":64
+/* "dfs/Player.pyx":65
  *         self.is_captain = True
  * 
  *     cpdef get_value(self, site):             # <<<<<<<<<<<<<<
@@ -3580,12 +3580,12 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
   double __pyx_t_10;
   __Pyx_TraceFrameInit(__pyx_codeobj__9)
   __Pyx_RefNannySetupContext("get_value", 0);
-  __Pyx_TraceCall("get_value", __pyx_f[0], 64, 0, __PYX_ERR(0, 64, __pyx_L1_error));
+  __Pyx_TraceCall("get_value", __pyx_f[0], 65, 0, __PYX_ERR(0, 65, __pyx_L1_error));
   /* Check if called by wrapper */
   if (unlikely(__pyx_skip_dispatch)) ;
   /* Check if overridden in Python */
   else if (unlikely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0)) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)__pyx_pw_3dfs_6Player_6Player_11get_value)) {
       __Pyx_XDECREF(__pyx_r);
@@ -3601,13 +3601,13 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
         }
       }
       if (!__pyx_t_4) {
-        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_site); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_site); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
       } else {
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_3)) {
           PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_site};
-          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_GOTREF(__pyx_t_2);
         } else
@@ -3615,19 +3615,19 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
           PyObject *__pyx_temp[2] = {__pyx_t_4, __pyx_v_site};
-          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-1, 1+1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_GOTREF(__pyx_t_2);
         } else
         #endif
         {
-          __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 64, __pyx_L1_error)
+          __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 65, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
           __Pyx_INCREF(__pyx_v_site);
           __Pyx_GIVEREF(__pyx_v_site);
           PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_v_site);
-          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         }
@@ -3641,15 +3641,15 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "dfs/Player.pyx":65
+  /* "dfs/Player.pyx":66
  * 
  *     cpdef get_value(self, site):
  *         divi = 1000 if site == "DK" else 10             # <<<<<<<<<<<<<<
  *         try:
  *         # if hasattr(self, "salary") and hasattr(self, "median"):
  */
-  __Pyx_TraceLine(65,0,__PYX_ERR(0, 65, __pyx_L1_error))
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_site, __pyx_n_s_DK, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __Pyx_TraceLine(66,0,__PYX_ERR(0, 66, __pyx_L1_error))
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_site, __pyx_n_s_DK, Py_EQ)); if (unlikely(__pyx_t_6 < 0)) __PYX_ERR(0, 66, __pyx_L1_error)
   if (__pyx_t_6) {
     __Pyx_INCREF(__pyx_int_1000);
     __pyx_t_1 = __pyx_int_1000;
@@ -3660,14 +3660,14 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
   __pyx_v_divi = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "dfs/Player.pyx":66
+  /* "dfs/Player.pyx":67
  *     cpdef get_value(self, site):
  *         divi = 1000 if site == "DK" else 10
  *         try:             # <<<<<<<<<<<<<<
  *         # if hasattr(self, "salary") and hasattr(self, "median"):
  *             self.median_value = float(self.median) / (float(self.salary)/divi)
  */
-  __Pyx_TraceLine(66,0,__PYX_ERR(0, 66, __pyx_L3_error))
+  __Pyx_TraceLine(67,0,__PYX_ERR(0, 67, __pyx_L3_error))
   {
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
@@ -3677,76 +3677,76 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
     __Pyx_XGOTREF(__pyx_t_9);
     /*try:*/ {
 
-      /* "dfs/Player.pyx":68
+      /* "dfs/Player.pyx":69
  *         try:
  *         # if hasattr(self, "salary") and hasattr(self, "median"):
  *             self.median_value = float(self.median) / (float(self.salary)/divi)             # <<<<<<<<<<<<<<
  *         # if hasattr(self, "salary") and hasattr(self, "lower"):
  *             self.lower_value = float(self.lower) / (float(self.salary)/divi)
  */
-      __Pyx_TraceLine(68,0,__PYX_ERR(0, 68, __pyx_L3_error))
-      __pyx_t_1 = PyFloat_FromDouble(((double)__pyx_v_self->median)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L3_error)
+      __Pyx_TraceLine(69,0,__PYX_ERR(0, 69, __pyx_L3_error))
+      __pyx_t_1 = PyFloat_FromDouble(((double)__pyx_v_self->median)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyFloat_FromDouble(((double)__pyx_v_self->salary)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 68, __pyx_L3_error)
+      __pyx_t_2 = PyFloat_FromDouble(((double)__pyx_v_self->salary)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 69, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_t_2, __pyx_v_divi); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 68, __pyx_L3_error)
+      __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_t_2, __pyx_v_divi); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 69, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 68, __pyx_L3_error)
+      __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 69, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 68, __pyx_L3_error)
+      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 69, __pyx_L3_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __pyx_v_self->median_value = __pyx_t_10;
 
-      /* "dfs/Player.pyx":70
+      /* "dfs/Player.pyx":71
  *             self.median_value = float(self.median) / (float(self.salary)/divi)
  *         # if hasattr(self, "salary") and hasattr(self, "lower"):
  *             self.lower_value = float(self.lower) / (float(self.salary)/divi)             # <<<<<<<<<<<<<<
  *         # if hasattr(self, "salary") and hasattr(self, "upper"):
  *             self.upper_value = float(self.upper) / (float(self.salary)/divi)
  */
-      __Pyx_TraceLine(70,0,__PYX_ERR(0, 70, __pyx_L3_error))
-      __pyx_t_2 = PyFloat_FromDouble(((double)__pyx_v_self->lower)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L3_error)
+      __Pyx_TraceLine(71,0,__PYX_ERR(0, 71, __pyx_L3_error))
+      __pyx_t_2 = PyFloat_FromDouble(((double)__pyx_v_self->lower)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_3 = PyFloat_FromDouble(((double)__pyx_v_self->salary)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 70, __pyx_L3_error)
+      __pyx_t_3 = PyFloat_FromDouble(((double)__pyx_v_self->salary)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_v_divi); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L3_error)
+      __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_v_divi); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 70, __pyx_L3_error)
+      __pyx_t_3 = __Pyx_PyNumber_Divide(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 70, __pyx_L3_error)
+      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 71, __pyx_L3_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_v_self->lower_value = __pyx_t_10;
 
-      /* "dfs/Player.pyx":72
+      /* "dfs/Player.pyx":73
  *             self.lower_value = float(self.lower) / (float(self.salary)/divi)
  *         # if hasattr(self, "salary") and hasattr(self, "upper"):
  *             self.upper_value = float(self.upper) / (float(self.salary)/divi)             # <<<<<<<<<<<<<<
  *         except:
  *             pass
  */
-      __Pyx_TraceLine(72,0,__PYX_ERR(0, 72, __pyx_L3_error))
-      __pyx_t_3 = PyFloat_FromDouble(((double)__pyx_v_self->upper)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 72, __pyx_L3_error)
+      __Pyx_TraceLine(73,0,__PYX_ERR(0, 73, __pyx_L3_error))
+      __pyx_t_3 = PyFloat_FromDouble(((double)__pyx_v_self->upper)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 73, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_1 = PyFloat_FromDouble(((double)__pyx_v_self->salary)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 72, __pyx_L3_error)
+      __pyx_t_1 = PyFloat_FromDouble(((double)__pyx_v_self->salary)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_1, __pyx_v_divi); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 72, __pyx_L3_error)
+      __pyx_t_2 = __Pyx_PyNumber_Divide(__pyx_t_1, __pyx_v_divi); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 72, __pyx_L3_error)
+      __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 72, __pyx_L3_error)
+      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 73, __pyx_L3_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __pyx_v_self->upper_value = __pyx_t_10;
 
-      /* "dfs/Player.pyx":66
+      /* "dfs/Player.pyx":67
  *     cpdef get_value(self, site):
  *         divi = 1000 if site == "DK" else 10
  *         try:             # <<<<<<<<<<<<<<
@@ -3765,21 +3765,21 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "dfs/Player.pyx":73
+    /* "dfs/Player.pyx":74
  *         # if hasattr(self, "salary") and hasattr(self, "upper"):
  *             self.upper_value = float(self.upper) / (float(self.salary)/divi)
  *         except:             # <<<<<<<<<<<<<<
  *             pass
  *     def __str__(self):
  */
-    __Pyx_TraceLine(73,0,__PYX_ERR(0, 73, __pyx_L5_except_error))
+    __Pyx_TraceLine(74,0,__PYX_ERR(0, 74, __pyx_L5_except_error))
     /*except:*/ {
       __Pyx_ErrRestore(0,0,0);
       goto __pyx_L4_exception_handled;
     }
     __pyx_L5_except_error:;
 
-    /* "dfs/Player.pyx":66
+    /* "dfs/Player.pyx":67
  *     cpdef get_value(self, site):
  *         divi = 1000 if site == "DK" else 10
  *         try:             # <<<<<<<<<<<<<<
@@ -3799,7 +3799,7 @@ static PyObject *__pyx_f_3dfs_6Player_6Player_get_value(struct __pyx_obj_3dfs_6P
     __pyx_L8_try_end:;
   }
 
-  /* "dfs/Player.pyx":64
+  /* "dfs/Player.pyx":65
  *         self.is_captain = True
  * 
  *     cpdef get_value(self, site):             # <<<<<<<<<<<<<<
@@ -3847,9 +3847,9 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_10get_value(struct __pyx_obj_3dfs
   PyObject *__pyx_t_1 = NULL;
   __Pyx_TraceFrameInit(__pyx_codeobj__9)
   __Pyx_RefNannySetupContext("get_value", 0);
-  __Pyx_TraceCall("get_value (wrapper)", __pyx_f[0], 64, 0, __PYX_ERR(0, 64, __pyx_L1_error));
+  __Pyx_TraceCall("get_value (wrapper)", __pyx_f[0], 65, 0, __PYX_ERR(0, 65, __pyx_L1_error));
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_3dfs_6Player_6Player_get_value(__pyx_v_self, __pyx_v_site, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_3dfs_6Player_6Player_get_value(__pyx_v_self, __pyx_v_site, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3867,7 +3867,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_10get_value(struct __pyx_obj_3dfs
   return __pyx_r;
 }
 
-/* "dfs/Player.pyx":75
+/* "dfs/Player.pyx":76
  *         except:
  *             pass
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -3900,17 +3900,17 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__str__(struct __pyx_obj_3dfs_6
   PyObject *__pyx_t_5 = NULL;
   int __pyx_t_6;
   __Pyx_RefNannySetupContext("__str__", 0);
-  __Pyx_TraceCall("__str__", __pyx_f[0], 75, 0, __PYX_ERR(0, 75, __pyx_L1_error));
+  __Pyx_TraceCall("__str__", __pyx_f[0], 76, 0, __PYX_ERR(0, 76, __pyx_L1_error));
 
-  /* "dfs/Player.pyx":79
+  /* "dfs/Player.pyx":80
  *         # return f"name: {self.name}"
  *         #return self.name
  *         toRet = f"name: {self.name}, captain: {self.is_captain}, position: {self.position}, team: {self.team}, salary: {self.salary}, median: {self.median}, "             # <<<<<<<<<<<<<<
  *         toRet += f"value: {self.median_value}" if hasattr(self, "median_value") else ""
  *         return toRet
  */
-  __Pyx_TraceLine(79,0,__PYX_ERR(0, 79, __pyx_L1_error))
-  __pyx_t_1 = PyTuple_New(13); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __Pyx_TraceLine(80,0,__PYX_ERR(0, 80, __pyx_L1_error))
+  __pyx_t_1 = PyTuple_New(13); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = 0;
   __pyx_t_3 = 127;
@@ -3918,7 +3918,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 6;
   __Pyx_GIVEREF(__pyx_kp_u_name_2);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_name_2);
-  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->name, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->name, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
   __pyx_t_2 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -3929,7 +3929,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 11;
   __Pyx_GIVEREF(__pyx_kp_u_captain);
   PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_captain);
-  __pyx_t_4 = __Pyx_PyUnicode_FromBInt_int(__pyx_v_self->is_captain); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyUnicode_FromBInt_int(__pyx_v_self->is_captain); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_2 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_4);
@@ -3939,7 +3939,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 12;
   __Pyx_GIVEREF(__pyx_kp_u_position_2);
   PyTuple_SET_ITEM(__pyx_t_1, 4, __pyx_kp_u_position_2);
-  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->position, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->position, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
   __pyx_t_2 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -3950,7 +3950,7 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 8;
   __Pyx_GIVEREF(__pyx_kp_u_team_2);
   PyTuple_SET_ITEM(__pyx_t_1, 6, __pyx_kp_u_team_2);
-  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->team, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_v_self->team, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
   __pyx_t_2 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4);
@@ -3961,9 +3961,9 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 10;
   __Pyx_GIVEREF(__pyx_kp_u_salary_2);
   PyTuple_SET_ITEM(__pyx_t_1, 8, __pyx_kp_u_salary_2);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->salary); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_self->salary); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_4, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_5) : __pyx_t_3;
@@ -3975,9 +3975,9 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 10;
   __Pyx_GIVEREF(__pyx_kp_u_median_2);
   PyTuple_SET_ITEM(__pyx_t_1, 10, __pyx_kp_u_median_2);
-  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_self->median); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_self->median); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_t_5, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_FormatSimple(__pyx_t_5, __pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_3 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) > __pyx_t_3) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4) : __pyx_t_3;
@@ -3989,27 +3989,27 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__str__(struct __pyx_obj_3dfs_6
   __pyx_t_2 += 2;
   __Pyx_GIVEREF(__pyx_kp_u__10);
   PyTuple_SET_ITEM(__pyx_t_1, 12, __pyx_kp_u__10);
-  __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_1, 13, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_1, 13, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_toRet = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "dfs/Player.pyx":80
+  /* "dfs/Player.pyx":81
  *         #return self.name
  *         toRet = f"name: {self.name}, captain: {self.is_captain}, position: {self.position}, team: {self.team}, salary: {self.salary}, median: {self.median}, "
  *         toRet += f"value: {self.median_value}" if hasattr(self, "median_value") else ""             # <<<<<<<<<<<<<<
  *         return toRet
  */
-  __Pyx_TraceLine(80,0,__PYX_ERR(0, 80, __pyx_L1_error))
-  __pyx_t_6 = __Pyx_HasAttr(((PyObject *)__pyx_v_self), __pyx_n_s_median_value); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 80, __pyx_L1_error)
+  __Pyx_TraceLine(81,0,__PYX_ERR(0, 81, __pyx_L1_error))
+  __pyx_t_6 = __Pyx_HasAttr(((PyObject *)__pyx_v_self), __pyx_n_s_median_value); if (unlikely(__pyx_t_6 == ((int)-1))) __PYX_ERR(0, 81, __pyx_L1_error)
   if ((__pyx_t_6 != 0)) {
-    __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->median_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
+    __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->median_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_1, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 80, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_FormatSimple(__pyx_t_1, __pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyUnicode_Concat(__pyx_kp_u_value, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyUnicode_Concat(__pyx_kp_u_value, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_4 = __pyx_t_1;
@@ -4018,24 +4018,24 @@ static PyObject *__pyx_pf_3dfs_6Player_6Player_12__str__(struct __pyx_obj_3dfs_6
     __Pyx_INCREF(__pyx_kp_s__11);
     __pyx_t_4 = __pyx_kp_s__11;
   }
-  __pyx_t_1 = PyNumber_InPlaceAdd(__pyx_v_toRet, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_InPlaceAdd(__pyx_v_toRet, __pyx_t_4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF_SET(__pyx_v_toRet, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "dfs/Player.pyx":81
+  /* "dfs/Player.pyx":82
  *         toRet = f"name: {self.name}, captain: {self.is_captain}, position: {self.position}, team: {self.team}, salary: {self.salary}, median: {self.median}, "
  *         toRet += f"value: {self.median_value}" if hasattr(self, "median_value") else ""
  *         return toRet             # <<<<<<<<<<<<<<
  */
-  __Pyx_TraceLine(81,0,__PYX_ERR(0, 81, __pyx_L1_error))
+  __Pyx_TraceLine(82,0,__PYX_ERR(0, 82, __pyx_L1_error))
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_toRet);
   __pyx_r = __pyx_v_toRet;
   goto __pyx_L0;
 
-  /* "dfs/Player.pyx":75
+  /* "dfs/Player.pyx":76
  *         except:
  *             pass
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -7415,47 +7415,47 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "dfs/Player.pyx":50
- *         if site == "DK":
- *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+  /* "dfs/Player.pyx":51
+ *             match = re.match(r'([\w\&]+)@([\w\&]+)', data['Game Info'])
+ * 
  *             if data['TeamAbbrev'] == match.group(1):             # <<<<<<<<<<<<<<
  *                 self.opposing_team = match.group(2)
  *             elif data['TeamAbbrev'] == match.group(2):
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "dfs/Player.pyx":51
- *             match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+  /* "dfs/Player.pyx":52
+ * 
  *             if data['TeamAbbrev'] == match.group(1):
  *                 self.opposing_team = match.group(2)             # <<<<<<<<<<<<<<
  *             elif data['TeamAbbrev'] == match.group(2):
  *                 self.opposing_team = match.group(1)
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 51, __pyx_L1_error)
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 52, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "dfs/Player.pyx":52
+  /* "dfs/Player.pyx":53
  *             if data['TeamAbbrev'] == match.group(1):
  *                 self.opposing_team = match.group(2)
  *             elif data['TeamAbbrev'] == match.group(2):             # <<<<<<<<<<<<<<
  *                 self.opposing_team = match.group(1)
  *         elif site == "yahoo":
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 52, __pyx_L1_error)
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "dfs/Player.pyx":53
+  /* "dfs/Player.pyx":54
  *                 self.opposing_team = match.group(2)
  *             elif data['TeamAbbrev'] == match.group(2):
  *                 self.opposing_team = match.group(1)             # <<<<<<<<<<<<<<
  *         elif site == "yahoo":
  *             self.opposing_team = data['Opponent']
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 54, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
 
@@ -7495,29 +7495,29 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__17);
   __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(3, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__17, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Player_pyx, __pyx_n_s_update_player_dfs, 45, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(0, 45, __pyx_L1_error)
 
-  /* "dfs/Player.pyx":57
+  /* "dfs/Player.pyx":58
  *             self.opposing_team = data['Opponent']
  * 
  *     cpdef make_cpt(self):             # <<<<<<<<<<<<<<
  *         self.salary *= 1.5
  *         self.upper *= 1.5
  */
-  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__18);
   __Pyx_GIVEREF(__pyx_tuple__18);
-  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Player_pyx, __pyx_n_s_make_cpt, 57, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__18, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Player_pyx, __pyx_n_s_make_cpt, 58, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 58, __pyx_L1_error)
 
-  /* "dfs/Player.pyx":64
+  /* "dfs/Player.pyx":65
  *         self.is_captain = True
  * 
  *     cpdef get_value(self, site):             # <<<<<<<<<<<<<<
  *         divi = 1000 if site == "DK" else 10
  *         try:
  */
-  __pyx_tuple__19 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_site); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_tuple__19 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_site); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__19);
   __Pyx_GIVEREF(__pyx_tuple__19);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Player_pyx, __pyx_n_s_get_value, 64, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Player_pyx, __pyx_n_s_get_value, 65, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 65, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
@@ -7910,31 +7910,31 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Player_Player);
 
-  /* "dfs/Player.pyx":57
+  /* "dfs/Player.pyx":58
  *             self.opposing_team = data['Opponent']
  * 
  *     cpdef make_cpt(self):             # <<<<<<<<<<<<<<
  *         self.salary *= 1.5
  *         self.upper *= 1.5
  */
-  __Pyx_TraceLine(57,0,__PYX_ERR(0, 57, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_9make_cpt, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player_make_cpt, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__8)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __Pyx_TraceLine(58,0,__PYX_ERR(0, 58, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_9make_cpt, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player_make_cpt, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__8)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Player_Player->tp_dict, __pyx_n_s_make_cpt, __pyx_t_2) < 0) __PYX_ERR(0, 57, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Player_Player->tp_dict, __pyx_n_s_make_cpt, __pyx_t_2) < 0) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Player_Player);
 
-  /* "dfs/Player.pyx":64
+  /* "dfs/Player.pyx":65
  *         self.is_captain = True
  * 
  *     cpdef get_value(self, site):             # <<<<<<<<<<<<<<
  *         divi = 1000 if site == "DK" else 10
  *         try:
  */
-  __Pyx_TraceLine(64,0,__PYX_ERR(0, 64, __pyx_L1_error))
-  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_11get_value, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player_get_value, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __Pyx_TraceLine(65,0,__PYX_ERR(0, 65, __pyx_L1_error))
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_3dfs_6Player_6Player_11get_value, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Player_get_value, NULL, __pyx_n_s_dfs_Player, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Player_Player->tp_dict, __pyx_n_s_get_value, __pyx_t_2) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_3dfs_6Player_Player->tp_dict, __pyx_n_s_get_value, __pyx_t_2) < 0) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_3dfs_6Player_Player);
 

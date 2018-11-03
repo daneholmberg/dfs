@@ -46,7 +46,8 @@ cdef class Player:
         # self.isFlex = "FLEX" in data['Roster Position']
         self.salary = float(data['Salary'])
         if site == "DK":
-            match = re.match(r'(\w+)@(\w+)', data['Game Info'])
+            match = re.match(r'([\w\&]+)@([\w\&]+)', data['Game Info'])
+
             if data['TeamAbbrev'] == match.group(1):
                 self.opposing_team = match.group(2)
             elif data['TeamAbbrev'] == match.group(2):

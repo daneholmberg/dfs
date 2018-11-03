@@ -20,6 +20,11 @@ def parse_args():
     parser.add_argument("-w", action="store_true")
     parser.add_argument("-l", "--lineup_type", default="normal")
     parser.add_argument("-ps", "--proj_source", default="ffa")
+    parser.add_argument("-stack", action="store_true", help="Only return stacks")
+    parser.add_argument("--restrict", default=None, help="Int representing how many times a player can be in lineups")
+    parser.add_argument("--skip", default=1, help="skip over lineups")
+    parser.add_argument("--limit", default=1000, help="How many lineups to sort through")
+    parser.add_argument("--start_lin", default=0, help="Index to start looking for lineups")
 
     return parser.parse_args()
 
@@ -80,10 +85,10 @@ def main(args=None):
             print(time.time() - before, (count / length) * 100 )
         count += 1
 
-    limit = 500
-    Projector.sort_linesup(limit)
-    
-    
+    Projector.sort_linesup(int(args.limit), int(args.skip), int(args.start_lin))
+    Projector.make_stack(args.stack)
+    if args.restrict:
+        Projector.restrict_lineups(args.restrict)
 
     Projector.write_linesups_csv(args.type, args.site, args.lineup_type)
     print(time.time() - before)

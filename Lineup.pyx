@@ -5,27 +5,35 @@ cimport Player
 from copy import copy, deepcopy
 
 cdef class Lineup:
-    def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal"):
+    def __init__(self, players=[], int cap=50000, new_player=None, bint captain_mode=False, lineup_type="normal", has_cpt=False):
         self.players = []
         self.cap = cap
         self.salary_remaining = cap
-        #self.decrease_salary_remaining()
+        #self.decrease_salary_remaining() #
         self.lineup_type = lineup_type
         self.set_needed()
-        self.len_players = len(players)
+        self.len_players = 0 # len players
         self.players_dict = {}
+        self.has_cpt = has_cpt
+        self.stack = ""
+        #for player in players: #
+        #    self.players_dict[player.name] = True #
+        #self.required_players = {"Cam Newton": False, "Greg Olsen": False} 
         for player in players:
-            self.players_dict[player.name] = True
-        #self.required_players = {"Cam Newton": False, "Greg Olsen": False}
-        for player in players:
-            self.add_player(player, captain_mode)
-            self.len_players += 1
-        if not captain_mode:
-            for player in self.players:
-                self.remove_needed(player.position, player)
-        #if new_player and self.create_new(new_player, captain_mode):
-        #    self.add_player(player, captain_mode)
-        #    self.len_players += 1
+            added = self.add_player(player, captain_mode)
+            #if not added:
+                #print()
+                #print(player)
+                #print(self)
+                #print(self.salary_remaining, player.position, captain_mode, self.players_dict)
+                #print()
+        #if not captain_mode: #
+        #    for player in self.players: #
+        #        self.remove_needed(player.position, player) #
+        #if new_player and self.create_new(new_player, captain_mode): #
+        #    self.add_player(player, captain_mode) #
+        #    self.len_players += 1 #
+        #print(self)
     
     cpdef set_needed(self):
         if self.lineup_type == "normal":
@@ -108,7 +116,8 @@ cdef class Lineup:
         #if player.name in ["Geronimo Allison", "Randall Cobb", "Trent Taylor"]:
         #    return False
         
-        mult = 1.5 if captain_mode and self.len_players == 0 else 1
+        mult = 1.5 if captain_mode and self.len_players == 0 and not self.has_cpt else 1
+        #print(mult, self.has_cpt)
         sal_remain = self.salary_remaining - (int(player.salary) * mult)
         
         if sal_remain < 0:
@@ -127,15 +136,18 @@ cdef class Lineup:
         #    self.required_players[player.name] = True
         #if self.len_players == 8 and not self.check_required():
         #    return False
-        if self.len_players == 0 and captain_mode:
+        if self.len_players == 0 and captain_mode and not self.has_cpt:
+            if player.name == "Deshaun Watson":
+                print(player)
             player_cpt = deepcopy(player)
             player_cpt.salary *= 1.5
             player_cpt.median *= 1.5
             player_cpt.lower *= 1.5
             player_cpt.upper *= 1.5
+            player_cpt.is_captain = True
         
         self.salary_remaining = sal_remain
-        if self.len_players == 0 and captain_mode:
+        if self.len_players == 0 and captain_mode and not self.has_cpt:
             self.players.append(player_cpt)
             self.players_dict[player_cpt.name] = True
         else:
