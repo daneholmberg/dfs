@@ -3,6 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
+        "define_macros": [
+            [
+                "CYTHON_TRACE",
+                "1"
+            ]
+        ],
         "name": "dfs.constants",
         "sources": [
             "constants.pyx"
@@ -846,13 +852,6 @@ static const char *__pyx_f[] = {
 #define __Pyx_CLEAR(r)    do { PyObject* tmp = ((PyObject*)(r)); r = NULL; __Pyx_DECREF(tmp);} while(0)
 #define __Pyx_XCLEAR(r)   do { if((r) != NULL) {PyObject* tmp = ((PyObject*)(r)); r = NULL; __Pyx_DECREF(tmp);}} while(0)
 
-/* PyObjectGetAttrStr.proto */
-#if CYTHON_USE_TYPE_SLOTS
-static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject* attr_name);
-#else
-#define __Pyx_PyObject_GetAttrStr(o,n) PyObject_GetAttr(o,n)
-#endif
-
 /* PyThreadStateGet.proto */
 #if CYTHON_FAST_THREAD_STATE
 #define __Pyx_PyThreadState_declare  PyThreadState *__pyx_tstate;
@@ -887,6 +886,215 @@ static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject 
 #define __Pyx_ErrFetchInState(tstate, type, value, tb)  PyErr_Fetch(type, value, tb)
 #define __Pyx_ErrRestore(type, value, tb)  PyErr_Restore(type, value, tb)
 #define __Pyx_ErrFetch(type, value, tb)  PyErr_Fetch(type, value, tb)
+#endif
+
+/* Profile.proto */
+#ifndef CYTHON_PROFILE
+#if CYTHON_COMPILING_IN_PYPY || CYTHON_COMPILING_IN_PYSTON
+  #define CYTHON_PROFILE 0
+#else
+  #define CYTHON_PROFILE 1
+#endif
+#endif
+#ifndef CYTHON_TRACE_NOGIL
+  #define CYTHON_TRACE_NOGIL 0
+#else
+  #if CYTHON_TRACE_NOGIL && !defined(CYTHON_TRACE)
+    #define CYTHON_TRACE 1
+  #endif
+#endif
+#ifndef CYTHON_TRACE
+  #define CYTHON_TRACE 0
+#endif
+#if CYTHON_TRACE
+  #undef CYTHON_PROFILE_REUSE_FRAME
+#endif
+#ifndef CYTHON_PROFILE_REUSE_FRAME
+  #define CYTHON_PROFILE_REUSE_FRAME 0
+#endif
+#if CYTHON_PROFILE || CYTHON_TRACE
+  #include "compile.h"
+  #include "frameobject.h"
+  #include "traceback.h"
+  #if CYTHON_PROFILE_REUSE_FRAME
+    #define CYTHON_FRAME_MODIFIER static
+    #define CYTHON_FRAME_DEL(frame)
+  #else
+    #define CYTHON_FRAME_MODIFIER
+    #define CYTHON_FRAME_DEL(frame) Py_CLEAR(frame)
+  #endif
+  #define __Pyx_TraceDeclarations\
+  static PyCodeObject *__pyx_frame_code = NULL;\
+  CYTHON_FRAME_MODIFIER PyFrameObject *__pyx_frame = NULL;\
+  int __Pyx_use_tracing = 0;
+  #define __Pyx_TraceFrameInit(codeobj)\
+  if (codeobj) __pyx_frame_code = (PyCodeObject*) codeobj;
+  #ifdef WITH_THREAD
+  #define __Pyx_TraceCall(funcname, srcfile, firstlineno, nogil, goto_error)\
+  if (nogil) {\
+      if (CYTHON_TRACE_NOGIL) {\
+          PyThreadState *tstate;\
+          PyGILState_STATE state = PyGILState_Ensure();\
+          tstate = __Pyx_PyThreadState_Current;\
+          if (unlikely(tstate->use_tracing) && !tstate->tracing &&\
+                  (tstate->c_profilefunc || (CYTHON_TRACE && tstate->c_tracefunc))) {\
+              __Pyx_use_tracing = __Pyx_TraceSetupAndCall(&__pyx_frame_code, &__pyx_frame, tstate, funcname, srcfile, firstlineno);\
+          }\
+          PyGILState_Release(state);\
+          if (unlikely(__Pyx_use_tracing < 0)) goto_error;\
+      }\
+  } else {\
+      PyThreadState* tstate = PyThreadState_GET();\
+      if (unlikely(tstate->use_tracing) && !tstate->tracing &&\
+              (tstate->c_profilefunc || (CYTHON_TRACE && tstate->c_tracefunc))) {\
+          __Pyx_use_tracing = __Pyx_TraceSetupAndCall(&__pyx_frame_code, &__pyx_frame, tstate, funcname, srcfile, firstlineno);\
+          if (unlikely(__Pyx_use_tracing < 0)) goto_error;\
+      }\
+  }
+  #else
+  #define __Pyx_TraceCall(funcname, srcfile, firstlineno, nogil, goto_error)\
+  {   PyThreadState* tstate = PyThreadState_GET();\
+      if (unlikely(tstate->use_tracing) && !tstate->tracing &&\
+              (tstate->c_profilefunc || (CYTHON_TRACE && tstate->c_tracefunc))) {\
+          __Pyx_use_tracing = __Pyx_TraceSetupAndCall(&__pyx_frame_code, &__pyx_frame, tstate, funcname, srcfile, firstlineno);\
+          if (unlikely(__Pyx_use_tracing < 0)) goto_error;\
+      }\
+  }
+  #endif
+  #define __Pyx_TraceException()\
+  if (likely(!__Pyx_use_tracing)); else {\
+      PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+      if (tstate->use_tracing &&\
+              (tstate->c_profilefunc || (CYTHON_TRACE && tstate->c_tracefunc))) {\
+          tstate->tracing++;\
+          tstate->use_tracing = 0;\
+          PyObject *exc_info = __Pyx_GetExceptionTuple(tstate);\
+          if (exc_info) {\
+              if (CYTHON_TRACE && tstate->c_tracefunc)\
+                  tstate->c_tracefunc(\
+                      tstate->c_traceobj, __pyx_frame, PyTrace_EXCEPTION, exc_info);\
+              tstate->c_profilefunc(\
+                  tstate->c_profileobj, __pyx_frame, PyTrace_EXCEPTION, exc_info);\
+              Py_DECREF(exc_info);\
+          }\
+          tstate->use_tracing = 1;\
+          tstate->tracing--;\
+      }\
+  }
+  static void __Pyx_call_return_trace_func(PyThreadState *tstate, PyFrameObject *frame, PyObject *result) {
+      PyObject *type, *value, *traceback;
+      __Pyx_ErrFetchInState(tstate, &type, &value, &traceback);
+      tstate->tracing++;
+      tstate->use_tracing = 0;
+      if (CYTHON_TRACE && tstate->c_tracefunc)
+          tstate->c_tracefunc(tstate->c_traceobj, frame, PyTrace_RETURN, result);
+      if (tstate->c_profilefunc)
+          tstate->c_profilefunc(tstate->c_profileobj, frame, PyTrace_RETURN, result);
+      CYTHON_FRAME_DEL(frame);
+      tstate->use_tracing = 1;
+      tstate->tracing--;
+      __Pyx_ErrRestoreInState(tstate, type, value, traceback);
+  }
+  #ifdef WITH_THREAD
+  #define __Pyx_TraceReturn(result, nogil)\
+  if (likely(!__Pyx_use_tracing)); else {\
+      if (nogil) {\
+          if (CYTHON_TRACE_NOGIL) {\
+              PyThreadState *tstate;\
+              PyGILState_STATE state = PyGILState_Ensure();\
+              tstate = __Pyx_PyThreadState_Current;\
+              if (tstate->use_tracing) {\
+                  __Pyx_call_return_trace_func(tstate, __pyx_frame, (PyObject*)result);\
+              }\
+              PyGILState_Release(state);\
+          }\
+      } else {\
+          PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+          if (tstate->use_tracing) {\
+              __Pyx_call_return_trace_func(tstate, __pyx_frame, (PyObject*)result);\
+          }\
+      }\
+  }
+  #else
+  #define __Pyx_TraceReturn(result, nogil)\
+  if (likely(!__Pyx_use_tracing)); else {\
+      PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+      if (tstate->use_tracing) {\
+          __Pyx_call_return_trace_func(tstate, __pyx_frame, (PyObject*)result);\
+      }\
+  }
+  #endif
+  static PyCodeObject *__Pyx_createFrameCodeObject(const char *funcname, const char *srcfile, int firstlineno);
+  static int __Pyx_TraceSetupAndCall(PyCodeObject** code, PyFrameObject** frame, PyThreadState* tstate, const char *funcname, const char *srcfile, int firstlineno);
+#else
+  #define __Pyx_TraceDeclarations
+  #define __Pyx_TraceFrameInit(codeobj)
+  #define __Pyx_TraceCall(funcname, srcfile, firstlineno, nogil, goto_error)   if ((1)); else goto_error;
+  #define __Pyx_TraceException()
+  #define __Pyx_TraceReturn(result, nogil)
+#endif
+#if CYTHON_TRACE
+  static int __Pyx_call_line_trace_func(PyThreadState *tstate, PyFrameObject *frame, int lineno) {
+      int ret;
+      PyObject *type, *value, *traceback;
+      __Pyx_ErrFetchInState(tstate, &type, &value, &traceback);
+      __Pyx_PyFrame_SetLineNumber(frame, lineno);
+      tstate->tracing++;
+      tstate->use_tracing = 0;
+      ret = tstate->c_tracefunc(tstate->c_traceobj, frame, PyTrace_LINE, NULL);
+      tstate->use_tracing = 1;
+      tstate->tracing--;
+      if (likely(!ret)) {
+          __Pyx_ErrRestoreInState(tstate, type, value, traceback);
+      } else {
+          Py_XDECREF(type);
+          Py_XDECREF(value);
+          Py_XDECREF(traceback);
+      }
+      return ret;
+  }
+  #ifdef WITH_THREAD
+  #define __Pyx_TraceLine(lineno, nogil, goto_error)\
+  if (likely(!__Pyx_use_tracing)); else {\
+      if (nogil) {\
+          if (CYTHON_TRACE_NOGIL) {\
+              int ret = 0;\
+              PyThreadState *tstate;\
+              PyGILState_STATE state = PyGILState_Ensure();\
+              tstate = __Pyx_PyThreadState_Current;\
+              if (unlikely(tstate->use_tracing && tstate->c_tracefunc && __pyx_frame->f_trace)) {\
+                  ret = __Pyx_call_line_trace_func(tstate, __pyx_frame, lineno);\
+              }\
+              PyGILState_Release(state);\
+              if (unlikely(ret)) goto_error;\
+          }\
+      } else {\
+          PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+          if (unlikely(tstate->use_tracing && tstate->c_tracefunc && __pyx_frame->f_trace)) {\
+              int ret = __Pyx_call_line_trace_func(tstate, __pyx_frame, lineno);\
+              if (unlikely(ret)) goto_error;\
+          }\
+      }\
+  }
+  #else
+  #define __Pyx_TraceLine(lineno, nogil, goto_error)\
+  if (likely(!__Pyx_use_tracing)); else {\
+      PyThreadState* tstate = __Pyx_PyThreadState_Current;\
+      if (unlikely(tstate->use_tracing && tstate->c_tracefunc && __pyx_frame->f_trace)) {\
+          int ret = __Pyx_call_line_trace_func(tstate, __pyx_frame, lineno);\
+          if (unlikely(ret)) goto_error;\
+      }\
+  }
+  #endif
+#else
+  #define __Pyx_TraceLine(lineno, nogil, goto_error)   if ((1)); else goto_error;
+#endif
+
+/* PyObjectGetAttrStr.proto */
+#if CYTHON_USE_TYPE_SLOTS
+static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject* attr_name);
+#else
+#define __Pyx_PyObject_GetAttrStr(o,n) PyObject_GetAttr(o,n)
 #endif
 
 /* CLineInTraceback.proto */
@@ -956,7 +1164,6 @@ static const char __pyx_k_risk[] = "risk";
 static const char __pyx_k_team[] = "team";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_lower[] = "lower";
-static const char __pyx_k_sdPts[] = "sdPts";
 static const char __pyx_k_upper[] = "upper";
 static const char __pyx_k_median[] = "median";
 static const char __pyx_k_offset[] = "offset";
@@ -964,6 +1171,9 @@ static const char __pyx_k_salary[] = "salary";
 static const char __pyx_k_sdRank[] = "sdRank";
 static const char __pyx_k_dropoff[] = "dropoff";
 static const char __pyx_k_position[] = "position";
+static const char __pyx_k_ffa_lower[] = "ffa_lower";
+static const char __pyx_k_ffa_upper[] = "ffa_upper";
+static const char __pyx_k_ffa_median[] = "ffa_median";
 static const char __pyx_k_lineup_num[] = "lineup_num";
 static const char __pyx_k_points_avg[] = "points_avg";
 static const char __pyx_k_lower_value[] = "lower_value";
@@ -974,12 +1184,16 @@ static const char __pyx_k_points_floor[] = "points_floor";
 static const char __pyx_k_opposing_team[] = "opposing_team";
 static const char __pyx_k_LINEUP_COLUMNS[] = "LINEUP_COLUMNS";
 static const char __pyx_k_PLAYER_COLUMNS[] = "PLAYER_COLUMNS";
+static const char __pyx_k_pff_mediansdPts[] = "pff_mediansdPts";
 static const char __pyx_k_salary_remaining[] = "salary_remaining";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static PyObject *__pyx_n_s_LINEUP_COLUMNS;
 static PyObject *__pyx_n_s_PLAYER_COLUMNS;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_dropoff;
+static PyObject *__pyx_n_s_ffa_lower;
+static PyObject *__pyx_n_s_ffa_median;
+static PyObject *__pyx_n_s_ffa_upper;
 static PyObject *__pyx_n_s_lineup_num;
 static PyObject *__pyx_n_s_lower;
 static PyObject *__pyx_n_s_lower_value;
@@ -989,6 +1203,7 @@ static PyObject *__pyx_n_s_median_value;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_offset;
 static PyObject *__pyx_n_s_opposing_team;
+static PyObject *__pyx_n_s_pff_mediansdPts;
 static PyObject *__pyx_n_s_points_avg;
 static PyObject *__pyx_n_s_points_ceil;
 static PyObject *__pyx_n_s_points_floor;
@@ -996,7 +1211,6 @@ static PyObject *__pyx_n_s_position;
 static PyObject *__pyx_n_s_risk;
 static PyObject *__pyx_n_s_salary;
 static PyObject *__pyx_n_s_salary_remaining;
-static PyObject *__pyx_n_s_sdPts;
 static PyObject *__pyx_n_s_sdRank;
 static PyObject *__pyx_n_s_team;
 static PyObject *__pyx_n_s_test;
@@ -1045,6 +1259,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_PLAYER_COLUMNS, __pyx_k_PLAYER_COLUMNS, sizeof(__pyx_k_PLAYER_COLUMNS), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_dropoff, __pyx_k_dropoff, sizeof(__pyx_k_dropoff), 0, 0, 1, 1},
+  {&__pyx_n_s_ffa_lower, __pyx_k_ffa_lower, sizeof(__pyx_k_ffa_lower), 0, 0, 1, 1},
+  {&__pyx_n_s_ffa_median, __pyx_k_ffa_median, sizeof(__pyx_k_ffa_median), 0, 0, 1, 1},
+  {&__pyx_n_s_ffa_upper, __pyx_k_ffa_upper, sizeof(__pyx_k_ffa_upper), 0, 0, 1, 1},
   {&__pyx_n_s_lineup_num, __pyx_k_lineup_num, sizeof(__pyx_k_lineup_num), 0, 0, 1, 1},
   {&__pyx_n_s_lower, __pyx_k_lower, sizeof(__pyx_k_lower), 0, 0, 1, 1},
   {&__pyx_n_s_lower_value, __pyx_k_lower_value, sizeof(__pyx_k_lower_value), 0, 0, 1, 1},
@@ -1054,6 +1271,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_offset, __pyx_k_offset, sizeof(__pyx_k_offset), 0, 0, 1, 1},
   {&__pyx_n_s_opposing_team, __pyx_k_opposing_team, sizeof(__pyx_k_opposing_team), 0, 0, 1, 1},
+  {&__pyx_n_s_pff_mediansdPts, __pyx_k_pff_mediansdPts, sizeof(__pyx_k_pff_mediansdPts), 0, 0, 1, 1},
   {&__pyx_n_s_points_avg, __pyx_k_points_avg, sizeof(__pyx_k_points_avg), 0, 0, 1, 1},
   {&__pyx_n_s_points_ceil, __pyx_k_points_ceil, sizeof(__pyx_k_points_ceil), 0, 0, 1, 1},
   {&__pyx_n_s_points_floor, __pyx_k_points_floor, sizeof(__pyx_k_points_floor), 0, 0, 1, 1},
@@ -1061,7 +1279,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_risk, __pyx_k_risk, sizeof(__pyx_k_risk), 0, 0, 1, 1},
   {&__pyx_n_s_salary, __pyx_k_salary, sizeof(__pyx_k_salary), 0, 0, 1, 1},
   {&__pyx_n_s_salary_remaining, __pyx_k_salary_remaining, sizeof(__pyx_k_salary_remaining), 0, 0, 1, 1},
-  {&__pyx_n_s_sdPts, __pyx_k_sdPts, sizeof(__pyx_k_sdPts), 0, 0, 1, 1},
   {&__pyx_n_s_sdRank, __pyx_k_sdRank, sizeof(__pyx_k_sdRank), 0, 0, 1, 1},
   {&__pyx_n_s_team, __pyx_k_team, sizeof(__pyx_k_team), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
@@ -1225,6 +1442,7 @@ static int __pyx_pymod_exec_constants(PyObject *__pyx_pyinit_module)
 #endif
 #endif
 {
+  __Pyx_TraceDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannyDeclarations
   #if CYTHON_PEP489_MULTI_PHASE_INIT
@@ -1323,13 +1541,15 @@ if (!__Pyx_RefNanny) {
   #if defined(__Pyx_Generator_USED) || defined(__Pyx_Coroutine_USED)
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
+  __Pyx_TraceCall("__Pyx_PyMODINIT_FUNC PyInit_constants(void)", __pyx_f[0], 1, 0, __PYX_ERR(0, 1, __pyx_L1_error));
 
   /* "dfs/constants.pyx":1
  * PLAYER_COLUMNS = ["name", "salary", "position", "team", "opposing_team", "median_value", "upper_value",             # <<<<<<<<<<<<<<
- *                   "lower_value", "median", "upper", "lower", "sdPts", "dropoff", "sdRank", "risk", "offset"]
+ *                   "lower_value", "median", "upper", "lower", "ffa_median", "ffa_upper", "ffa_lower", "pff_median" "sdPts", "dropoff", "sdRank", "risk", "offset"]
  * 
  */
-  __pyx_t_1 = PyList_New(16); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_TraceLine(1,0,__PYX_ERR(0, 1, __pyx_L1_error))
+  __pyx_t_1 = PyList_New(19); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_name);
   __Pyx_GIVEREF(__pyx_n_s_name);
@@ -1364,31 +1584,41 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_n_s_lower);
   __Pyx_GIVEREF(__pyx_n_s_lower);
   PyList_SET_ITEM(__pyx_t_1, 10, __pyx_n_s_lower);
-  __Pyx_INCREF(__pyx_n_s_sdPts);
-  __Pyx_GIVEREF(__pyx_n_s_sdPts);
-  PyList_SET_ITEM(__pyx_t_1, 11, __pyx_n_s_sdPts);
+  __Pyx_INCREF(__pyx_n_s_ffa_median);
+  __Pyx_GIVEREF(__pyx_n_s_ffa_median);
+  PyList_SET_ITEM(__pyx_t_1, 11, __pyx_n_s_ffa_median);
+  __Pyx_INCREF(__pyx_n_s_ffa_upper);
+  __Pyx_GIVEREF(__pyx_n_s_ffa_upper);
+  PyList_SET_ITEM(__pyx_t_1, 12, __pyx_n_s_ffa_upper);
+  __Pyx_INCREF(__pyx_n_s_ffa_lower);
+  __Pyx_GIVEREF(__pyx_n_s_ffa_lower);
+  PyList_SET_ITEM(__pyx_t_1, 13, __pyx_n_s_ffa_lower);
+  __Pyx_INCREF(__pyx_n_s_pff_mediansdPts);
+  __Pyx_GIVEREF(__pyx_n_s_pff_mediansdPts);
+  PyList_SET_ITEM(__pyx_t_1, 14, __pyx_n_s_pff_mediansdPts);
   __Pyx_INCREF(__pyx_n_s_dropoff);
   __Pyx_GIVEREF(__pyx_n_s_dropoff);
-  PyList_SET_ITEM(__pyx_t_1, 12, __pyx_n_s_dropoff);
+  PyList_SET_ITEM(__pyx_t_1, 15, __pyx_n_s_dropoff);
   __Pyx_INCREF(__pyx_n_s_sdRank);
   __Pyx_GIVEREF(__pyx_n_s_sdRank);
-  PyList_SET_ITEM(__pyx_t_1, 13, __pyx_n_s_sdRank);
+  PyList_SET_ITEM(__pyx_t_1, 16, __pyx_n_s_sdRank);
   __Pyx_INCREF(__pyx_n_s_risk);
   __Pyx_GIVEREF(__pyx_n_s_risk);
-  PyList_SET_ITEM(__pyx_t_1, 14, __pyx_n_s_risk);
+  PyList_SET_ITEM(__pyx_t_1, 17, __pyx_n_s_risk);
   __Pyx_INCREF(__pyx_n_s_offset);
   __Pyx_GIVEREF(__pyx_n_s_offset);
-  PyList_SET_ITEM(__pyx_t_1, 15, __pyx_n_s_offset);
+  PyList_SET_ITEM(__pyx_t_1, 18, __pyx_n_s_offset);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_PLAYER_COLUMNS, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "dfs/constants.pyx":4
- *                   "lower_value", "median", "upper", "lower", "sdPts", "dropoff", "sdRank", "risk", "offset"]
+ *                   "lower_value", "median", "upper", "lower", "ffa_median", "ffa_upper", "ffa_lower", "pff_median" "sdPts", "dropoff", "sdRank", "risk", "offset"]
  * 
  * LINEUP_COLUMNS = ["lineup_num", "points_avg", "points_ceil", "points_floor", "name", "salary", "position",             # <<<<<<<<<<<<<<
  *                   "team", "opposing_team", "median_value", "upper_value", "lower_value", "median", "upper", "lower", "salary_remaining"]
  * 
  */
+  __Pyx_TraceLine(4,0,__PYX_ERR(0, 4, __pyx_L1_error))
   __pyx_t_1 = PyList_New(16); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_lineup_num);
@@ -1444,13 +1674,15 @@ if (!__Pyx_RefNanny) {
 
   /* "dfs/constants.pyx":1
  * PLAYER_COLUMNS = ["name", "salary", "position", "team", "opposing_team", "median_value", "upper_value",             # <<<<<<<<<<<<<<
- *                   "lower_value", "median", "upper", "lower", "sdPts", "dropoff", "sdRank", "risk", "offset"]
+ *                   "lower_value", "median", "upper", "lower", "ffa_median", "ffa_upper", "ffa_lower", "pff_median" "sdPts", "dropoff", "sdRank", "risk", "offset"]
  * 
  */
+  __Pyx_TraceLine(1,0,__PYX_ERR(0, 1, __pyx_L1_error))
   __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_TraceReturn(Py_None, 0);
 
   /*--- Wrapped vars code ---*/
 
@@ -1494,20 +1726,6 @@ end:
 }
 #endif
 
-/* PyObjectGetAttrStr */
-#if CYTHON_USE_TYPE_SLOTS
-static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject* attr_name) {
-    PyTypeObject* tp = Py_TYPE(obj);
-    if (likely(tp->tp_getattro))
-        return tp->tp_getattro(obj, attr_name);
-#if PY_MAJOR_VERSION < 3
-    if (likely(tp->tp_getattr))
-        return tp->tp_getattr(obj, PyString_AS_STRING(attr_name));
-#endif
-    return PyObject_GetAttr(obj, attr_name);
-}
-#endif
-
 /* PyErrFetchRestore */
 #if CYTHON_FAST_THREAD_STATE
 static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
@@ -1529,6 +1747,113 @@ static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject 
     tstate->curexc_type = 0;
     tstate->curexc_value = 0;
     tstate->curexc_traceback = 0;
+}
+#endif
+
+/* Profile */
+#if CYTHON_PROFILE
+static int __Pyx_TraceSetupAndCall(PyCodeObject** code,
+                                   PyFrameObject** frame,
+                                   PyThreadState* tstate,
+                                   const char *funcname,
+                                   const char *srcfile,
+                                   int firstlineno) {
+    PyObject *type, *value, *traceback;
+    int retval;
+    if (*frame == NULL || !CYTHON_PROFILE_REUSE_FRAME) {
+        if (*code == NULL) {
+            *code = __Pyx_createFrameCodeObject(funcname, srcfile, firstlineno);
+            if (*code == NULL) return 0;
+        }
+        *frame = PyFrame_New(
+            tstate,                          /*PyThreadState *tstate*/
+            *code,                           /*PyCodeObject *code*/
+            __pyx_d,                  /*PyObject *globals*/
+            0                                /*PyObject *locals*/
+        );
+        if (*frame == NULL) return 0;
+        if (CYTHON_TRACE && (*frame)->f_trace == NULL) {
+            Py_INCREF(Py_None);
+            (*frame)->f_trace = Py_None;
+        }
+#if PY_VERSION_HEX < 0x030400B1
+    } else {
+        (*frame)->f_tstate = tstate;
+#endif
+    }
+      __Pyx_PyFrame_SetLineNumber(*frame, firstlineno);
+    retval = 1;
+    tstate->tracing++;
+    tstate->use_tracing = 0;
+    __Pyx_ErrFetchInState(tstate, &type, &value, &traceback);
+    #if CYTHON_TRACE
+    if (tstate->c_tracefunc)
+        retval = tstate->c_tracefunc(tstate->c_traceobj, *frame, PyTrace_CALL, NULL) == 0;
+    if (retval && tstate->c_profilefunc)
+    #endif
+        retval = tstate->c_profilefunc(tstate->c_profileobj, *frame, PyTrace_CALL, NULL) == 0;
+    tstate->use_tracing = (tstate->c_profilefunc ||
+                           (CYTHON_TRACE && tstate->c_tracefunc));
+    tstate->tracing--;
+    if (retval) {
+        __Pyx_ErrRestoreInState(tstate, type, value, traceback);
+        return tstate->use_tracing && retval;
+    } else {
+        Py_XDECREF(type);
+        Py_XDECREF(value);
+        Py_XDECREF(traceback);
+        return -1;
+    }
+}
+static PyCodeObject *__Pyx_createFrameCodeObject(const char *funcname, const char *srcfile, int firstlineno) {
+    PyObject *py_srcfile = 0;
+    PyObject *py_funcname = 0;
+    PyCodeObject *py_code = 0;
+    #if PY_MAJOR_VERSION < 3
+    py_funcname = PyString_FromString(funcname);
+    py_srcfile = PyString_FromString(srcfile);
+    #else
+    py_funcname = PyUnicode_FromString(funcname);
+    py_srcfile = PyUnicode_FromString(srcfile);
+    #endif
+    if (!py_funcname | !py_srcfile) goto bad;
+    py_code = PyCode_New(
+        0,
+        #if PY_MAJOR_VERSION >= 3
+        0,
+        #endif
+        0,
+        0,
+        CO_OPTIMIZED | CO_NEWLOCALS,
+        __pyx_empty_bytes,     /*PyObject *code,*/
+        __pyx_empty_tuple,     /*PyObject *consts,*/
+        __pyx_empty_tuple,     /*PyObject *names,*/
+        __pyx_empty_tuple,     /*PyObject *varnames,*/
+        __pyx_empty_tuple,     /*PyObject *freevars,*/
+        __pyx_empty_tuple,     /*PyObject *cellvars,*/
+        py_srcfile,       /*PyObject *filename,*/
+        py_funcname,      /*PyObject *name,*/
+        firstlineno,
+        __pyx_empty_bytes      /*PyObject *lnotab*/
+    );
+bad:
+    Py_XDECREF(py_srcfile);
+    Py_XDECREF(py_funcname);
+    return py_code;
+}
+#endif
+
+/* PyObjectGetAttrStr */
+#if CYTHON_USE_TYPE_SLOTS
+static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject* attr_name) {
+    PyTypeObject* tp = Py_TYPE(obj);
+    if (likely(tp->tp_getattro))
+        return tp->tp_getattro(obj, attr_name);
+#if PY_MAJOR_VERSION < 3
+    if (likely(tp->tp_getattr))
+        return tp->tp_getattr(obj, PyString_AS_STRING(attr_name));
+#endif
+    return PyObject_GetAttr(obj, attr_name);
 }
 #endif
 

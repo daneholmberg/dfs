@@ -794,7 +794,7 @@ struct __pyx_obj_3dfs_6Player_Player;
 struct __pyx_obj_3dfs_6Lineup_Lineup;
 struct __pyx_opt_args_3dfs_6Player_6Player_update_player_dfs;
 
-/* "Player.pxd":20
+/* "Player.pxd":24
  *     cdef public bint is_captain
  *     cpdef update_player_proj(self, data)
  *     cpdef update_player_dfs(self, data, site=*)             # <<<<<<<<<<<<<<
@@ -830,6 +830,10 @@ struct __pyx_obj_3dfs_6Player_Player {
   double median_value;
   double upper_value;
   double lower_value;
+  PyObject *pff_median;
+  PyObject *ffa_median;
+  PyObject *ffa_upper;
+  PyObject *ffa_lower;
   int is_captain;
 };
 
@@ -4378,7 +4382,7 @@ static PyObject *__pyx_f_3dfs_6Lineup_6Lineup_add_player(struct __pyx_obj_3dfs_6
 
   /* "dfs/Lineup.pyx":119
  *         #    return False
- * 
+ *         #float mult
  *         mult = 1.5 if captain_mode and self.len_players == 0 and not self.has_cpt else 1             # <<<<<<<<<<<<<<
  *         #print(mult, self.has_cpt)
  *         sal_remain = self.salary_remaining - (int(player.salary) * mult)

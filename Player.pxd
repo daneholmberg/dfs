@@ -15,6 +15,10 @@ cdef class Player:
     cdef public double median_value
     cdef public double upper_value
     cdef public double lower_value
+    cdef public str pff_median
+    cdef public str ffa_median
+    cdef public str ffa_upper
+    cdef public str ffa_lower
     cdef public bint is_captain
     cpdef update_player_proj(self, data)
     cpdef update_player_dfs(self, data, site=*)

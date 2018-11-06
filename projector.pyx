@@ -1,6 +1,6 @@
 # cython: profile=True
 
-# distutils: define_macros=CYTHON_TRACE_NOGIL=1
+# distutils: cdefine_macros=CYTHON_TRACE_NOGIL=1
 # cython: linetrace=True
 # cython: binding=True
 
@@ -40,7 +40,8 @@ class Projector:
         self.desig_cpt = False
         #self.players_dict = {"QBs": [], "RBs": [], "WRs": [], "TEs": [], "Flexes": [], "DSTs": []}
         self.dfs_data = dfs_data
-        self.projected_data = self.normalize_data(projected_data)
+        self.projected_data = self.combine_data(projected_data)
+        #self.projected_data = self.normalize_data(projected_data, source)
         
         
     # def build_players_dict(self):
@@ -58,7 +59,27 @@ class Projector:
     #            self.players_dict['Flexes'].append(player)
     #        elif player.position == "DST":
     #            self.players_dict['DSTs'].append(player) 
+    def combine_data(self, projected_data):
+        combined_data = {}
+        for source, data in projected_data.items():
+            if source == "pff":
+                data = self.normalize_data(data, "pff")
+            for row in data:
+                unique_key = f"{row['player']}{row['team']}{row['position']}"
+                if unique_key not in combined_data:
+                    combined_data[unique_key] = row
+                combined_data[unique_key][f"{source}_median"] = row["points"]
+                combined_data[unique_key][f"{source}_lower"] = row["lower"]
+                combined_data[unique_key][f"{source}_upper"] = row["upper"]
+        for row in combined_data.values():
+            if "pff_median" in row and "ffa_median" in row:
+                row["combined_median"] = (float(row["pff_median"]) + float(row["ffa_median"])) / 2
+                row["combined_lower"] = (float(row["pff_lower"]) + float(row["ffa_lower"])) / 2
+                row["combined_upper"] = (float(row["pff_upper"]) + float(row["ffa_upper"])) / 2
+        return combined_data
+
     def normalize_data(self, projected_data, source):
+        #for source, data in projected_data.items():
         if source == "ffa":
             return projected_data
         elif source == "pff":
@@ -81,7 +102,7 @@ class Projector:
             return npd
 
     def build_projection_dict(self, starting_players, removed_players, site="DK", lineup_type="normal", captain=None):
-        for proj_row in self.projected_data:
+        for unique_key, proj_row in self.projected_data.items():
             if proj_row['player'] in removed_players:
                 continue
             if lineup_type == "normal":
@@ -193,17 +214,18 @@ class Projector:
         #self.reduce_players(7, 10, 14, 7, 5) 
         #self.reduce_players(6, 12, 15, 7, 5) # 2 players already
         #self.reduce_players(6, 15, 20, 10, 5) # 4 players already
-        #self.reduce_players(7, 22, 25, 15, 5) # 4 players already
-        self.reduce_players(5, 9, 12, 5, 5) # 75
+        self.reduce_players(2, 22, 25, 15, 5) # 4 players already
+        #self.reduce_players(5, 9, 12, 5, 5) # 75
         #self.reduce_players(5, 12, 14, 9, 5) 
         #self.reduce_players(5, 7, 9, 5, 5) # 6-7
 
         #self.reduce_players(9, 12, 15, 7, 5) # 51 college
         self.players.reverse()
-        self.players = sample(self.players, len(self.players))
-        for s_player in self.starting_players:
-            self.players.insert(0, s_player)
-
+        #self.players = sample(self.players, len(self.players))
+        #for s_player in self.starting_players:
+            #self.players.insert(0, s_player)
+        for ply in self.players:
+            print(ply)
         print(f"Len players: {len(self.players)-len(self.starting_players)}")
 
         # self.reduce_players(4, 17, 14, 9, 12)7 8 12 5 5
@@ -259,7 +281,7 @@ class Projector:
     #        np_arr[i] = i
     #    return np_arr
 
-    def lineups_iter(self, int r, cpt=False, site="DK", lineup_type="normal"):
+    def lineups_iter(self, int r, bint cpt=False, str site="DK", str lineup_type="normal"):
         if site == "DK":
             s_cap = 50000
         elif site == "yahoo":
@@ -297,6 +319,8 @@ class Projector:
         cdef int i
         cdef int j
         cdef int k
+        cdef int v
+        cdef int x
         cdef int cpt_int = 0
         cdef bint incur
 
@@ -322,13 +346,14 @@ class Projector:
                     indices = self.reset_inds_cpt(cpt_int, r)
                     lineup = Lineup.Lineup([self.players[cpt_int]], s_cap, captain_mode=cpt, lineup_type=lineup_type)
                     cpt_int += 1
+                    
                     for v in range(len_starters,r):
                         added = lineup.add_player(self.players[v], cpt)
                         if not added:
                             incur = False
 
                             indices[v] = indices[v] + 1
-
+                            
                             for x in range(v+1, r):
                                 indices[x] = indices[x-1] + 1
                             break
@@ -339,7 +364,7 @@ class Projector:
                 return
 
             if i < lineup.len_players:
-                lineup = Lineup.Lineup(lineup.players[0:i], captain_mode=cpt, lineup_type=lineup_type, has_cpt=True)
+                lineup = Lineup.Lineup(lineup.players[0:i], s_cap, captain_mode=cpt, lineup_type=lineup_type, has_cpt=True)
             if incur:
                 indices[i] += 1
                 for j in range(i+1, r):
@@ -405,6 +430,10 @@ class Projector:
             players[-1]['upper'] = player.upper
             players[-1]['median'] = player.median
             players[-1]['lower'] = player.lower
+            players[-1]['ffa_median'] = player.ffa_median
+            players[-1]['ffa_upper'] = player.ffa_upper
+            players[-1]['ffa_lower'] = player.ffa_lower
+            players[-1]['pff_median'] = player.pff_median
             players[-1]['sdPts'] = player.sdPts
             players[-1]['dropoff'] = player.dropoff
             players[-1]['sdRank'] = player.sdRank
@@ -486,6 +515,19 @@ class Projector:
         if replace:
             self.lineups = new_lineups
 
+    def remove_unwanteds(self):
+        def is_wanted(lineup, defense):
+            for player in lineup.players:
+                if player.team == defense.opposing_team:
+                    return False
+            return True
+        new_lineups = []
+        for lineup in self.lineups:
+            defense = list(filter(lambda player: player.position=="DST", lineup.players))[0]
+            if is_wanted(lineup, defense):
+                new_lineups.append(lineup)
+        self.lineups = new_lineups
+
     def restrict_lineups(self, limit=3):
         limit = int(limit)
         players = {}
@@ -518,7 +560,7 @@ class Projector:
             return "RB-DST"
         return ""
 
-    def add_values(self, site):
+    def add_values(self, str site):
         for player in self.players.values():
             player.get_value(site)
     

@@ -115,7 +115,7 @@ cdef class Lineup:
             #return False
         #if player.name in ["Geronimo Allison", "Randall Cobb", "Trent Taylor"]:
         #    return False
-        
+        #float mult
         mult = 1.5 if captain_mode and self.len_players == 0 and not self.has_cpt else 1
         #print(mult, self.has_cpt)
         sal_remain = self.salary_remaining - (int(player.salary) * mult)

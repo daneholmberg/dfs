@@ -9,7 +9,8 @@ import old.Projector_old
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("dfs_data")
-    parser.add_argument("projected_data")
+    parser.add_argument("--ffa_proj", default=None)
+    parser.add_argument("--pff_proj", default=None)
     parser.add_argument("type", nargs='?', default="median")
     parser.add_argument("-cpt", action="store_true")
     parser.add_argument("-cp", "--captain", default=None)
@@ -25,6 +26,7 @@ def parse_args():
     parser.add_argument("--skip", default=1, help="skip over lineups")
     parser.add_argument("--limit", default=1000, help="How many lineups to sort through")
     parser.add_argument("--start_lin", default=0, help="Index to start looking for lineups")
+    parser.add_argument("-unwant", action="store_true")
 
     return parser.parse_args()
 
@@ -42,7 +44,14 @@ def main(args=None):
         starting_players = list(map(lambda plyer: plyer.strip(), args.starting.split(",")))
 
     dfs_data = csv.DictReader(open(args.dfs_data))
-    projected_data = csv.DictReader(open(args.projected_data))
+    projected_data = {}
+    if args.ffa_proj:
+        ffa_proj = csv.DictReader(open(args.ffa_proj))
+        projected_data["ffa"] = ffa_proj
+    if args.pff_proj:
+        pff_proj = csv.DictReader(open(args.pff_proj))
+        projected_data["pff"] = pff_proj
+
 
     Projector = dfs.projector.Projector(dfs_data, projected_data, args.type, args.proj_source)
     Projector.build_projection_dict(starting_players, remove_players, args.site, args.lineup_type, args.captain)
@@ -89,6 +98,9 @@ def main(args=None):
     Projector.make_stack(args.stack)
     if args.restrict:
         Projector.restrict_lineups(args.restrict)
+
+    if args.unwant:
+        Projector.remove_unwanteds()
 
     Projector.write_linesups_csv(args.type, args.site, args.lineup_type)
     print(time.time() - before)

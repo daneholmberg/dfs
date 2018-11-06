@@ -14,6 +14,28 @@ cdef class Player:
         self.team = data['team']
         self.position = data['position']
         self.median = float(data['points'])
+        if "combined_median" in data:
+            self.median = data["combined_median"]
+        #if "pff_median" in data:
+            #data["pff_median"] = data["pff_median"].decode("utf-8")
+        #    print(type(data["pff_median"]), data["pff_median"])
+        try:
+            self.pff_median = ""
+            self.ffa_median = ""
+            self.ffa_lower = ""
+            self.ffa_upper = ""
+            if "pff_median" in data:
+                self.pff_median = data['pff_median']
+            if "ffa_median" in data:
+                self.ffa_median = data['ffa_median']
+            if "ffa_lower" in data:
+                self.ffa_lower = data['ffa_lower']
+            if "ffa_upper" in data:
+                self.ffa_upper = data['ffa_upper']
+
+        except TypeError:
+            pass
+
         self.lower = float(data['lower'])
         self.upper = float(data['upper'])
         self.sdPts = data['sdPts']
